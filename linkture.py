@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 
 from pathlib import Path
@@ -55,7 +55,7 @@ class Scriptures():
     def __init__(self):
         self.bn = {}
         path = Path(__file__).resolve().parent
-        con = sqlite3.connect(path / 'bbooks.db')
+        con = sqlite3.connect(path / 'res/bbooks.db')
         cur = con.cursor()
         for row in cur.execute("SELECT * FROM Books;").fetchall():
             for item in row[1].split(','):
