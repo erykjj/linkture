@@ -26,12 +26,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 
 
 from pathlib import Path
-import argparse, pandas as pd
-import re, sqlite3
+import argparse, re, sqlite3
+import pandas as pd
 
 
 def main(args):
@@ -40,6 +40,7 @@ def main(args):
         group = match.group(1).strip('{}')
         if args['verbose']:
             print(f'\n...processing: "{group}"')
+        # return str(s.code_scripture(group))
         return s.link_scripture(group)
 
     with open(args['infile'], 'r') as f:
@@ -72,32 +73,32 @@ class Scriptures():
         self.v_v = re.compile(r'(?=(\d+\s*),(\s*\d+))')
         self.vv = re.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
 
+    def check_book(self, book):
+        bk = book.upper().replace(' ', '').replace('.', '')
+        if bk not in self.bn:
+            return None, None
+        else:
+            book = self.bn[bk]
+        return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+    def process_scripture(self, scripture):
+        result = self.bk_ref.search(scripture)
+        if result:
+            bk, rest = result.group(1), result.group(2).lstrip()
+            bn, last = self.check_book(bk)
+            if not bn:
+                return None, None, None, -1
+            if rest == "":
+                vss = self.br.loc[(self.br.Book == bn) & (self.br.Chapter == last), ['Last']].values[0][0]
+                rest = f"1:1-{last}:{vss}"
+            for result in self.v_v.findall(rest):
+                if int(result[1]) - int(result[0]) == 1:
+                    rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
+            if bn:
+                return f"{bk} ", rest, bn, last
+        return None, None, None, None
+
     def link_scripture(self, scripture):
-
-        def check_book(book):
-            bk = book.upper().replace(' ', '').replace('.', '')
-            if bk not in self.bn:
-                return None, None
-            else:
-                book = self.bn[bk]
-            return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-        def process_scripture(scripture):
-            result = self.bk_ref.search(scripture)
-            if result:
-                bk, rest = result.group(1), result.group(2).lstrip()
-                bn, last = check_book(bk)
-                if not bn:
-                    return None, None, None, -1
-                if rest == "":
-                    vss = self.br.loc[(self.br.Book == bn) & (self.br.Chapter == last), ['Last']].values[0][0]
-                    rest = f"1:1-{last}:{vss}"
-                for result in self.v_v.findall(rest):
-                    if int(result[1]) - int(result[0]) == 1:
-                        rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
-                if bn:
-                    return f"{bk} ", rest, bn, last
-            return None, None, None, None
 
         def process_verses(chunk, book, multi):
             b = str(book)
@@ -165,12 +166,12 @@ class Scriptures():
         url = ''
         book = ''
         for chunk in scripture.split(';'):
-            bk, rest, bn, last = process_scripture(chunk)
+            bk, rest, bn, last = self.process_scripture(chunk)
             if last == -1:
                 url = url + '; ' + '{{' + chunk.strip() + '}}'
                 continue
             if not bn:
-                bk, rest, bn, last = process_scripture(book + chunk)
+                bk, rest, bn, last = self.process_scripture(book + chunk)
                 bk = ''
             chap = 0
             book = bk
@@ -188,6 +189,83 @@ class Scriptures():
                     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk}</a>'
                 bk = ''
         return url.strip(' ;,')
+
+    def code_scripture(self, scripture):
+
+        def code_verses(chunk, book, multi):
+            b = str(book).zfill(2)
+
+            result = self.ch_v_ch_v.search(chunk)
+            if result:
+                ch1 = result.group(1).zfill(3)
+                v1 = result.group(2).zfill(3)
+                ch2 = result.group(3).zfill(3)
+                v2 = result.group(4).zfill(3)
+                return (b+ch1+v1, b+ch2+v2), 0
+
+            result = self.ch_v_v.search(chunk)
+            if result:
+                ch1 = result.group(1).zfill(3)
+                v1 = result.group(2).zfill(3)
+                ch2 = ch1
+                v2 = result.group(3).zfill(3)
+                return (b+ch1+v1, b+ch2+v2), ch1
+
+            result = self.ch_v.search(chunk)
+            if result:
+                ch1 = result.group(1).zfill(3)
+                v1 = result.group(2).zfill(3)
+                return (b+ch1+v1, b+ch1+v1), ch1
+
+            result = self.ch_ch.search(chunk)
+            if result:
+                if multi:
+                    ch1 = result.group(1).zfill(3)
+                    v1 = '001'
+                    ch2 = result.group(2).zfill(3)
+                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                else:
+                    ch1 = '001'
+                    v1 = result.group(1).zfill(3)
+                    ch2 = ch1
+                    v2 = result.group(2).zfill(3)
+                return (b+ch1+v1, b+ch2+v2), 0
+
+            result = self.ch_.search(chunk)
+            if result:
+                if multi:
+                    ch1 = result.group(1).zfill(3)
+                    v1 = '001'
+                    ch2 = ch1
+                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                    return (b+ch1+v1, b+ch2+v2), 0
+                else:
+                    ch1 = '001'
+                    v1 = result.group(1).zfill(3)
+                return (b+ch1+v1, b+ch1+v1), 0
+
+            return None, 0
+
+        series = []
+        book = ''
+        for chunk in scripture.split(';'):
+            bk, rest, bn, last = self.process_scripture(chunk)
+            if last == -1:
+                continue
+            if not bn:
+                bk, rest, bn, last = self.process_scripture(book + chunk)
+                bk = ''
+            chap = 0
+            book = bk
+            for bit in rest.split(','):
+                if chap:
+                    link, chap = code_verses(f"{chap}:{bit}", bn, last-1)
+                else:
+                    link, chap = code_verses(bit, bn, last-1)
+                series.append(link)
+                bk = ''
+        return series
+
 
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
