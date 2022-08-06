@@ -40,8 +40,10 @@ def main(args):
         group = match.group(1).strip('{}')
         if args['verbose']:
             print(f'\n...processing: "{group}"')
-        # return str(s.code_scripture(group))
-        return s.link_scripture(group)
+        if args['c']:
+            return str(s.code_scripture(group))
+        else:
+            return s.link_scripture(group)
 
     with open(args['infile'], 'r') as f:
         txt = f.read()
@@ -270,7 +272,8 @@ class Scriptures():
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Convert scriptures marked wih {{scripture}} to jwpub links.")
+    parser = argparse.ArgumentParser(description="Convert scriptures indicated as {{scripture}} to list of coded ranges or jwpub links.")
+    parser.add_argument('-c', action='store_true', help='convert to code range only')
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}")
     parser.add_argument('--verbose', action='store_true', help='show scriptures being processed')
     parser.add_argument("infile", help='file to process')
