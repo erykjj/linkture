@@ -260,7 +260,7 @@ def _main(args):
 
     def replacement(match):
         group = match.group(1).strip('{}')
-        if args['verbose']:
+        if not args['quiet']:
             print(f'...Processing "{group}"')
         if args['code']:
             return str(s.code_scripture(group))
@@ -302,7 +302,7 @@ if __name__ == "__main__":
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='Work with files')
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='Show version and exit')
-    parser.add_argument('--verbose', action='store_true', help='Show processing status')
+    parser.add_argument('-q', '--quiet', action='store_true', help="Don't show processing status")
     args = parser.parse_args()
 
     _main(vars(args))
