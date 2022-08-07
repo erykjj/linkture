@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-File:           linkture module
+File:           linkture (module)
 
 Description:    Process and link/code Bible references
 
@@ -38,9 +38,6 @@ import argparse, re, sqlite3
 import pandas as pd
 
 
-__all__ = ["Scripture", "link_scripture", "code_scripture"]
-
-
 class Scriptures():
 
     def __init__(self):
@@ -63,7 +60,7 @@ class Scriptures():
         self.v_v = re.compile(r'(?=(\d+\s*),(\s*\d+))')
         self.vv = re.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
 
-    def check_book(self, book):
+    def _check_book(self, book):
         bk = book.upper().replace(' ', '').replace('.', '')
         if bk not in self.bn:
             return None, None
@@ -71,11 +68,11 @@ class Scriptures():
             book = self.bn[bk]
         return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
 
-    def process_scripture(self, scripture):
+    def _process_scripture(self, scripture):
         result = self.bk_ref.search(scripture)
         if result:
             bk, rest = result.group(1), result.group(2).lstrip()
-            bn, last = self.check_book(bk)
+            bn, last = self._check_book(bk)
             if not bn:
                 return None, None, None, -1
             if rest == "":
@@ -156,12 +153,12 @@ class Scriptures():
         url = ''
         book = ''
         for chunk in scripture.split(';'):
-            bk, rest, bn, last = self.process_scripture(chunk)
+            bk, rest, bn, last = self._process_scripture(chunk)
             if last == -1:
                 url = url + '; ' + '{{' + chunk.strip() + '}}'
                 continue
             if not bn:
-                bk, rest, bn, last = self.process_scripture(book + chunk)
+                bk, rest, bn, last = self._process_scripture(book + chunk)
                 bk = ''
             else:
                 book = bk
@@ -240,11 +237,11 @@ class Scriptures():
         series = []
         book = ''
         for chunk in scripture.split(';'):
-            bk, rest, bn, last = self.process_scripture(chunk)
+            bk, rest, bn, last = self._process_scripture(chunk)
             if last == -1:
                 continue
             if not bn:
-                bk, rest, bn, last = self.process_scripture(book + chunk)
+                bk, rest, bn, last = self._process_scripture(book + chunk)
                 bk = ''
             else:
                 book = bk
@@ -259,12 +256,12 @@ class Scriptures():
         return series
 
 
-def main(args):
+def _main(args):
 
     def replacement(match):
         group = match.group(1).strip('{}')
         if args['verbose']:
-            print(f'...processing: "{group}"')
+            print(f'...Processing "{group}"')
         if args['code']:
             return str(s.code_scripture(group))
         elif args['link']:
@@ -308,4 +305,4 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', action='store_true', help='Show processing status')
     args = parser.parse_args()
 
-    main(vars(args))
+    _main(vars(args))
