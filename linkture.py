@@ -26,8 +26,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 
+# TODO: add direct (one Scripture)/not file processing and output
 
 from pathlib import Path
 import argparse, re, sqlite3
@@ -40,17 +41,30 @@ def main(args):
         group = match.group(1).strip('{}')
         if args['verbose']:
             print(f'\n...processing: "{group}"')
-        if args['c']:
+        if args['code']:
             return str(s.code_scripture(group))
-        else:
+        elif args['link']:
             return s.link_scripture(group)
 
-    with open(args['infile'], 'r') as f:
-        txt = f.read()
     s = Scriptures()
+    m = re.compile(r'{{(.*?)}}')
+
+    if args['f']:
+        if args['f'][0] == args['f'][1]:
+            print('Make sure in-file and out-file are different!\n')
+            exit()
+        with open(args['f'][0], 'r') as f:
+            txt = f.read()
+    else:
+        txt = "{{" + args['s'] + "}}"
+
     txt2 = re.sub(m, replacement, txt)
-    with open(args['outfile'], 'w', encoding='UTF-8') as f:
-        f.write(txt2)
+
+    if args['f']:
+        with open(args['f'][1], 'w', encoding='UTF-8') as f:
+            f.write(txt2)
+    else:
+        print(txt2)
 
 
 class Scriptures():
@@ -175,8 +189,9 @@ class Scriptures():
             if not bn:
                 bk, rest, bn, last = self.process_scripture(book + chunk)
                 bk = ''
+            else:
+                book = bk
             chap = 0
-            book = bk
             for bit in rest.split(','):
                 if chap:
                     link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
@@ -257,8 +272,9 @@ class Scriptures():
             if not bn:
                 bk, rest, bn, last = self.process_scripture(book + chunk)
                 bk = ''
+            else:
+                book = bk
             chap = 0
-            book = bk
             for bit in rest.split(','):
                 if chap:
                     link, chap = code_verses(f"{chap}:{bit}", bn, last-1)
@@ -272,15 +288,18 @@ class Scriptures():
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Convert scriptures indicated as {{scripture}} to list of coded ranges or jwpub links.")
-    parser.add_argument('-c', action='store_true', help='convert to code range only')
-    parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}")
-    parser.add_argument('--verbose', action='store_true', help='show scriptures being processed')
-    parser.add_argument("infile", help='file to process')
-    parser.add_argument("outfile", help='output file')
+    parser = argparse.ArgumentParser(description="Convert scriptures to list of coded ranges or jwpub links.")
+
+    kind = parser.add_mutually_exclusive_group(required=True)
+    kind.add_argument('-c', '--code', action='store_true', help='Convert to code range')
+    kind.add_argument('-l', '--link', action='store_true', help='Create links')
+ 
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('-s', metavar='reference', help='Work with STDIN')
+    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='Work with files')
+
+    parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='Show version and exit')
+    parser.add_argument('--verbose', action='store_true', help='Show processing status')
     args = parser.parse_args()
-    if vars(args)['infile'] == vars(args)['outfile']:
-        print('Make sure the outfile is different from the infile!\n')
-        exit()
-    m = re.compile(r'({{.*?}})')
+
     main(vars(args))
