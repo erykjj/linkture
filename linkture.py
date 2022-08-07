@@ -153,29 +153,32 @@ class Scriptures():
         url = ''
         book = ''
         for chunk in scripture.split(';'):
-            bk, rest, bn, last = self._process_scripture(chunk)
-            if last == -1:
-                url = url + '; ' + '{{' + chunk.strip() + '}}'
-                continue
-            if not bn:
-                bk, rest, bn, last = self._process_scripture(book + chunk)
-                bk = ''
-            else:
-                book = bk
-            chap = 0
-            for bit in rest.split(','):
-                if chap:
-                    link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
-                    url += ', '
+            try:
+                bk, rest, bn, last = self._process_scripture(chunk)
+                if last == -1:
+                    url = url + '; ' + '{{' + chunk.strip() + '}}'
+                    continue
+                if not bn:
+                    bk, rest, bn, last = self._process_scripture(book + chunk)
+                    bk = ''
                 else:
-                    link, chap = process_verses(bit, bn, last-1)
-                    url += '; '
-                processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
-                if len(chunk) < (len(bk) + len(bit)):
-                    url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
-                else:
-                    url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk}</a>'
-                bk = ''
+                    book = bk
+                chap = 0
+                for bit in rest.split(','):
+                    if chap:
+                        link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
+                        url += ', '
+                    else:
+                        link, chap = process_verses(bit, bn, last-1)
+                        url += '; '
+                    processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
+                    if len(chunk) < (len(bk) + len(bit)):
+                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
+                    else:
+                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk}</a>'
+                    bk = ''
+            except:
+                pass
         return url.strip(' ;,')
 
     def code_scripture(self, scripture):
@@ -237,22 +240,25 @@ class Scriptures():
         series = []
         book = ''
         for chunk in scripture.split(';'):
-            bk, rest, bn, last = self._process_scripture(chunk)
-            if last == -1:
-                continue
-            if not bn:
-                bk, rest, bn, last = self._process_scripture(book + chunk)
-                bk = ''
-            else:
-                book = bk
-            chap = 0
-            for bit in rest.split(','):
-                if chap:
-                    link, chap = code_verses(f"{chap}:{bit}", bn, last-1)
+            try:
+                bk, rest, bn, last = self._process_scripture(chunk)
+                if last == -1:
+                    continue
+                if not bn:
+                    bk, rest, bn, last = self._process_scripture(book + chunk)
+                    bk = ''
                 else:
-                    link, chap = code_verses(bit, bn, last-1)
-                series.append(link)
-                bk = ''
+                    book = bk
+                chap = 0
+                for bit in rest.split(','):
+                    if chap:
+                        link, chap = code_verses(f"{chap}:{bit}", bn, last-1)
+                    else:
+                        link, chap = code_verses(bit, bn, last-1)
+                    series.append(link)
+                    bk = ''
+            except:
+                pass
         return series
 
 
