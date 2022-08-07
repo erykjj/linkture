@@ -3,7 +3,7 @@
 """
 File:           linkture module
 
-Description:    Process Bible references and convert them into jwpub links
+Description:    Process and link/code Bible references
 
 MIT License     Copyright (c) 2022 Eryk J.
 
@@ -26,43 +26,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
+
+INFO = "Functions to convert scriptures to a list of coded ranges or to .jwpub links. This script _does not_ parse text files for scriptures - it only parses what is enclosed within {{ }} or provided as a string argument. Also, it doesn't check if chapters or verses actually exist (are withing range). Make sure the scriptures use common English names/abbreviations."
+
+# TODO: sqlite -> json for easier editing of resouces??
+
 
 from pathlib import Path
 import argparse, re, sqlite3
 import pandas as pd
 
 
-def main(args):
-
-    def replacement(match):
-        group = match.group(1).strip('{}')
-        if args['verbose']:
-            print(f'\n...processing: "{group}"')
-        if args['code']:
-            return str(s.code_scripture(group))
-        elif args['link']:
-            return s.link_scripture(group)
-
-    s = Scriptures()
-    m = re.compile(r'{{(.*?)}}')
-
-    if args['f']:
-        if args['f'][0] == args['f'][1]:
-            print('Make sure in-file and out-file are different!\n')
-            exit()
-        with open(args['f'][0], 'r') as f:
-            txt = f.read()
-    else:
-        txt = "{{" + args['s'] + "}}"
-
-    txt2 = re.sub(m, replacement, txt)
-
-    if args['f']:
-        with open(args['f'][1], 'w', encoding='UTF-8') as f:
-            f.write(txt2)
-    else:
-        print(txt2)
+__all__ = ["Scripture", "link_scripture", "code_scripture"]
 
 
 class Scriptures():
@@ -283,10 +259,42 @@ class Scriptures():
         return series
 
 
+def main(args):
+
+    def replacement(match):
+        group = match.group(1).strip('{}')
+        if args['verbose']:
+            print(f'...processing: "{group}"')
+        if args['code']:
+            return str(s.code_scripture(group))
+        elif args['link']:
+            return s.link_scripture(group)
+
+    s = Scriptures()
+    m = re.compile(r'{{(.*?)}}')
+
+    if args['f']:
+        if args['f'][0] == args['f'][1]:
+            print('Make sure in-file and out-file are different!\n')
+            exit()
+        with open(args['f'][0], 'r') as f:
+            txt = f.read()
+    else:
+        txt = "{{" + args['s'] + "}}"
+
+    txt2 = re.sub(m, replacement, txt)
+
+    if args['f']:
+        with open(args['f'][1], 'w', encoding='UTF-8') as f:
+            f.write(txt2)
+    else:
+        print(txt2)
+
+
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Convert scriptures to list of coded ranges or jwpub links.")
+    parser = argparse.ArgumentParser(description=INFO)
 
     kind = parser.add_mutually_exclusive_group(required=True)
     kind.add_argument('-c', '--code', action='store_true', help='Convert to code range')
