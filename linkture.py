@@ -28,13 +28,10 @@ SOFTWARE.
 
 VERSION = '1.2.1'
 
-INFO = "Functions to convert scriptures to a list of coded ranges or to .jwpub links. This script _does not_ parse text files for scriptures - it only parses what is enclosed within {{ }} or provided as a string argument. Also, it doesn't check if chapters or verses actually exist (are withing range). Make sure the scriptures use common English names/abbreviations."
-
-# TODO: sqlite -> json for easier editing of resouces??
-
+INFO = "Functions to convert scriptures to a list of coded ranges or to .jwpub links. This script _does not_ parse text files for scriptures - it only parses what is enclosed within {{ }} or provided as a string argument. Also, it doesn't check if chapters or verses actually exist (within range). Make sure the scriptures use common English names/abbreviations."
 
 from pathlib import Path
-import argparse, re, sqlite3
+import argparse, json, re
 import pandas as pd
 
 
@@ -43,14 +40,14 @@ class Scriptures():
     def __init__(self):
         self.bn = {}
         path = Path(__file__).resolve().parent
-        con = sqlite3.connect(path / 'res/bbooks.db')
-        cur = con.cursor()
-        for row in cur.execute("SELECT * FROM Books;").fetchall():
+
+        with open(path / 'res/books.json', 'r') as json_file:
+            b = json.load(json_file)
+        for row in b['English']:
             for item in row[1].split(','):
                 self.bn[item.replace(' ', '').replace('.', '').upper()] = row[0]
-        self.br = pd.read_sql("SELECT Book, Chapter, Last FROM Ranges;", con)
-        cur.close()
-        con.close()
+        self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
+
         self.bk_ref = re.compile(r'(\d?\s*[a-zA-Z]+\.?)(.*)', re.IGNORECASE)
         self.ch_v_ch_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
         self.ch_v_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
@@ -178,7 +175,7 @@ class Scriptures():
                         url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk}</a>'
                     bk = ''
             except:
-                pass
+                return scripture
         return url.strip(' ;,')
 
     def code_scripture(self, scripture):
@@ -258,7 +255,7 @@ class Scriptures():
                     series.append(link)
                     bk = ''
             except:
-                pass
+                return scripture
         return series
 
 
@@ -274,7 +271,7 @@ def _main(args):
             return s.link_scripture(group)
 
     s = Scriptures()
-    m = re.compile(r'{{(.*?)}}')
+    m = re.compile(r'({{.*?}})')
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
