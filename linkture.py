@@ -26,9 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.1.1'
-
-# TODO: add direct (one Scripture)/not file processing and output
+VERSION = '1.2.0'
 
 from pathlib import Path
 import argparse, re, sqlite3
