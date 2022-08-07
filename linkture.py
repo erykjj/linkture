@@ -45,7 +45,7 @@ class Scriptures():
             b = json.load(json_file)
         for row in b['English']:
             for item in row[1].split(','):
-                self.bn[item.replace(' ', '').replace('.', '').upper()] = row[0]
+                self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
         self.bk_ref = re.compile(r'(\d?\s*[a-zA-Z]+\.?)(.*)', re.IGNORECASE)
@@ -58,7 +58,7 @@ class Scriptures():
         self.vv = re.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
 
     def _check_book(self, book):
-        bk = book.upper().replace(' ', '').replace('.', '')
+        bk = book.upper().replace(' ', '').replace('.', '').replace('-', '')
         if bk not in self.bn:
             return None, None
         else:
@@ -172,10 +172,10 @@ class Scriptures():
                     if len(chunk) < (len(bk) + len(bit)):
                         url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
                     else:
-                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk}</a>'
+                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
                     bk = ''
             except:
-                return scripture
+                url += "{{" + chunk + "}}"
         return url.strip(' ;,')
 
     def code_scripture(self, scripture):
@@ -255,7 +255,7 @@ class Scriptures():
                     series.append(link)
                     bk = ''
             except:
-                return scripture
+                pass
         return series
 
 
