@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 
 INFO = "Functions to convert scriptures to a list of coded ranges or to .jwpub links. This script _does not_ parse text files for scriptures - it only parses what is enclosed within {{ }} or provided as a string argument. Also, it doesn't check if chapters or verses actually exist (within range). Make sure the scriptures use common English names/abbreviations."
 
@@ -265,10 +265,10 @@ def _main(args):
         group = match.group(1).strip('{}')
         if not args['quiet']:
             print(f'...Processing "{group}"')
-        if args['code']:
-            return str(s.code_scripture(group))
-        elif args['link']:
+        if args['link']:
             return s.link_scripture(group)
+        else:
+            return str(s.code_scripture(group))
 
     s = Scriptures()
     m = re.compile(r'({{.*?}})')
@@ -295,10 +295,7 @@ if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description=INFO)
-
-    kind = parser.add_mutually_exclusive_group(required=True)
-    kind.add_argument('-c', '--code', action='store_true', help='Convert to code range')
-    kind.add_argument('-l', '--link', action='store_true', help='Create links')
+    parser.add_argument('-l', '--link', action='store_true', help='Create links (instead of range list)')
  
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument('-s', metavar='reference', help='Work with STDIN')
