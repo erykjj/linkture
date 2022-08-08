@@ -9,7 +9,6 @@ setuptools.setup(
     name="linkture",
     version="1.2.2",
     author="Eryk J.",
-    author_email="infiniti@inventati.org",
     url="https://github.com/erykjj/linkture",
 
     description="Process and link/code Bible references",
