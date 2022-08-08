@@ -28,7 +28,7 @@ SOFTWARE.
 
 VERSION = '1.2.2'
 
-INFO = "Functions to convert scriptures to a list of coded ranges or to .jwpub links. This script _does not_ parse text files for scriptures - it only parses what is enclosed within {{ }} or provided as a string argument. Also, it doesn't check if chapters or verses actually exist (within range). Make sure the scriptures use common English names/abbreviations."
+INFO = "Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges or to HTML <href> links (specifically for use in .jwpub archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse. Note that this script _does not_ parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist). Make sure the scriptures use common English names/abbreviations, though the *books.json* list can be modified for other languages."
 
 from pathlib import Path
 import argparse, json, re
