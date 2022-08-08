@@ -2,7 +2,8 @@ import setuptools
 from pathlib import Path
 
 work_dir = Path(__file__).parent
-long_descr = (work_dir / "README.md").read_text()
+long_description = (work_dir / "README.md").read_text()
+
 
 setuptools.setup(
 
@@ -12,9 +13,8 @@ setuptools.setup(
     url="https://github.com/erykjj/linkture",
 
     description="Process and link/code Bible references",
-    long_description = long_descr
-    long_description_content_type="text/markdown"
-
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 
     packages=setuptools.find_packages(),
     classifiers=[
