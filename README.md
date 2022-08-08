@@ -3,7 +3,7 @@
 
 ## Purpose
 
-Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges or to HTML \<href> links (specifically for use in .jwpub archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
+Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
 
 **Note** that this script _does not_ parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist). Make sure the scriptures use common English names/abbreviations, though the *books.json* list can be modified for other languages.
 
@@ -88,3 +88,7 @@ Here is another line ([('63001002', '63001005'), ('43017003', '43017026'), ('430
 [('54001001', '54001020'), ('54003001', '54003016')]
 The end.
 ```
+____
+## Feedback
+
+Feel free to [get in touch and post any issues and suggestions](https://github.com/erykjj/linkture/issues).
