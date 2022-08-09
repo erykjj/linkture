@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- refined regex for multi-word book names (eg. "Song of Solomon")
+
 ### Removed
 ____
 ## [1.2.2] - 2022-08-08
