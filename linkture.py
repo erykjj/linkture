@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.2.2'
+VERSION = '1.2.3'
 
 
 from pathlib import Path
@@ -47,7 +47,7 @@ class Scriptures():
                 self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
-        self.bk_ref = re.compile(r'(\d?\s*[a-zA-Z]+\.?)(.*)', re.IGNORECASE)
+        self.bk_ref = re.compile(r'(\d?(?:\s?[a-zA-Z\.-]+)+)\s?(.*)')
         self.ch_v_ch_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
         self.ch_v_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
         self.ch_v = re.compile(r'(\d+)\s*:\s*(\d+)')
