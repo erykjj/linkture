@@ -8,11 +8,11 @@ long_description = (work_dir / "README.md").read_text()
 setuptools.setup(
 
     name="linkture",
-    version="1.2.2",
+    version="1.2.3",
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
-    description="Process and link/code Bible references",
+    description="Process and link/code Bible scripture references",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
