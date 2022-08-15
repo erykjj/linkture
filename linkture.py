@@ -326,7 +326,7 @@ def _main(args):
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Process and link/(de-)code Bible scripture references. See README for more information.")
+    parser = argparse.ArgumentParser(description="Process and link/encode Bible scripture references. See README for more information.")
     parser.add_argument('-l', '--link', action='store_true', help='Create links (instead of range list)')
  
     mode = parser.add_mutually_exclusive_group(required=True)
