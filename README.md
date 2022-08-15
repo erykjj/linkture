@@ -37,6 +37,7 @@ from linkture import Scriptures
 s = Scriptures()
 url = s.link_scripture("John 17:3, 26")
 codes = s.code_scripture("Psalm 83:18; Mt 6:9")
+scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '55003017')]
 ```
 ____
 ## Sample output
