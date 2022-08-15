@@ -3,7 +3,7 @@
 
 ## Purpose
 
-Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
+Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges (and vice-versa) or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
 
 **Note** that this script _does not_ parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist). Make sure the scriptures use common English names/abbreviations, though the *books.json* list can be modified for other languages.
 
@@ -37,7 +37,7 @@ from linkture import Scriptures
 s = Scriptures()
 url = s.link_scripture("John 17:3, 26")
 codes = s.code_scripture("Psalm 83:18; Mt 6:9")
-scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '55003017')]
+scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '55003017')])
 ```
 ____
 ## Sample output
