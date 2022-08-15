@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.2.3'
+VERSION = '1.3.0'
 
 
 from pathlib import Path
@@ -42,8 +42,11 @@ class Scriptures():
 
         with open(path / 'res/books.json', 'r') as json_file:
             b = json.load(json_file)
+        self.books = ['Bible']
         for row in b['English']:
-            for item in row[1].split(','):
+            names = row[1].split(',')
+            self.books.insert(row[0], names[0])
+            for item in names:
                 self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
@@ -257,6 +260,36 @@ class Scriptures():
                 pass
         return series
 
+    def decode_scripture(self, reference=[]):
+        scriptures = ''
+        for item in reference:
+            start, end = item
+            sb = int(start[:2])
+            sc = int(start[2:5])
+            sv = int(start[5:])
+            eb = int(end[:2])
+            ec = int(end[2:5])
+            ev = int(end[5:])
+            if not ((0 < sb <= 66) & (sb == eb) & (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]) & (0 < sv <= ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0])):
+                continue
+            bk = self.books[sb]
+            if sc == self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]:
+                ch = ' '
+            else:
+                ch = f" {sc}:"
+            if start == end:
+                scripture = f"{bk}{ch}{sv}"
+            else:
+                if sc == ec:
+                    if ev - sv == 1:
+                        scripture = f"{bk}{ch}{sv}, {ev}"
+                    else:
+                        scripture = f"{bk}{ch}{sv}-{ev}"
+                else:
+                    scripture = f"{bk}{ch}{sv}-{ec}:{ev}"
+            scriptures += f"; {scripture}"
+        return scriptures.lstrip(" ;")
+
 
 def _main(args):
 
@@ -293,7 +326,7 @@ def _main(args):
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Process and link/code Bible scripture references. See README for more information.")
+    parser = argparse.ArgumentParser(description="Process and link/(de-)code Bible scripture references. See README for more information.")
     parser.add_argument('-l', '--link', action='store_true', help='Create links (instead of range list)')
  
     mode = parser.add_mutually_exclusive_group(required=True)
