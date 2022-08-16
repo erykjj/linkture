@@ -151,9 +151,15 @@ class Scriptures():
 
         url = ''
         book = ''
+        prev_bk = ''
         for chunk in scripture.split(';'):
             try:
                 bk, rest, bn, last = self._process_scripture(chunk)
+                if bk == prev_bk:
+                    no_bk = True
+                else:
+                    no_bk = False
+                    prev_bk = bk
                 if last == -1:
                     url = url + '; ' + '{{' + chunk.strip() + '}}'
                     continue
@@ -170,7 +176,10 @@ class Scriptures():
                     else:
                         link, chap = process_verses(bit, bn, last-1)
                         url += '; '
-                    processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
+                    if no_bk:
+                        processed_chunk = f"{undo_series(bit).lstrip()}"
+                    else:
+                        processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
                     if len(chunk) < (len(bk) + len(bit)):
                         url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
                     else:
