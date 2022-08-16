@@ -155,11 +155,6 @@ class Scriptures():
         for chunk in scripture.split(';'):
             try:
                 bk, rest, bn, last = self._process_scripture(chunk)
-                if bk == prev_bk:
-                    no_bk = True
-                else:
-                    no_bk = False
-                    prev_bk = bk
                 if last == -1:
                     url = url + '; ' + '{{' + chunk.strip() + '}}'
                     continue
@@ -168,6 +163,11 @@ class Scriptures():
                     bk = ''
                 else:
                     book = bk
+                if book == prev_bk:
+                    no_bk = True
+                else:
+                    no_bk = False
+                    prev_bk = book
                 chap = 0
                 for bit in rest.split(','):
                     if chap:
