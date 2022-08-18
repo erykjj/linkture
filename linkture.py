@@ -274,7 +274,7 @@ class Scriptures():
             if not ((0 < sb <= 66) & (sb == eb) & (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]) & (0 < sv <= ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0])):
                 continue
             bk = self.books[sb]
-            if sc == self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]:
+            if self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0] == 1:
                 ch = ' '
             else:
                 ch = f" {sc}:"
