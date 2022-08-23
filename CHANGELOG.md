@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Updated book names list
+
 ### Fixed
 
 ### Removed
