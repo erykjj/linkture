@@ -6,12 +6,21 @@
 
 ### Changed
 
-- Updated book names list
-
 ### Fixed
 
 ### Removed
 ____
+## [1.3.1] - 2022-08-27
+
+### Added
+
+- Add functionality with other language sets (English is default, Spanish, French, German, Italian, Portuguese)
+  - The sets can be extended as needed
+
+### Changed
+
+- Updated English book names list
+
 ## [1.3.0] - 2022-08-19
 
 ### Added
@@ -33,6 +42,7 @@ ____
 - Initial release
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.3.1]:https://github.com/erykjj/linkture/releases/tag/v1.3.1
 [1.3.0]:https://github.com/erykjj/linkture/releases/tag/v1.3.0
 [1.2.3]:https://github.com/erykjj/linkture/releases/tag/v1.2.3
 [1.2.2]:https://github.com/erykjj/linkture/releases/tag/v1.2.2
