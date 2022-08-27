@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 
 
 from pathlib import Path
@@ -36,14 +36,14 @@ import pandas as pd
 
 class Scriptures():
 
-    def __init__(self):
+    def __init__(self, lang='English'):
         self.bn = {}
         path = Path(__file__).resolve().parent
 
         with open(path / 'res/books.json', 'r') as json_file:
             b = json.load(json_file)
         self.books = ['Bible']
-        for row in b['English']:
+        for row in b[lang]:
             names = row[1].split(',')
             self.books.insert(row[0], names[0])
             for item in names:
@@ -303,7 +303,7 @@ def _main(args):
         else:
             return str(s.code_scripture(group))
 
-    s = Scriptures()
+    s = Scriptures(args['language'])
     m = re.compile(r'({{.*?}})')
 
     if args['f']:
@@ -329,7 +329,8 @@ if __name__ == "__main__":
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description="Process and link/encode Bible scripture references. See README for more information.")
     parser.add_argument('-l', '--link', action='store_true', help='Create links (instead of range list)')
- 
+    parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='Indicate language of book names (English if unspecified)')
+
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument('-s', metavar='reference', help='Work with STDIN')
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='Work with files')
