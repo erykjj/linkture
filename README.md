@@ -11,15 +11,20 @@ ____
 ## Usage
 
 ```
-python3 linkture.py [-h] [-l] (-s reference | -f in-file out-file) [-v] [-q]
+python3 linkture.py [-h] [-v] [-l] [-q]
+                   [--language {English,Spanish,German,French,Italian,Portuguese}]
+                   (-s reference | -f in-file out-file)
 
 options:
-  -h, --help           show this help message and exit
-  -l, --link           Create links (instead of range list)
-  -s reference         Work with STDIN
-  -f in-file out-file  Work with files
-  -v, --version        Show version and exit
-  -q, --quiet          Don't show processing status
+  -h, --help            show this help message and exit
+  -l, --link            Create links (instead of range list)
+  --language {English,Spanish,German,French,Italian,Portuguese}
+                        Indicate language of book names
+                        (English if unspecified)
+  -s reference          Work with STDIN
+  -f in-file out-file   Work with files
+  -v, --version         Show version and exit
+  -q, --quiet           Don't show processing status
 ```
 
 Or, make it executable first and run directly:
