@@ -271,8 +271,14 @@ class Scriptures():
             eb = int(end[:2])
             ec = int(end[2:5])
             ev = int(end[5:])
-            if not ((0 < sb <= 66) & (sb == eb) & (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]) & (0 < sv <= ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0])):
+            if not ((0 < sb <= 66) & (sb == eb)):
                 continue
+            else:
+                if not (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]):
+                    continue
+                else:
+                    if not (0 < sv <= ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0]):
+                        continue
             bk = self.books[sb]
             if self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0] == 1:
                 ch = ' '
