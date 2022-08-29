@@ -6,7 +6,11 @@
 
 ### Changed
 
+- Updated set of book names in English
+
 ### Fixed
+
+- Improve out-of-range chapter/verse detection
 
 ### Removed
 ____
