@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.3.1'
+VERSION = '1.3.2'
 
 
 from pathlib import Path
@@ -58,6 +58,7 @@ class Scriptures():
         self.ch_ = re.compile(r'(\d+)')
         self.v_v = re.compile(r'(?=(\d+\s*),(\s*\d+))')
         self.vv = re.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
+        self.dd = re.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
     def _check_book(self, book):
         bk = book.upper().replace(' ', '').replace('.', '').replace('-', '')
@@ -144,7 +145,7 @@ class Scriptures():
             for result in self.ch_v_ch_v.findall(txt):
                 if result[0] == result[2]:
                     txt = txt.replace(f"{result[0]}:{result[1]}-{result[2]}:{result[3]}", f"{result[0]}:{result[1]}-{result[3]}")
-            for result in self.vv.findall(txt):
+            for result in self.dd.findall(txt):
                 if int(result[1]) - int(result[0]) == 1:
                     txt = txt.replace(f"{result[0]}-{result[1]}", f"{result[0]}, {result[1]}")
             return txt
