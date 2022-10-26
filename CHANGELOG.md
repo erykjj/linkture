@@ -6,14 +6,22 @@
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+____
+## [1.3.2] - 2022-10-26
+
+### Changed
+
 - Updated set of book names in English
 
 ### Fixed
 
-- Improve out-of-range chapter/verse detection
+- Improved out-of-range chapter/verse detection
+- Convert consecutive ranges into lists (eg. "1-2" -> "1, 2")
 
-### Removed
-____
 ## [1.3.1] - 2022-08-27
 
 ### Added
@@ -46,6 +54,7 @@ ____
 - Initial release
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.3.2]:https://github.com/erykjj/linkture/releases/tag/v1.3.2
 [1.3.1]:https://github.com/erykjj/linkture/releases/tag/v1.3.1
 [1.3.0]:https://github.com/erykjj/linkture/releases/tag/v1.3.0
 [1.2.3]:https://github.com/erykjj/linkture/releases/tag/v1.2.3
