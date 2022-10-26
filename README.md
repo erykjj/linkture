@@ -70,7 +70,7 @@ Here is another line (<a href="jwpub://b/NWTR/63:1:2-63:1:5" class="b">2 John 2-
 <a href="jwpub://b/NWTR/64:1:2" class="b">3 John 2</a>
 <a href="jwpub://b/NWTR/3:2:3-3:2:5" class="b">Lev 2:3-5</a>, <a href="jwpub://b/NWTR/3:2:7-3:2:9" class="b">7-9</a>
 <a href="jwpub://b/NWTR/63:1:1-63:1:13" class="b">2 John</a>
-<a href="jwpub://b/NWTR/43:3:1-43:4:54" class="b">John 3, 4</a>
+<a href="jwpub://b/NWTR/64:1:3-64:1:4" class="b">3-John 3, 4</a>
 <a href="jwpub://b/NWTR/59:1:1-59:5:20" class="b">James</a>; <a href="jwpub://b/NWTR/44:10:1" class="b">Acts 10:1</a>, <a href="jwpub://b/NWTR/44:10:3" class="b">3</a>, <a href="jwpub://b/NWTR/44:10:5" class="b">5</a>
 <a href="jwpub://b/NWTR/54:6:1-54:6:21" class="b">1 Timothy 6</a>
 <a href="jwpub://b/NWTR/54:3:1-54:4:16" class="b">1Timothy 3, 4</a>
@@ -86,7 +86,7 @@ Here is another line ([('63001002', '63001005'), ('43017003', '43017026'), ('430
 [('64001002', '64001002')]
 [('03002003', '03002005'), ('03002007', '03002009')]
 [('63001001', '63001013')]
-[('43003001', '43004054')]
+[('64001003', '64001004')]
 [('59001001', '59005020'), ('44010001', '44010001'), ('44010003', '44010003'), ('44010005', '44010005')]
 [('54006001', '54006021')]
 [('54003001', '54004016')]
