@@ -26,7 +26,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.3.2'
+VERSION = '1.4.0'
+
+# TODO: allow output in abbreviated format
 
 
 from pathlib import Path
@@ -335,15 +337,22 @@ if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description="Process and link/encode Bible scripture references. See README for more information.")
-    parser.add_argument('-l', '--link', action='store_true', help='Create links (instead of range list)')
-    parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='Indicate language of book names (English if unspecified)')
-
-    mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument('-s', metavar='reference', help='Work with STDIN')
-    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='Work with files')
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='Show version and exit')
-    parser.add_argument('-q', '--quiet', action='store_true', help="Don't show processing status")
+
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with input and output files')
+    mode.add_argument('-s', metavar='reference', help='work with STDIN/STDOUT')
+
+    parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
+
+    form = parser.add_mutually_exclusive_group(required=False)
+    form.add_argument('--official', action='store_true', help='official abbreviation output format')
+    form.add_argument('--standard', action='store_true', help='standard abbreviation output format')
+
+    parser.add_argument('-l', '--link', action='store_true', help='create links (instead of range list)')
+
+    parser.add_argument('-q', '--quiet', action='store_true', help="don't show processing status")
     args = parser.parse_args()
 
     _main(vars(args))
