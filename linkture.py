@@ -38,7 +38,7 @@ import pandas as pd
 
 class Scriptures():
 
-    def __init__(self, lang='English'):
+    def __init__(self, lang='English', form=0):
         self.bn = {}
         path = Path(__file__).resolve().parent
 
@@ -47,7 +47,7 @@ class Scriptures():
         self.books = ['Bible']
         for row in b[lang]:
             names = row[1].split(',')
-            self.books.insert(row[0], names[0])
+            self.books.insert(row[0], names[form])
             for item in names:
                 self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
@@ -312,7 +312,13 @@ def _main(args):
         else:
             return str(s.code_scripture(group))
 
-    s = Scriptures(args['language'])
+    if args['standard']:
+        form = 1
+    elif args['official']:
+        form = 2
+    else:
+        form = 0
+    s = Scriptures(args['language'], form)
     m = re.compile(r'({{.*?}})')
 
     if args['f']:
