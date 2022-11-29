@@ -38,7 +38,7 @@ import pandas as pd
 
 class Scriptures():
 
-    def __init__(self, lang='English', form=0):
+    def __init__(self, lang='English', form=0, rewrite=False):
         self.bn = {}
         path = Path(__file__).resolve().parent
 
@@ -312,13 +312,17 @@ def _main(args):
         else:
             return str(s.code_scripture(group))
 
+    rewrite = False
     if args['standard']:
         form = 1
+        rewrite = True
     elif args['official']:
         form = 2
-    else:
+        rewrite = True
+    elif args['full']:
         form = 0
-    s = Scriptures(args['language'], form)
+        rewrite = True
+    s = Scriptures(args['language'], form, rewrite)
     m = re.compile(r'({{.*?}})')
 
     if args['f']:
@@ -346,15 +350,18 @@ if __name__ == "__main__":
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='Show version and exit')
 
-    mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with input and output files')
+    function_group = parser.add_argument_group('Operational method', 'Choose between terminal or files input/output')
+    mode = function_group.add_mutually_exclusive_group(required=True)
+    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files')
     mode.add_argument('-s', metavar='reference', help='process "reference(s)"')
 
     parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
 
-    form = parser.add_mutually_exclusive_group(required=False)
-    form.add_argument('--official', action='store_true', help='official abbreviation output format')
-    form.add_argument('--standard', action='store_true', help='standard abbreviation output format')
+    format_group = parser.add_argument_group('Output format (optional)', 'If provided, book names will be rewritten accordingly')
+    form = format_group.add_mutually_exclusive_group(required=False)
+    form.add_argument('--full', action='store_true', help='output as full name')
+    form.add_argument('--official', action='store_true', help='output as official abbreviation')
+    form.add_argument('--standard', action='store_true', help='output as standard abbreviation')
 
     parser.add_argument('-l', '--link', action='store_true', help='create links (instead of range list)')
 
