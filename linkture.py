@@ -348,7 +348,7 @@ if __name__ == "__main__":
 
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with input and output files')
-    mode.add_argument('-s', metavar='reference', help='work with STDIN/STDOUT')
+    mode.add_argument('-s', metavar='reference', help='process "reference(s)"')
 
     parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
 
