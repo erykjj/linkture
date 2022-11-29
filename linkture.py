@@ -40,6 +40,7 @@ class Scriptures():
 
     def __init__(self, lang='English', form=0, rewrite=False):
         self.bn = {}
+        self.rewrite = rewrite
         path = Path(__file__).resolve().parent
 
         with open(path / 'res/books.json', 'r') as json_file:
@@ -84,6 +85,8 @@ class Scriptures():
                 if int(result[1]) - int(result[0]) == 1:
                     rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
             if bn:
+                if self.rewrite:
+                    bk = self.books[bn]
                 return f"{bk} ", rest, bn, last
         return None, None, None, None
 
@@ -175,10 +178,11 @@ class Scriptures():
                         link, chap = process_verses(bit, bn, last-1)
                         url += '; '
                     processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
-                    if len(chunk) < (len(bk) + len(bit)):
-                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
-                    else:
-                        url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
+                    url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
+                    # if len(chunk) < (len(bk) + len(bit)):
+                    #     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
+                    # else:
+                    #     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
                     bk = ''
             except:
                 url += "{{" + chunk + "}}"
@@ -313,6 +317,7 @@ def _main(args):
             return str(s.code_scripture(group))
 
     rewrite = False
+    form = 0
     if args['standard']:
         form = 1
         rewrite = True
