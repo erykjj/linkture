@@ -303,23 +303,7 @@ class Scriptures():
         return scriptures.lstrip(" ;")
 
     def rewrite_scripture(self, scripture):
-        series = []
-        book = ''
-        for chunk in scripture.split(';'):
-            try:
-                bk, rest, bn, last = self._process_scripture(chunk)
-                if last == -1:
-                    continue
-                if not bn:
-                    bk, rest, bn, last = self._process_scripture(book + chunk)
-                    bk = ''
-                else:
-                    book = bk
-                # TODO: undo series
-                series.append(f'{bk}{rest}')
-            except:
-                pass
-        return '; '.join(series)
+        return self.decode_scripture(self.code_scripture(scripture))
 
 def _main(args):
 
