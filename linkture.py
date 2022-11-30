@@ -28,8 +28,6 @@ SOFTWARE.
 
 VERSION = '1.4.0'
 
-# TODO: allow output in abbreviated format
-
 
 from pathlib import Path
 import argparse, json, re
@@ -47,7 +45,7 @@ class Scriptures():
             b = json.load(json_file)
         self.books = ['Bible']
         for row in b[lang]:
-            names = row[1].split(',')
+            names = row[1].split(', ')
             self.books.insert(row[0], names[form])
             for item in names:
                 self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
@@ -304,6 +302,24 @@ class Scriptures():
             scriptures += f"; {scripture}"
         return scriptures.lstrip(" ;")
 
+    def rewrite_scripture(self, scripture):
+        series = []
+        book = ''
+        for chunk in scripture.split(';'):
+            try:
+                bk, rest, bn, last = self._process_scripture(chunk)
+                if last == -1:
+                    continue
+                if not bn:
+                    bk, rest, bn, last = self._process_scripture(book + chunk)
+                    bk = ''
+                else:
+                    book = bk
+                # TODO: undo series
+                series.append(f'{bk}{rest}')
+            except:
+                pass
+        return '; '.join(series)
 
 def _main(args):
 
@@ -313,8 +329,10 @@ def _main(args):
             print(f'...Processing "{group}"')
         if args['link']:
             return s.link_scripture(group)
-        else:
+        elif args['range']:
             return str(s.code_scripture(group))
+        else:
+            return s.rewrite_scripture(group)
 
     rewrite = False
     form = 0
@@ -368,7 +386,10 @@ if __name__ == "__main__":
     form.add_argument('--official', action='store_true', help='output as official abbreviation')
     form.add_argument('--standard', action='store_true', help='output as standard abbreviation')
 
-    parser.add_argument('-l', '--link', action='store_true', help='create links (instead of range list)')
+    type_group = parser.add_argument_group('Type of conversion', 'If not specified, references are simply rewritten according to chosen output format')
+    tpe = type_group.add_mutually_exclusive_group(required=False)
+    tpe.add_argument('-l', '--link', action='store_true', help='create jwpub link(s)')
+    tpe.add_argument('-r', '--range', action='store_true', help='create range list')
 
     parser.add_argument('-q', '--quiet', action='store_true', help="don't show processing status")
     args = parser.parse_args()
