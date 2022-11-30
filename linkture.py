@@ -36,7 +36,7 @@ import pandas as pd
 
 class Scriptures():
 
-    def __init__(self, lang='English', form=0, rewrite=False):
+    def __init__(self, language='English', form=0, rewrite=False):
         self.bn = {}
         self.rewrite = rewrite
         path = Path(__file__).resolve().parent
@@ -44,7 +44,7 @@ class Scriptures():
         with open(path / 'res/books.json', 'r') as json_file:
             b = json.load(json_file)
         self.books = ['Bible']
-        for row in b[lang]:
+        for row in b[language]:
             names = row[1].split(', ')
             self.books.insert(row[0], names[form])
             for item in names:
