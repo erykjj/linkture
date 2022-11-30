@@ -145,6 +145,7 @@ class Scriptures():
             return None, 0
 
         def undo_series(txt):
+            txt = txt.replace(' ', '')
             for result in self.ch_v_ch_v.findall(txt):
                 if result[0] == result[2]:
                     txt = txt.replace(f"{result[0]}:{result[1]}-{result[2]}:{result[3]}", f"{result[0]}:{result[1]}-{result[3]}")
@@ -177,10 +178,6 @@ class Scriptures():
                         url += '; '
                     processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
                     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
-                    # if len(chunk) < (len(bk) + len(bit)):
-                    #     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{chunk.strip()}</a>'
-                    # else:
-                    #     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
                     bk = ''
             except:
                 url += "{{" + chunk + "}}"
