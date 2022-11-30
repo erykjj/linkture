@@ -11,6 +11,22 @@
 ### Removed
 
 ____
+## [1.4.0] - 2022-11-29
+
+### Added
+
+- Added option to rewrite/fix scriptures:
+  - full name format (eg., "Matthew")
+  - standard abbreviation format (eg., "Matt")
+  - official abbreviation format (eg., "Mt")
+
+### Changed
+
+- Adjusted commandline options and function parameters
+- Default output is a rewritten scripture (always rewrites/fixes output)
+  - Range list and jwpub link are other options
+- Updated README
+
 ## [1.3.2] - 2022-10-26
 
 ### Changed
@@ -54,6 +70,7 @@ ____
 - Initial release
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.4.0]:https://github.com/erykjj/linkture/releases/tag/v1.4.0
 [1.3.2]:https://github.com/erykjj/linkture/releases/tag/v1.3.2
 [1.3.1]:https://github.com/erykjj/linkture/releases/tag/v1.3.1
 [1.3.0]:https://github.com/erykjj/linkture/releases/tag/v1.3.0
