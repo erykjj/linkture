@@ -350,24 +350,24 @@ def _main(args):
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="Process and link/encode Bible scripture references. See README for more information.")
+    parser = argparse.ArgumentParser(description="process and link/encode Bible scripture references; see README for more information")
 
-    parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='Show version and exit')
+    parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='show version and exit')
 
-    function_group = parser.add_argument_group('Operational method', 'Choose between terminal or files input/output')
+    function_group = parser.add_argument_group('operational method', 'choose between terminal or files input/output:')
     mode = function_group.add_mutually_exclusive_group(required=True)
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files')
     mode.add_argument('-s', metavar='reference', help='process "reference(s)"')
 
     parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
 
-    format_group = parser.add_argument_group('Output format (optional)', 'If provided, book names will be rewritten accordingly')
+    format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     form = format_group.add_mutually_exclusive_group(required=False)
     form.add_argument('--full', action='store_true', help='output as full name')
     form.add_argument('--official', action='store_true', help='output as official abbreviation')
     form.add_argument('--standard', action='store_true', help='output as standard abbreviation')
 
-    type_group = parser.add_argument_group('Type of conversion', 'If not specified, references are simply rewritten according to chosen output format')
+    type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
     tpe.add_argument('-l', '--link', action='store_true', help='create jwpub link(s)')
     tpe.add_argument('-r', '--range', action='store_true', help='create range list')
