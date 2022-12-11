@@ -68,7 +68,7 @@ Or import it into your script:
 ```
 from linkture import Scriptures
 
-s = Scriptures(lang='English', form=1, rewrite=True)
+s = Scriptures(language='English', form=1, rewrite=True)
 
 url = s.link_scripture("John 17:3, 26")
 codes = s.code_scripture("Psalm 83:18; Mt 6:9")
