@@ -11,6 +11,13 @@
 ### Removed
 
 ____
+## [1.4.1] - 2022-12-13
+
+### Fixed
+
+- fixed type-checking warnings
+- fixed in-range testing
+
 ## [1.4.0] - 2022-11-29
 
 ### Added
@@ -68,8 +75,10 @@ ____
 ## [1.2.2] - 2022-08-08
 
 - Initial release
+
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.4.1]:https://github.com/erykjj/linkture/releases/tag/v1.4.1
 [1.4.0]:https://github.com/erykjj/linkture/releases/tag/v1.4.0
 [1.3.2]:https://github.com/erykjj/linkture/releases/tag/v1.3.2
 [1.3.1]:https://github.com/erykjj/linkture/releases/tag/v1.3.1
