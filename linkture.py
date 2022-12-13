@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 
 
 from pathlib import Path
@@ -64,7 +64,7 @@ class Scriptures():
     def _check_book(self, book):
         bk = book.upper().replace(' ', '').replace('.', '').replace('-', '')
         if bk not in self.bn:
-            return None, None
+            return None, 0
         else:
             book = self.bn[bk]
         return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
@@ -75,7 +75,7 @@ class Scriptures():
             bk, rest = result.group(1), result.group(2).lstrip()
             bn, last = self._check_book(bk)
             if not bn:
-                return None, None, None, -1
+                return '', '', None, -1
             if rest == "":
                 vss = self.br.loc[(self.br.Book == bn) & (self.br.Chapter == last), ['Last']].values[0][0]
                 rest = f"1:1-{last}:{vss}"
@@ -86,7 +86,7 @@ class Scriptures():
                 if self.rewrite:
                     bk = self.books[bn]
                 return f"{bk} ", rest, bn, last
-        return None, None, None, None
+        return '', '', None, 0
 
     def link_scripture(self, scripture):
 
@@ -273,14 +273,12 @@ class Scriptures():
             eb = int(end[:2])
             ec = int(end[2:5])
             ev = int(end[5:])
-            if not ((0 < sb <= 66) & (sb == eb)):
+            if not ((0 < sb <= 66) & (sb == eb)): # book out of range
                 continue
-            else:
-                if not (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]):
-                    continue
-                else:
-                    if not (0 < sv <= ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0]):
-                        continue
+            if not (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
+                continue
+            if not ((0 < sv <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
+                continue
             bk = self.books[sb]
             if self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0] == 1:
                 ch = ' '
