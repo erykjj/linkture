@@ -11,12 +11,18 @@
 ### Removed
 
 ____
+## [1.4.2] - 2023-01-20
+
+### Fixed
+
+- Skip rewriting of incorrectly formatted/unrecognized scriptures
+
 ## [1.4.1] - 2022-12-13
 
 ### Fixed
 
-- fixed type-checking warnings
-- fixed in-range testing
+- Fixed type-checking warnings
+- Fixed in-range testing
 
 ## [1.4.0] - 2022-11-29
 
@@ -60,17 +66,17 @@ ____
 
 ### Added
 
-- added function to decode list of coded references
+- Added function to decode list of coded references
 
 ### Changed
 
-- linking removes repeated book names (eg. 'John 3:16; John 17:3' is processed as 'John 3:16; 17:3')
+- Linking removes repeated book names (eg. 'John 3:16; John 17:3' is processed as 'John 3:16; 17:3')
 
 ## [1.2.3] - 2022-08-08
 
 ### Fixed
 
-- refined regex for multi-word book names (eg. "Song of Solomon")
+- Refined regex for multi-word book names (eg. "Song of Solomon")
 
 ## [1.2.2] - 2022-08-08
 
@@ -78,6 +84,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.4.2]:https://github.com/erykjj/linkture/releases/tag/v1.4.2
 [1.4.1]:https://github.com/erykjj/linkture/releases/tag/v1.4.1
 [1.4.0]:https://github.com/erykjj/linkture/releases/tag/v1.4.0
 [1.3.2]:https://github.com/erykjj/linkture/releases/tag/v1.3.2
