@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.4.1'
+VERSION = '1.4.2'
 
 
 from pathlib import Path
@@ -266,6 +266,8 @@ class Scriptures():
     def decode_scripture(self, reference=[]):
         scriptures = ''
         for item in reference:
+            if not item:
+                continue
             start, end = item
             sb = int(start[:2])
             sc = int(start[2:5])
