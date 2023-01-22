@@ -13,7 +13,7 @@ ____
 ## Usage
 
 ```
-python linkture.py [-h] [-v] (-f in-file out-file | -s reference)
+python3 linkture.py [-h] [-v] (-f in-file out-file | -s reference)
                    [--language {English,Spanish,German,French,Italian,Portuguese}]
                    [--full | --official | --standard] [-l | -r] [-q]
 
@@ -29,7 +29,7 @@ options:
 operational method:
   choose between terminal or files input/output:
 
-  -f in-file out-file   work with files
+  -f in-file out-file   work with files (UTF-8)
   -s reference          process "reference(s)"
 
 output format (optional):
