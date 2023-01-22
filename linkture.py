@@ -356,7 +356,7 @@ if __name__ == "__main__":
 
     function_group = parser.add_argument_group('operational method', 'choose between terminal or files input/output:')
     mode = function_group.add_mutually_exclusive_group(required=True)
-    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files')
+    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
     mode.add_argument('-s', metavar='reference', help='process "reference(s)"')
 
     parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
