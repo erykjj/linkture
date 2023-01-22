@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Added UTF-8 specification on opened files
+
 ### Fixed
 
 ### Removed
