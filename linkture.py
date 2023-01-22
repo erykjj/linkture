@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.4.2'
+VERSION = '1.4.3'
 
 
 from pathlib import Path
@@ -41,7 +41,7 @@ class Scriptures():
         self.rewrite = rewrite
         path = Path(__file__).resolve().parent
 
-        with open(path / 'res/books.json', 'r') as json_file:
+        with open(path / 'res/books.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
         self.books = ['Bible']
         for row in b[language]:
@@ -333,7 +333,7 @@ def _main(args):
         if args['f'][0] == args['f'][1]:
             print('Make sure in-file and out-file are different!\n')
             exit()
-        with open(args['f'][0], 'r') as f:
+        with open(args['f'][0], 'r', encoding='UTF-8') as f:
             txt = f.read()
     else:
         txt = "{{" + args['s'] + "}}"
