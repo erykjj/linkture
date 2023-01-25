@@ -15,7 +15,7 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+copies or substantial portions of the Softwaregex.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,13 +23,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SOFTWAregex.
 """
 
 VERSION = '1.5.0'
 
 
-import argparse, json, re
+import argparse, json, regex
 import pandas as pd
 
 from pathlib import Path
@@ -39,6 +39,8 @@ from unidecode import unidecode
 class Scriptures():
 
     def __init__(self, language='English', form=0, rewrite=False):
+        if language not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
+            return
         self.bn = {}
         self.rewrite = rewrite
         path = Path(__file__).resolve().parent
@@ -62,19 +64,18 @@ class Scriptures():
 
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
-        self.bk_ref = re.compile(r'(\d?(?:\s?[a-zA-Z\.-]+)+)\s?(.*)')
-        self.ch_v_ch_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
-        self.ch_v_v = re.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
-        self.ch_v = re.compile(r'(\d+)\s*:\s*(\d+)')
-        self.ch_ch = re.compile(r'(\d+)\s*[-\u2013\u2014]\s*(\d+)')
-        self.ch_ = re.compile(r'(\d+)')
-        self.v_v = re.compile(r'(?=(\d+\s*),(\s*\d+))')
-        self.vv = re.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
-        self.dd = re.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
+        self.bk_ref = regex.compile(r'(\d?(?:\s?[\p{L}\.-]+)+)\s?(.*)')
+        self.ch_v_ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
+        self.ch_v_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
+        self.ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)')
+        self.ch_ch = regex.compile(r'(\d+)\s*[-\u2013\u2014]\s*(\d+)')
+        self.ch_ = regex.compile(r'(\d+)')
+        self.v_v = regex.compile(r'(?=(\d+\s*),(\s*\d+))')
+        self.vv = regex.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
+        self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
     def _check_book(self, book):
-        print(book, unidecode(book))
-        bk = book.upper().replace(' ', '').replace('.', '').replace('-', '')
+        bk = unidecode(book).upper().replace(' ', '').replace('.', '').replace('-', '')
         if bk not in self.bn:
             return None, 0
         else:
@@ -82,7 +83,7 @@ class Scriptures():
         return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
 
     def _process_scripture(self, scripture):
-        result = self.bk_ref.search(scripture) # TODO: accented chars don't work!!
+        result = self.bk_ref.search(scripture)
         if result:
             bk, rest = result.group(1), result.group(2).lstrip()
             bn, last = self._check_book(bk)
@@ -339,7 +340,7 @@ def _main(args):
         form = 0
         rewrite = True
     s = Scriptures(args['language'], form, rewrite)
-    m = re.compile(r'({{.*?}})')
+    m = regex.compile(r'({{.*?}})')
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
@@ -350,7 +351,7 @@ def _main(args):
     else:
         txt = "{{" + args['s'] + "}}"
 
-    txt2 = re.sub(m, replacement, txt)
+    txt2 = regex.sub(m, replacement, txt)
 
     if args['f']:
         with open(args['f'][1], 'w', encoding='UTF-8') as f:
