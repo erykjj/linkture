@@ -4,9 +4,18 @@
 
 ### Added
 
+- Additional languages
+  - Now recognizing: Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish
+
 ### Changed
 
+- Split off 'non-official' Bible book variants into a separate *custom.json*
+  - **Note**: if you've modified the *books.json* with your own variants, make sure to transfer these to the *custom.json* files (follow the formatting as in the file); the *books.json* **will be over-written** by the 'official' variants in the available languages
+
 ### Fixed
+
+- Processing of accented characters
+  - not tested fully with non-Latin characters (Russian, Chinese, etc.)
 
 ### Removed
 
