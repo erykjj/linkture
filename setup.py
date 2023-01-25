@@ -8,7 +8,7 @@ long_description = (work_dir / "README.md").read_text()
 setuptools.setup(
 
     name="linkture",
-    version="1.4.3",
+    version="1.5.0",
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
@@ -23,5 +23,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_requires=[ 'argparse', 'json', 'pandas', 'pathlib', 'regex', 'unidecode' ]
 
 )
