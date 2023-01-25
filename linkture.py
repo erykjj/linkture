@@ -38,9 +38,14 @@ from unidecode import unidecode
 
 class Scriptures():
 
-    def __init__(self, language='English', form=0, rewrite=False):
+    def __init__(self, language='English', translate=None, form=0, rewrite=False):
         if language not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
             return
+        if translate:
+            if translate not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
+                return
+        else:
+            translate = language
         self.bn = {}
         self.rewrite = rewrite
         path = Path(__file__).resolve().parent
@@ -48,19 +53,22 @@ class Scriptures():
         self.books = ['Bible']
         with open(path / 'res/books.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
-        for row in b[language]:
+        for row in b[translate]:
             names = row[1].split(', ')
             self.books.insert(row[0], names[form])
+        for row in b[language]:
+            names = row[1].split(', ')
             for item in names:
                 normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
                 self.bn[normalized] = row[0]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
-        for row in b[language]:
-            names = row[1].split(', ')
-            for item in names:
-                normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
-                self.bn[normalized] = row[0]
+        if language in b.keys():
+            for row in b[language]:
+                names = row[1].split(', ')
+                for item in names:
+                    normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                    self.bn[normalized] = row[0]
 
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
@@ -315,6 +323,7 @@ class Scriptures():
     def rewrite_scripture(self, scripture):
         return self.decode_scripture(self.code_scripture(scripture))
 
+
 def _main(args):
 
     def replacement(match):
@@ -339,7 +348,7 @@ def _main(args):
     elif args['full']:
         form = 0
         rewrite = True
-    s = Scriptures(args['language'], form, rewrite)
+    s = Scriptures(args['language'], args['translate'], form, rewrite)
     m = regex.compile(r'({{.*?}})')
 
     if args['f']:
@@ -359,11 +368,10 @@ def _main(args):
     else:
         print(txt2)
 
-
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="process and link/encode Bible scripture references; see README for more information")
+    parser = argparse.ArgumentParser(description="process, translate, link/encode Bible scripture references; see README for more information")
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='show version and exit')
 
@@ -372,7 +380,8 @@ if __name__ == "__main__":
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
     mode.add_argument('-s', metavar='reference', help='process "reference; reference; etc."')
 
-    parser.add_argument('--language', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate language of book names (English if unspecified)')
+    parser.add_argument('--language', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate source language for book names (English if unspecified)')
+    parser.add_argument('--translate', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate output language for book names (same as source if unspecified)')
 
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     form = format_group.add_mutually_exclusive_group(required=False)
