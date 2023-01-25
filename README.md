@@ -3,7 +3,7 @@
 
 ## Purpose
 
-Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges (and vice-versa) or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
+Functions to translate and/or convert Bible scripture references to a list of coded (non-contiguous) ranges (and vice-versa) or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
 
 The *res/books.json* list contains Bible book names in Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish. Any other variants of book names can be added to the *res/custom.json* list.
 
@@ -20,15 +20,18 @@ ____
 ```
 python3 linkture.py [-h] [-v] (-f in-file out-file | -s reference)
                     [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                    [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
                     [--full | --official | --standard] [-l | -r] [-q]
 
-process and link/encode Bible scripture references; see README for more information
+process, translate, link/encode Bible scripture references; see README for more information
 
 options:
   -h, --help            show this help message and exit
   -v, --version         show version and exit
   --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
-                        indicate language of book names (English if unspecified)
+                        indicate source language for book names (English if unspecified)
+  --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
+                        indicate output language for book names (same as source if unspecified)
   -q, --quiet           don't show processing status
 
 operational method:
@@ -49,6 +52,7 @@ type of conversion:
 
   -l, --link            create jwpub link(s)
   -r, --range           create range list
+
 ```
 
 Or, make it executable first and run directly:
@@ -67,6 +71,12 @@ Joh 17:17; 2Ti 3:16, 17
 
 $ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" -r -q
 [('43017017', '43017017'), ('55003016', '55003017')]
+
+$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" --translate Chinese -q
+约翰福音 17:17; 提摩太后书 3:16, 17
+
+$ ./linkture.py -s "Jean 17:17; 2 Timothée 3:16, 17" --language French --translate German -q
+Johannes 17:17; 2. Timotheus 3:16, 17
 ```
 
 ## Script/import usage
