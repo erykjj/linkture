@@ -7,7 +7,7 @@ Functions to translate and/or convert Bible scripture references to a list of co
 
 The *res/books.json* list contains Bible book names in Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish. Any other variants of book names can be added to the *res/custom.json* list.
 
-**Note** that this script _does not_ (yet) parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist).
+**Note** that this script _does not_ (yet) parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument.
 
 ____
 ## Installation
