@@ -64,7 +64,7 @@ class Scriptures():
 
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
-        self.bk_ref = regex.compile(r'(\d?(?:\s?[\p{L}\.-]+)+)\s?(.*)')
+        self.bk_ref = regex.compile(r'(\d?(?:\s?[\p{L}\.-]+)+)\s?(.*)') # CHECK: not tested with non-Latin characters
         self.ch_v_ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
         self.ch_v_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
         self.ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)')
@@ -376,7 +376,7 @@ if __name__ == "__main__":
 
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     form = format_group.add_mutually_exclusive_group(required=False)
-    form.add_argument('--full', action='store_true', help='output as full name  (eg., "Genesis")')
+    form.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
     form.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
     form.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
 
