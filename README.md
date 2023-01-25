@@ -10,19 +10,24 @@ The *res/books.json* list contains Bible book names in English, Spanish, German,
 **Note** that this script _does not_ parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist).
 
 ____
-## Usage
+## Installation
+
+Download [latest source](https://github.com/erykjj/linkture/releases/latest) and `python3 -m pip install linkture-*.tar.gz`.
+
+____
+## Command-line usage
 
 ```
 python3 linkture.py [-h] [-v] (-f in-file out-file | -s reference)
-                   [--language {English,Spanish,German,French,Italian,Portuguese}]
-                   [--full | --official | --standard] [-l | -r] [-q]
+                    [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                    [--full | --official | --standard] [-l | -r] [-q]
 
 process and link/encode Bible scripture references; see README for more information
 
 options:
   -h, --help            show this help message and exit
   -v, --version         show version and exit
-  --language {English,Spanish,German,French,Italian,Portuguese}
+  --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate language of book names (English if unspecified)
   -q, --quiet           don't show processing status
 
@@ -30,14 +35,14 @@ operational method:
   choose between terminal or files input/output:
 
   -f in-file out-file   work with files (UTF-8)
-  -s reference          process "reference(s)"
+  -s reference          process "reference; reference; etc."
 
 output format (optional):
   if provided, book names will be rewritten accordingly:
 
-  --full                output as full name
-  --official            output as official abbreviation
-  --standard            output as standard abbreviation
+  --full                output as full name - default (eg., "Genesis")
+  --official            output as official abbreviation (eg., "Ge")
+  --standard            output as standard abbreviation (eg., "Gen.")
 
 type of conversion:
   if not specified, references are simply rewritten according to chosen output format:
@@ -64,7 +69,8 @@ $ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" -r -q
 [('43017017', '43017017'), ('55003016', '55003017')]
 ```
 
-Or import it into your script:
+## Script/import usage
+
 ```
 from linkture import Scriptures
 
@@ -76,13 +82,15 @@ scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '5500301
 scriptures = s.rewrite_scripture("EXOD 3:15; Re 21:4")
 ```
 Parameters:
+* *language*
+  * Chinese, Danish, Dutch, English (default), French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish
 * *form*
-  * **0** for full name format (default)
-  * **1** for standard abbreviation format
-  * **2** for official abbreviation format
+  * **0** for full name format - default (eg., "Genesis")
+  * **1** for standard abbreviation format (eg., "Gen.")
+  * **2** for official abbreviation format (eg., "Ge")
 * *rewrite*
   * **False** - book names not rewritten (default)
-  * **True** - rewrite book names
+  * **True** - rewrite book names (according to selected *form*)
 
 ____
 ## Feedback
