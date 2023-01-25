@@ -6,6 +6,7 @@
 
 - Additional languages
   - Now recognizing: Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish
+- Added **translation** to/from any of the above languages
 
 ### Changed
 
