@@ -4,6 +4,17 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [1.5.0] - 2023-01-25
+
+### Added
+
 - Additional languages
   - Now recognizing: Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish
 - Added **translation** to/from any of the above languages
@@ -18,9 +29,6 @@
 - Processing of accented characters
   - not tested fully with non-Latin characters (Russian, Chinese, etc.)
 
-### Removed
-
-____
 ## [1.4.3] - 2023-01-24
 
 ### Changed
@@ -100,6 +108,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[1.5.0]:https://github.com/erykjj/linkture/releases/tag/v1.5.0
 [1.4.3]:https://github.com/erykjj/linkture/releases/tag/v1.4.3
 [1.4.2]:https://github.com/erykjj/linkture/releases/tag/v1.4.2
 [1.4.1]:https://github.com/erykjj/linkture/releases/tag/v1.4.1
