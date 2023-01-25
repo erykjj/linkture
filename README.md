@@ -5,7 +5,7 @@
 
 Functions to convert Bible scripture references to a list of coded (non-contiguous) ranges (and vice-versa) or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
 
-The *res/books.json* list contains Bible book names in English, Spanish, German, French, Italian and Portuguese; it can be modified for other languages. The first entry is the official full name; the second is the standard abbreviation; the third is the official abbreviation. After that can be added any other variants of the book name.
+The *res/books.json* list contains Bible book names in Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish. Any other variants of book names can be added to the *res/custom.json* list.
 
 **Note** that this script _does not_ parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist).
 
