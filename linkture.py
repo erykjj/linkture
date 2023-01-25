@@ -26,12 +26,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-VERSION = '1.4.3'
+VERSION = '1.5.0'
 
 
-from pathlib import Path
 import argparse, json, re
 import pandas as pd
+
+from pathlib import Path
+from unidecode import unidecode
 
 
 class Scriptures():
@@ -41,14 +43,23 @@ class Scriptures():
         self.rewrite = rewrite
         path = Path(__file__).resolve().parent
 
+        self.books = ['Bible']
         with open(path / 'res/books.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
-        self.books = ['Bible']
         for row in b[language]:
             names = row[1].split(', ')
             self.books.insert(row[0], names[form])
             for item in names:
-                self.bn[item.replace(' ', '').replace('.', '').replace('-', '').upper()] = row[0]
+                normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                self.bn[normalized] = row[0]
+        with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
+            b = json.load(json_file)
+        for row in b[language]:
+            names = row[1].split(', ')
+            for item in names:
+                normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                self.bn[normalized] = row[0]
+
         self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
 
         self.bk_ref = re.compile(r'(\d?(?:\s?[a-zA-Z\.-]+)+)\s?(.*)')
@@ -62,6 +73,7 @@ class Scriptures():
         self.dd = re.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
     def _check_book(self, book):
+        print(book, unidecode(book))
         bk = book.upper().replace(' ', '').replace('.', '').replace('-', '')
         if bk not in self.bn:
             return None, 0
@@ -70,7 +82,7 @@ class Scriptures():
         return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
 
     def _process_scripture(self, scripture):
-        result = self.bk_ref.search(scripture)
+        result = self.bk_ref.search(scripture) # TODO: accented chars don't work!!
         if result:
             bk, rest = result.group(1), result.group(2).lstrip()
             bn, last = self._check_book(bk)

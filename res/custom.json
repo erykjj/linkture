@@ -1,0 +1,40 @@
+{
+  "English": [
+    [2, "Exo, Exod"],
+    [5, "Deu"],
+    [7, "Jdg"],
+    [8, "Rth"],
+    [11, "1Kgs"],
+    [12, "2Kgs"],
+    [13, "1 Chr"],
+    [14, "2 Chr"],
+    [17, "Est, Esth"],
+    [19, "Psalm, Pss, Psa"],
+    [20, "Pro"],
+    [21, "Ecc, Eccles, Qoh"],
+    [22, "Cant, Son"],
+    [30, "Amo"],
+    [31, "Oba"],
+    [40, "Mat"],
+    [41, "Mar"],
+    [42, "Luk"],
+    [43, "Jn"],
+    [44, "Act"],
+    [45, "Roma"],
+    [48, "Galat"],
+    [49, "Ephes"],
+    [50, "Phi, Phili"],
+    [51, "Colos"],
+    [52, "1Thes"],
+    [53, "2Thes"],
+    [57, "Phile"],
+    [58, "Hebre"],
+    [59, "Jam"],
+    [65, "Jud"],
+    [66, "Revel"]
+  ],
+  "Spanish": [
+    [22, "Cantar de los Cantares, Cantar"],
+    [66, "Revelación, Rev, Re"]
+  ]
+}
