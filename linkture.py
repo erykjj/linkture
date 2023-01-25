@@ -369,15 +369,15 @@ if __name__ == "__main__":
     function_group = parser.add_argument_group('operational method', 'choose between terminal or files input/output:')
     mode = function_group.add_mutually_exclusive_group(required=True)
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
-    mode.add_argument('-s', metavar='reference', help='process "reference(s)"')
+    mode.add_argument('-s', metavar='reference', help='process "reference; reference; etc."')
 
-    parser.add_argument('--language', default='English', choices=['English', 'Spanish', 'German', 'French', 'Italian', 'Portuguese'], help='indicate language of book names (English if unspecified)')
+    parser.add_argument('--language', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate language of book names (English if unspecified)')
 
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     form = format_group.add_mutually_exclusive_group(required=False)
-    form.add_argument('--full', action='store_true', help='output as full name')
-    form.add_argument('--official', action='store_true', help='output as official abbreviation')
-    form.add_argument('--standard', action='store_true', help='output as standard abbreviation')
+    form.add_argument('--full', action='store_true', help='output as full name  (eg., "Genesis")')
+    form.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
+    form.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
 
     type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
