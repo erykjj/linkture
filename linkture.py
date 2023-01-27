@@ -41,10 +41,10 @@ class Scriptures():
 
     def __init__(self, language='English', translate=None, form=None):
         if language not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
-            return
+            raise ValueError(f"Source language {language} is not an option!")
         if translate:
             if translate not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
-                return
+                raise ValueError(f"Translation language {translate} is not an option!")
         else:
             translate = language
         self.bn = {}
