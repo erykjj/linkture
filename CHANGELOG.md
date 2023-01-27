@@ -6,6 +6,9 @@
 
 ### Changed
 
+- Combined *form* and *rewrite* parameter into just *form* (not specified means no rewrite)
+  - **Note:** These are now strings ("full", "standard", "official"), instead of the previous integers
+
 ### Fixed
 
 ### Removed
