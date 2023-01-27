@@ -26,8 +26,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWAregex.
 """
 
-VERSION = '1.5.0'
+VERSION = '1.5.1'
 
+# ((?:\d{0,1}|[Ii]{0,3}|;)\s?\p{Lu}[\p{L} .\-]+\s?\d?[:​\.\-\u2013\u2014\d,\s;]+(?<!;\s)\d+)
 
 import argparse, json, regex
 import pandas as pd
@@ -38,7 +39,7 @@ from unidecode import unidecode
 
 class Scriptures():
 
-    def __init__(self, language='English', translate=None, form=0, rewrite=False):
+    def __init__(self, language='English', translate=None, form=None):
         if language not in ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'):
             return
         if translate:
@@ -47,7 +48,16 @@ class Scriptures():
         else:
             translate = language
         self.bn = {}
-        self.rewrite = rewrite
+        self.rewrite = True
+        if form == "full":
+            form = 0
+        elif form == "standard":
+            form = 1
+        elif form == "official":
+            form = 2
+        else:
+            form = 0
+            self.rewrite = False
         path = Path(__file__).resolve().parent
 
         self.books = ['Bible']
@@ -337,18 +347,14 @@ def _main(args):
         else:
             return s.rewrite_scripture(group)
 
-    rewrite = False
-    form = 0
+    form = None
     if args['standard']:
-        form = 1
-        rewrite = True
+        form = 'standard'
     elif args['official']:
-        form = 2
-        rewrite = True
+        form = 'official'
     elif args['full']:
-        form = 0
-        rewrite = True
-    s = Scriptures(args['language'], args['translate'], form, rewrite)
+        form = 'full'
+    s = Scriptures(args['language'], args['translate'], form)
     m = regex.compile(r'({{.*?}})')
 
     if args['f']:
@@ -389,7 +395,7 @@ if __name__ == "__main__":
     form.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
     form.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
 
-    type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen output format:')
+    type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
     tpe.add_argument('-l', '--link', action='store_true', help='create jwpub link(s)')
     tpe.add_argument('-r', '--range', action='store_true', help='create range list')
