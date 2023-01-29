@@ -36,11 +36,11 @@ import pandas as pd
 from pathlib import Path
 from unidecode import unidecode
 
+available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish')
 
 class Scriptures():
 
     def __init__(self, language='English', translate=None, form=None):
-        available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish')
         if language not in available_languages:
             raise ValueError("Indicated source language is not an option!")
         if translate:
@@ -387,9 +387,8 @@ if __name__ == "__main__":
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
     mode.add_argument('-s', metavar='reference', help='process "reference; reference; etc."')
 
-    parser.add_argument('--language', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate source language for book names (English if unspecified)')
-    parser.add_argument('--translate', default='English', choices=['Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish'], help='indicate output language for book names (same as source if unspecified)')
-
+    parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
+    parser.add_argument('--translate', default='English', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     form = format_group.add_mutually_exclusive_group(required=False)
     form.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
