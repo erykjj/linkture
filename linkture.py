@@ -90,30 +90,30 @@ class Scriptures():
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
     def _check_book(self, book):
-        bk = unidecode(book).upper().replace(' ', '').replace('.', '').replace('-', '')
-        if bk not in self.src_book_names:
+        bk_name = unidecode(book).upper().replace(' ', '').replace('.', '').replace('-', '')
+        if bk_name not in self.src_book_names:
             return None, 0
         else:
-            book = self.src_book_names[bk]
+            book = self.src_book_names[bk_name]
         return self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
     def _process_scripture(self, scripture):
         result = self.bk_ref.search(scripture)
         if result:
-            bk, rest = result.group(1), result.group(2).lstrip()
-            bn, last = self._check_book(bk)
-            if not bn:
+            bk_name, rest = result.group(1), result.group(2).lstrip()
+            bk_num, last = self._check_book(bk_name)
+            if not bk_num:
                 return '', '', None, -1
             if rest == "":
-                vss = self.ranges.loc[(self.ranges.Book == bn) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+                vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
                 rest = f"1:1-{last}:{vss}"
             for result in self.v_v.findall(rest):
                 if int(result[1]) - int(result[0]) == 1:
                     rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
-            if bn:
+            if bk_num:
                 if self.rewrite:
-                    bk = self.tr_book_names[bn]
-                return f"{bk} ", rest, bn, last
+                    bk_name = self.tr_book_names[bk_num]
+                return f"{bk_name} ", rest, bk_num, last
         return '', '', None, 0
 
     def link_scripture(self, scripture):
@@ -186,27 +186,27 @@ class Scriptures():
         book = ''
         for chunk in scripture.split(';'):
             try:
-                bk, rest, bn, last = self._process_scripture(chunk)
+                bk_name, rest, bk_num, last = self._process_scripture(chunk)
                 if last == -1:
                     url = url + '; ' + '{{' + chunk.strip() + '}}'
                     continue
-                if not bn:
-                    bk, rest, bn, last = self._process_scripture(book + chunk)
-                if bk.strip() != book.strip():
-                    book = bk
+                if not bk_num:
+                    bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
+                if bk_name.strip() != book.strip():
+                    book = bk_name
                 else:
-                    bk = ''
+                    bk_name = ''
                 chap = 0
                 for bit in rest.split(','):
                     if chap:
-                        link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
+                        link, chap = process_verses(f"{chap}:{bit}", bk_num, last-1)
                         url += ', '
                     else:
-                        link, chap = process_verses(bit, bn, last-1)
+                        link, chap = process_verses(bit, bk_num, last-1)
                         url += '; '
-                    processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
+                    processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
                     url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
-                    bk = ''
+                    bk_name = ''
             except:
                 url += "{{" + chunk + "}}"
         return url.strip(' ;,')
@@ -281,27 +281,27 @@ class Scriptures():
         book = ''
         for chunk in scripture.split(';'):
             # try:
-                bk, rest, bn, last = self._process_scripture(chunk)
+                bk_name, rest, bk_num, last = self._process_scripture(chunk)
                 if last == -1:
                     url = url + '; ' + '{{' + chunk.strip() + '}}'
                     continue
-                if not bn:
-                    bk, rest, bn, last = self._process_scripture(book + chunk)
-                if bk.strip() != book.strip():
-                    book = bk
+                if not bk_num:
+                    bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
+                if bk_name.strip() != book.strip():
+                    book = bk_name
                 else:
-                    bk = ''
+                    bk_name = ''
                 chap = 0
                 for bit in rest.split(','):
                     if chap:
-                        link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
+                        link, chap = process_verses(f"{chap}:{bit}", bk_num, last-1)
                         url += ', '
                     else:
-                        link, chap = process_verses(bit, bn, last-1)
+                        link, chap = process_verses(bit, bk_num, last-1)
                         url += '; '
-                    processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
+                    processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
                     url += processed_chunk.strip()
-                    bk = ''
+                    bk_name = ''
             # except:
             #     url += "{{" + chunk + "}}"
         return url.strip(' ;,')
@@ -367,22 +367,22 @@ class Scriptures():
         book = ''
         for chunk in scripture.split(';'):
             try:
-                bk, rest, bn, last = self._process_scripture(chunk)
+                bk_name, rest, bk_num, last = self._process_scripture(chunk)
                 if last == -1:
                     continue
-                if not bn:
-                    bk, rest, bn, last = self._process_scripture(book + chunk)
-                    bk = ''
+                if not bk_num:
+                    bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
+                    bk_name = ''
                 else:
-                    book = bk
+                    book = bk_name
                 chap = 0
                 for bit in rest.split(','):
                     if chap:
-                        link, chap = code_verses(f"{chap}:{bit}", bn, last-1)
+                        link, chap = code_verses(f"{chap}:{bit}", bk_num, last-1)
                     else:
-                        link, chap = code_verses(bit, bn, last-1)
+                        link, chap = code_verses(bit, bk_num, last-1)
                     series.append(link)
-                    bk = ''
+                    bk_name = ''
             except:
                 pass
         return series
@@ -405,21 +405,21 @@ class Scriptures():
                 continue
             if not ((0 < sv <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
                 continue
-            bk = self.tr_book_names[sb]
+            bk_name = self.tr_book_names[sb]
             if self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0] == 1:
                 ch = ' '
             else:
                 ch = f" {sc}:"
             if start == end:
-                scripture = f"{bk}{ch}{sv}"
+                scripture = f"{bk_name}{ch}{sv}"
             else:
                 if sc == ec:
                     if ev - sv == 1:
-                        scripture = f"{bk}{ch}{sv}, {ev}"
+                        scripture = f"{bk_name}{ch}{sv}, {ev}"
                     else:
-                        scripture = f"{bk}{ch}{sv}-{ev}"
+                        scripture = f"{bk_name}{ch}{sv}-{ev}"
                 else:
-                    scripture = f"{bk}{ch}{sv}-{ec}:{ev}"
+                    scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
             scriptures += f"; {scripture}"
         return scriptures.lstrip(" ;")
 
