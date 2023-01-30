@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWAregex.
 """
 
-VERSION = '1.5.1'
+VERSION = '2.0.0'
 
 import argparse, json, regex, sqlite3
 import pandas as pd
