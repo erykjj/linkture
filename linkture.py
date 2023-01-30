@@ -55,18 +55,18 @@ class Scriptures():
             form = 5
         else:
             form = 3
-        self.bn = {}
+        self.src_book_names = {}
         path = Path(__file__).resolve().parent
 
-        self.books = ['Bible']
+        self.tr_book_names = ['Bible']
         con = sqlite3.connect(path / 'res/resources.db')
         cur = con.cursor()
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{translate}';").fetchall():
-            self.books.insert(rec[2], rec[form])
+            self.tr_book_names.insert(rec[2], rec[form])
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
                 normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
-                self.bn[normalized] = rec[2]
+                self.src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
         if language in b.keys():
@@ -74,8 +74,8 @@ class Scriptures():
                 names = row[1].split(', ')
                 for item in names:
                     normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
-                    self.bn[normalized] = row[0]
-        self.br = pd.read_sql_query("SELECT * FROM Ranges;", con)
+                    self.src_book_names[normalized] = row[0]
+        self.ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
         con.close()
 
@@ -91,11 +91,11 @@ class Scriptures():
 
     def _check_book(self, book):
         bk = unidecode(book).upper().replace(' ', '').replace('.', '').replace('-', '')
-        if bk not in self.bn:
+        if bk not in self.src_book_names:
             return None, 0
         else:
-            book = self.bn[bk]
-        return self.br.loc[(self.br.Book == book) & (self.br.Chapter.isnull()), ['Book', 'Last']].values[0]
+            book = self.src_book_names[bk]
+        return self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
     def _process_scripture(self, scripture):
         result = self.bk_ref.search(scripture)
@@ -105,14 +105,14 @@ class Scriptures():
             if not bn:
                 return '', '', None, -1
             if rest == "":
-                vss = self.br.loc[(self.br.Book == bn) & (self.br.Chapter == last), ['Last']].values[0][0]
+                vss = self.ranges.loc[(self.ranges.Book == bn) & (self.ranges.Chapter == last), ['Last']].values[0][0]
                 rest = f"1:1-{last}:{vss}"
             for result in self.v_v.findall(rest):
                 if int(result[1]) - int(result[0]) == 1:
                     rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
             if bn:
                 if self.rewrite:
-                    bk = self.books[bn]
+                    bk = self.tr_book_names[bn]
                 return f"{bk} ", rest, bn, last
         return '', '', None, 0
 
@@ -149,7 +149,7 @@ class Scriptures():
                     ch1 = result.group(1)
                     v1 = '1'
                     ch2 = result.group(2)
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
                 else:
                     ch1 = '1'
                     v1 = result.group(1)
@@ -163,7 +163,7 @@ class Scriptures():
                     ch1 = result.group(1)
                     v1 = '1'
                     ch2 = ch1
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
                     return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
                 else:
                     ch1 = '1'
@@ -244,7 +244,7 @@ class Scriptures():
                     ch1 = result.group(1)
                     v1 = '1'
                     ch2 = result.group(2)
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
                 else:
                     ch1 = '1'
                     v1 = result.group(1)
@@ -258,7 +258,7 @@ class Scriptures():
                     ch1 = result.group(1)
                     v1 = '1'
                     ch2 = ch1
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
                     return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
                 else:
                     ch1 = '1'
@@ -340,7 +340,7 @@ class Scriptures():
                     ch1 = result.group(1).zfill(3)
                     v1 = '001'
                     ch2 = result.group(2).zfill(3)
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
                 else:
                     ch1 = '001'
                     v1 = result.group(1).zfill(3)
@@ -354,7 +354,7 @@ class Scriptures():
                     ch1 = result.group(1).zfill(3)
                     v1 = '001'
                     ch2 = ch1
-                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
                     return (b+ch1+v1, b+ch2+v2), 0
                 else:
                     ch1 = '001'
@@ -401,12 +401,12 @@ class Scriptures():
             ev = int(end[5:])
             if not ((0 < sb <= 66) & (sb == eb)): # book out of range
                 continue
-            if not (0 < sc <= ec <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
+            if not (0 < sc <= ec <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
                 continue
-            if not ((0 < sv <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.br.loc[(self.br.Book == sb) & (self.br.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
+            if not ((0 < sv <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
                 continue
-            bk = self.books[sb]
-            if self.br.loc[(self.br.Book == sb) & (self.br.Chapter.isnull()), ['Last']].values[0] == 1:
+            bk = self.tr_book_names[sb]
+            if self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0] == 1:
                 ch = ' '
             else:
                 ch = f" {sc}:"
