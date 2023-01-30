@@ -88,16 +88,17 @@ class Scriptures():
         self.v_v = regex.compile(r'(?=(\d+\s*),(\s*\d+))')
         self.vv = regex.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
+        self.scrpt = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
 
-    def _check_book(self, book):
-        bk_name = unidecode(book).upper().replace(' ', '').replace('.', '').replace('-', '')
+    def _check_book(self, bk_name):
+        bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
         if bk_name not in self.src_book_names:
             return None, 0
         else:
-            book = self.src_book_names[bk_name]
-        return self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+            bk_num = self.src_book_names[bk_name]
+        return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
-    def _process_scripture(self, scripture):
+    def _process_scripture(self, scripture): # TODO: returns rewritten name, not original
         result = self.bk_ref.search(scripture)
         if result:
             bk_name, rest = result.group(1), result.group(2).lstrip()
@@ -115,6 +116,14 @@ class Scriptures():
                     bk_name = self.tr_book_names[bk_num]
                 return f"{bk_name} ", rest, bk_num, last
         return '', '', None, 0
+
+    def list_scriptures(self, text):
+        return regex.findall(self.scrpt, text)
+
+    def tag_scriptures(self, text):
+        def r(match):
+            return "{{" + match.group(1) + "}}"
+        return regex.sub(self.scrpt, r, text)
 
     def link_scripture(self, scripture, prefix='<a href="http://', suffix='" >'):
 
