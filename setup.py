@@ -12,7 +12,7 @@ setuptools.setup(
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
-    description="Process and link/(de-)code Bible scripture references",
+    description="Parse, list, link, tag, translate Bible scripture references",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
