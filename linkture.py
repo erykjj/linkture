@@ -28,8 +28,6 @@ SOFTWAregex.
 
 VERSION = '1.5.1'
 
-# ((?:\d{0,1}|[Ii]{0,3}|;)\s?\p{Lu}[\p{L} .\-]+\s?\d?[:​\.\-\u2013\u2014\d,\s;]+(?<!;\s)\d+)
-
 import argparse, json, regex
 import pandas as pd
 
@@ -50,9 +48,7 @@ class Scriptures():
             translate = language
         self.bn = {}
         self.rewrite = True
-        if form == "full":
-            form = 0
-        elif form == "standard":
+        if form == "standard":
             form = 1
         elif form == "official":
             form = 2
@@ -331,13 +327,16 @@ class Scriptures():
             scriptures += f"; {scripture}"
         return scriptures.lstrip(" ;")
 
-    def rewrite_scripture(self, scripture):
+    def rewrite_scripture(self, scripture): # TODO: needs fixing so as not to add book names if not necessary
         return self.decode_scripture(self.code_scripture(scripture))
 
 
 def _main(args):
 
-    def replacement(match):
+    def r1(match):
+        return "{{" + match.group(1) + "}}"
+
+    def r2(match):
         group = match.group(1).strip('{}')
         if not args['quiet']:
             print(f'...Processing "{group}"')
@@ -353,10 +352,9 @@ def _main(args):
         form = 'standard'
     elif args['official']:
         form = 'official'
-    elif args['full']:
-        form = 'full'
     s = Scriptures(args['language'], args['translate'], form)
-    m = regex.compile(r'({{.*?}})')
+    m1 = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
+    m2 = regex.compile(r'({{.*?}})')
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
@@ -365,15 +363,16 @@ def _main(args):
         with open(args['f'][0], 'r', encoding='UTF-8') as f:
             txt = f.read()
     else:
-        txt = "{{" + args['s'] + "}}"
+        txt = args['s']
 
-    txt2 = regex.sub(m, replacement, txt)
+    txt = regex.sub(m1, r1, txt)
+    txt = regex.sub(m2, r2, txt)
 
     if args['f']:
         with open(args['f'][1], 'w', encoding='UTF-8') as f:
-            f.write(txt2)
+            f.write(txt)
     else:
-        print(txt2)
+        print(txt)
 
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
