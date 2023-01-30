@@ -116,7 +116,7 @@ class Scriptures():
                 return f"{bk_name} ", rest, bk_num, last
         return '', '', None, 0
 
-    def link_scripture(self, scripture):
+    def link_scripture(self, scripture, prefix='<a href="http://', suffix='" >'):
 
         def process_verses(chunk, book, multi):
             b = str(book)
@@ -205,7 +205,7 @@ class Scriptures():
                         link, chap = process_verses(bit, bk_num, last-1)
                         url += '; '
                     processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
-                    url += f'<a href="jwpub://b/NWTR/{link}" class="b">{processed_chunk.strip()}</a>'
+                    url += f'{prefix}{link}{suffix}{processed_chunk.strip()}</a>'
                     bk_name = ''
             except:
                 url += "{{" + chunk + "}}"
@@ -434,7 +434,7 @@ def _main(args):
         if not args['quiet']:
             print(f'...Processing "{group}"')
         if args['link']:
-            return s.link_scripture(group)
+            return s.link_scripture(group, '<a href="jwpub://b/NWTR/', '" class="b">')
         elif args['range']:
             return str(s.code_scripture(group))
         else:
