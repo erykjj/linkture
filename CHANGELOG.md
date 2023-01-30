@@ -4,10 +4,14 @@
 
 ### Added
 
+- Big code changes, as a **parser is included** now
+
 ### Changed
 
 - Combined *form* and *rewrite* parameter into just *form* (not specified means no rewrite)
   - **Note:** These are now strings ("full", "standard", "official"), instead of the previous integers
+- Moved constant resources (book names and ranges) to SQLite db instead of json
+  - *custom.json* is still there for easier modification
 
 ### Fixed
 
