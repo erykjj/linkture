@@ -23,6 +23,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'unidecode' ]
+    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'sqlite3', 'unidecode' ]
 
 )

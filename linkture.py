@@ -28,7 +28,7 @@ SOFTWAregex.
 
 VERSION = '1.5.1'
 
-import argparse, json, regex
+import argparse, json, regex, sqlite3
 import pandas as pd
 
 from pathlib import Path
@@ -48,27 +48,25 @@ class Scriptures():
             translate = language
         self.rewrite = bool((language != translate) or form)
         if form == "full":
-            form = 0
+            form = 3
         elif form == "standard":
-            form = 1
+            form = 4
         elif form == "official":
-            form = 2
+            form = 5
         else:
-            form = 0
+            form = 3
         self.bn = {}
         path = Path(__file__).resolve().parent
 
         self.books = ['Bible']
-        with open(path / 'res/books.json', 'r', encoding='UTF-8') as json_file:
-            b = json.load(json_file)
-        for row in b[translate]:
-            names = row[1].split(', ')
-            self.books.insert(row[0], names[form])
-        for row in b[language]:
-            names = row[1].split(', ')
-            for item in names:
-                normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
-                self.bn[normalized] = row[0]
+        con = sqlite3.connect(path / 'res/resources.db')
+        cur = con.cursor()
+        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{translate}';").fetchall():
+            self.books.insert(rec[2], rec[form])
+        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
+            for i in range(3,6):
+                normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
+                self.bn[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
         if language in b.keys():
@@ -77,8 +75,9 @@ class Scriptures():
                 for item in names:
                     normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
                     self.bn[normalized] = row[0]
-
-        self.br = pd.read_csv(path / 'res/ranges.csv', delimiter='\t')
+        self.br = pd.read_sql_query("SELECT * FROM Ranges;", con)
+        cur.close()
+        con.close()
 
         self.bk_ref = regex.compile(r'(\d?(?:\s?[\p{L}\.-]+)+)\s?(.*)') # CHECK: not tested with non-Latin characters
         self.ch_v_ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)\s*:\s*(\d+)')
