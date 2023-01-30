@@ -46,15 +46,16 @@ class Scriptures():
                 raise ValueError("Indicated translation language is not an option!")
         else:
             translate = language
-        self.bn = {}
-        self.rewrite = True
-        if form == "standard":
+        self.rewrite = bool((language != translate) or form)
+        if form == "full":
+            form = 0
+        elif form == "standard":
             form = 1
         elif form == "official":
             form = 2
         else:
             form = 0
-            self.rewrite = False
+        self.bn = {}
         path = Path(__file__).resolve().parent
 
         self.books = ['Bible']
@@ -211,6 +212,102 @@ class Scriptures():
                 url += "{{" + chunk + "}}"
         return url.strip(' ;,')
 
+    def rewrite_scripture(self, scripture):
+
+        def process_verses(chunk, book, multi):
+            b = str(book)
+
+            result = self.ch_v_ch_v.search(chunk)
+            if result:
+                ch1 = result.group(1)
+                v1 = result.group(2)
+                ch2 = result.group(3)
+                v2 = result.group(4)
+                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
+
+            result = self.ch_v_v.search(chunk)
+            if result:
+                ch1 = result.group(1)
+                v1 = result.group(2)
+                ch2 = ch1
+                v2 = result.group(3)
+                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch1
+
+            result = self.ch_v.search(chunk)
+            if result:
+                ch1 = result.group(1)
+                v1 = result.group(2)
+                return f"{b}:{ch1}:{v1}", ch1
+
+            result = self.ch_ch.search(chunk)
+            if result:
+                if multi:
+                    ch1 = result.group(1)
+                    v1 = '1'
+                    ch2 = result.group(2)
+                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                else:
+                    ch1 = '1'
+                    v1 = result.group(1)
+                    ch2 = ch1
+                    v2 = result.group(2)
+                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
+
+            result = self.ch_.search(chunk)
+            if result:
+                if multi:
+                    ch1 = result.group(1)
+                    v1 = '1'
+                    ch2 = ch1
+                    v2 = str(self.br.loc[(self.br.Book == book) & (self.br.Chapter == int(ch2)), ['Last']].values[0][0])
+                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
+                else:
+                    ch1 = '1'
+                    v1 = result.group(1)
+                return f"{b}:{ch1}:{v1}", 0
+
+            return None, 0
+
+        def undo_series(txt):
+            txt = txt.replace(' ', '')
+            for result in self.ch_v_ch_v.findall(txt):
+                if result[0] == result[2]:
+                    txt = txt.replace(f"{result[0]}:{result[1]}-{result[2]}:{result[3]}", f"{result[0]}:{result[1]}-{result[3]}")
+            for result in self.dd.findall(txt):
+                if int(result[1]) - int(result[0]) == 1:
+                    txt = txt.replace(f"{result[0]}-{result[1]}", f"{result[0]}, {result[1]}")
+            return txt
+
+        url = ''
+        book = ''
+        for chunk in scripture.split(';'):
+            # try:
+                bk, rest, bn, last = self._process_scripture(chunk)
+                if last == -1:
+                    url = url + '; ' + '{{' + chunk.strip() + '}}'
+                    continue
+                if not bn:
+                    bk, rest, bn, last = self._process_scripture(book + chunk)
+                if bk.strip() != book.strip():
+                    book = bk
+                else:
+                    bk = ''
+                chap = 0
+                for bit in rest.split(','):
+                    if chap:
+                        link, chap = process_verses(f"{chap}:{bit}", bn, last-1)
+                        url += ', '
+                    else:
+                        link, chap = process_verses(bit, bn, last-1)
+                        url += '; '
+                    processed_chunk = f"{bk}{undo_series(bit).lstrip()}"
+                    url += processed_chunk.strip()
+                    bk = ''
+            # except:
+            #     url += "{{" + chunk + "}}"
+        return url.strip(' ;,')
+
+
     def code_scripture(self, scripture):
 
         def code_verses(chunk, book, multi):
@@ -327,9 +424,6 @@ class Scriptures():
             scriptures += f"; {scripture}"
         return scriptures.lstrip(" ;")
 
-    def rewrite_scripture(self, scripture): # TODO: needs fixing so as not to add book names if not necessary
-        return self.decode_scripture(self.code_scripture(scripture))
-
 
 def _main(args):
 
@@ -352,6 +446,8 @@ def _main(args):
         form = 'standard'
     elif args['official']:
         form = 'official'
+    elif args['full']:
+        form = 'full'
     s = Scriptures(args['language'], args['translate'], form)
     m1 = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
     m2 = regex.compile(r'({{.*?}})')
@@ -387,12 +483,12 @@ if __name__ == "__main__":
     mode.add_argument('-s', metavar='reference', help='process "reference; reference; etc."')
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
-    parser.add_argument('--translate', default='English', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
+    parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
-    form = format_group.add_mutually_exclusive_group(required=False)
-    form.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
-    form.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
-    form.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
+    formats = format_group.add_mutually_exclusive_group(required=False)
+    formats.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
+    formats.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
+    formats.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
 
     type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
