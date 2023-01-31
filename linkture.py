@@ -90,19 +90,21 @@ class Scriptures():
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
         self.scrpt = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
 
-    def _check_book(self, bk_name):
-        bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
-        if bk_name not in self.src_book_names:
-            return None, 0
-        else:
-            bk_num = self.src_book_names[bk_name]
-        return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
     def _process_scripture(self, scripture): # TODO: returns rewritten name, not original
+
+        def check_book(bk_name):
+            bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
+            if bk_name not in self.src_book_names:
+                return None, 0
+            else:
+                bk_num = self.src_book_names[bk_name]
+            return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
         result = self.bk_ref.search(scripture)
         if result:
             bk_name, rest = result.group(1), result.group(2).lstrip()
-            bk_num, last = self._check_book(bk_name)
+            bk_num, last = check_book(bk_name)
             if not bk_num:
                 return '', '', None, -1
             if rest == "":
@@ -112,9 +114,9 @@ class Scriptures():
                 if int(result[1]) - int(result[0]) == 1:
                     rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
             if bk_num:
-                if self.rewrite:
-                    bk_name = self.tr_book_names[bk_num]
-                return f"{bk_name} ", rest, bk_num, last
+                # if self.rewrite: # TODO: move this to calling procedure - here just chunking
+                #     bk_name = self.tr_book_names[bk_num]
+                return bk_name+' ', rest, bk_num, last
         return '', '', None, 0
 
     def list_scriptures(self, text):
@@ -196,22 +198,22 @@ class Scriptures():
         for chunk in scripture.split(';'):
             try:
                 bk_name, rest, bk_num, last = self._process_scripture(chunk)
-                if last == -1:
-                    url = url + '; ' + '{{' + chunk.strip() + '}}'
-                    continue
+                # if last == -1:
+                #     url = url + '; ' + '{{' + chunk.strip() + '}}'
+                #     continue
                 if not bk_num:
                     bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
                 if bk_name.strip() != book.strip():
                     book = bk_name
                 else:
                     bk_name = ''
-                chap = 0
+                ch = 0
                 for bit in rest.split(','):
-                    if chap:
-                        link, chap = process_verses(f"{chap}:{bit}", bk_num, last-1)
+                    if ch:
+                        link, ch = process_verses(f"{ch}:{bit}", bk_num, last-1)
                         url += ', '
                     else:
-                        link, chap = process_verses(bit, bk_num, last-1)
+                        link, ch = process_verses(bit, bk_num, last-1)
                         url += '; '
                     processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
                     url += f'{prefix}{link}{suffix}{processed_chunk.strip()}</a>'
@@ -221,60 +223,6 @@ class Scriptures():
         return url.strip(' ;,')
 
     def rewrite_scripture(self, scripture):
-
-        def process_verses(chunk, book, multi):
-            b = str(book)
-
-            result = self.ch_v_ch_v.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                ch2 = result.group(3)
-                v2 = result.group(4)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
-
-            result = self.ch_v_v.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                ch2 = ch1
-                v2 = result.group(3)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch1
-
-            result = self.ch_v.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                return f"{b}:{ch1}:{v1}", ch1
-
-            result = self.ch_ch.search(chunk)
-            if result:
-                if multi:
-                    ch1 = result.group(1)
-                    v1 = '1'
-                    ch2 = result.group(2)
-                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
-                else:
-                    ch1 = '1'
-                    v1 = result.group(1)
-                    ch2 = ch1
-                    v2 = result.group(2)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
-
-            result = self.ch_.search(chunk)
-            if result:
-                if multi:
-                    ch1 = result.group(1)
-                    v1 = '1'
-                    ch2 = ch1
-                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0])
-                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
-                else:
-                    ch1 = '1'
-                    v1 = result.group(1)
-                return f"{b}:{ch1}:{v1}", 0
-
-            return None, 0
 
         def undo_series(txt):
             txt = txt.replace(' ', '')
@@ -289,30 +237,26 @@ class Scriptures():
         url = ''
         book = ''
         for chunk in scripture.split(';'):
-            # try:
+            try:
                 bk_name, rest, bk_num, last = self._process_scripture(chunk)
-                if last == -1:
-                    url = url + '; ' + '{{' + chunk.strip() + '}}'
-                    continue
+                # if last == -1:
+                #     url = url + '; ' + '{{' + chunk.strip() + '}}'
+                #     continue
                 if not bk_num:
                     bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
                 if bk_name.strip() != book.strip():
                     book = bk_name
                 else:
                     bk_name = ''
-                chap = 0
                 for bit in rest.split(','):
-                    if chap:
-                        link, chap = process_verses(f"{chap}:{bit}", bk_num, last-1)
-                        url += ', '
-                    else:
-                        link, chap = process_verses(bit, bk_num, last-1)
-                        url += '; '
+                    url += '; '
+                    if self.rewrite and bk_name:
+                        bk_name = self.tr_book_names[bk_num]+' '
                     processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
                     url += processed_chunk.strip()
                     bk_name = ''
-            # except:
-            #     url += "{{" + chunk + "}}"
+            except:
+                url += "{{" + chunk + "}}"
         return url.strip(' ;,')
 
 
@@ -375,26 +319,33 @@ class Scriptures():
         series = []
         book = ''
         for chunk in scripture.split(';'):
-            try:
+            try: # TODO: needs fixing:
                 bk_name, rest, bk_num, last = self._process_scripture(chunk)
-                if last == -1:
-                    continue
+                # if last == -1:
+                #     continue
                 if not bk_num:
                     bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
                     bk_name = ''
                 else:
-                    book = bk_name
-                chap = 0
+                    book = bk_name.strip()
+                ch = 0
                 for bit in rest.split(','):
-                    if chap:
-                        link, chap = code_verses(f"{chap}:{bit}", bk_num, last-1)
+                    if ch:
+                        link, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
                     else:
-                        link, chap = code_verses(bit, bk_num, last-1)
+                        link, ch = code_verses(bit, bk_num, last-1)
                     series.append(link)
                     bk_name = ''
             except:
                 pass
         return series
+
+    def code_scriptures(self, text):
+        lst = []
+        for i in self.list_scriptures(text):
+            for c in self.code_scripture(i):
+                lst.append(c)
+        return lst
 
     def decode_scripture(self, reference=[]):
         scriptures = ''
@@ -435,10 +386,7 @@ class Scriptures():
 
 def _main(args):
 
-    def r1(match):
-        return "{{" + match.group(1) + "}}"
-
-    def r2(match):
+    def r(match):
         group = match.group(1).strip('{}')
         if not args['quiet']:
             print(f'...Processing "{group}"')
@@ -457,8 +405,7 @@ def _main(args):
     elif args['full']:
         form = 'full'
     s = Scriptures(args['language'], args['translate'], form)
-    m1 = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
-    m2 = regex.compile(r'({{.*?}})')
+    m = regex.compile(r'({{.*?}})')
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
@@ -469,8 +416,8 @@ def _main(args):
     else:
         txt = args['s']
 
-    txt = regex.sub(m1, r1, txt)
-    txt = regex.sub(m2, r2, txt)
+    txt = s.tag_scriptures(txt)
+    txt = regex.sub(m, r, txt)
 
     if args['f']:
         with open(args['f'][1], 'w', encoding='UTF-8') as f:
