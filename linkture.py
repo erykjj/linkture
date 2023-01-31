@@ -193,13 +193,13 @@ class Scriptures():
                     txt = txt.replace(f"{result[0]}-{result[1]}", f"{result[0]}, {result[1]}")
             return txt
 
-        url = ''
+        output = ''
         book = ''
         for chunk in scripture.split(';'):
             try:
                 bk_name, rest, bk_num, last = self._process_scripture(chunk)
                 # if last == -1:
-                #     url = url + '; ' + '{{' + chunk.strip() + '}}'
+                #     output = output + '; ' + '{{' + chunk.strip() + '}}'
                 #     continue
                 if not bk_num:
                     bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
@@ -211,16 +211,16 @@ class Scriptures():
                 for bit in rest.split(','):
                     if ch:
                         link, ch = process_verses(f"{ch}:{bit}", bk_num, last-1)
-                        url += ', '
+                        output += ', '
                     else:
                         link, ch = process_verses(bit, bk_num, last-1)
-                        url += '; '
+                        output += '; '
                     processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
-                    url += f'{prefix}{link}{suffix}{processed_chunk.strip()}</a>'
+                    output += f'{prefix}{link}{suffix}{processed_chunk.strip()}</a>'
                     bk_name = ''
             except:
-                url += "{{" + chunk + "}}"
-        return url.strip(' ;,')
+                output += "{{" + chunk + "}}"
+        return output.strip(' ;,')
 
     def rewrite_scripture(self, scripture):
 
@@ -234,13 +234,13 @@ class Scriptures():
                     txt = txt.replace(f"{result[0]}-{result[1]}", f"{result[0]}, {result[1]}")
             return txt
 
-        url = ''
+        output = ''
         book = ''
         for chunk in scripture.split(';'):
             try:
-                bk_name, rest, bk_num, last = self._process_scripture(chunk)
+                bk_name, rest, bk_num, last = self._process_scripture(chunk) # IDEA: use bk_num and better error-handling: return unprocessed
                 # if last == -1:
-                #     url = url + '; ' + '{{' + chunk.strip() + '}}'
+                #     output = output + '; ' + '{{' + chunk.strip() + '}}'
                 #     continue
                 if not bk_num:
                     bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
@@ -249,15 +249,15 @@ class Scriptures():
                 else:
                     bk_name = ''
                 for bit in rest.split(','):
-                    url += '; '
-                    if self.rewrite and bk_name:
+                    output += '; '
+                    if self.rewrite and bk_name and bk_num:
                         bk_name = self.tr_book_names[bk_num]+' '
                     processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
-                    url += processed_chunk.strip()
+                    output += processed_chunk.strip()
                     bk_name = ''
             except:
-                url += "{{" + chunk + "}}"
-        return url.strip(' ;,')
+                output += "{{" + chunk + "}}"
+        return output.strip(' ;,')
 
 
     def code_scripture(self, scripture):
