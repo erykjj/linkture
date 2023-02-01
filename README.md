@@ -7,7 +7,7 @@ Functions to translate and/or convert Bible scripture references to a list of co
 
 The *res/books.json* list contains Bible book names in Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish. Any other variants of book names can be added to the *res/custom.json* list.
 
-**Note** that this script _does not_ (yet) parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument. Also, it doesn't check if chapters or verses are within range (actually exist).
+**Note** that this script _does not_ (yet) parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument.
 
 ____
 ## Installation
@@ -48,7 +48,7 @@ output format (optional):
   --standard            output as standard abbreviation (eg., "Gen.")
 
 type of conversion:
-  if not specified, references are simply rewritten according to chosen output format:
+  if not specified, references are simply rewritten according to chosen (or default) output format:
 
   -l, --link            create jwpub link(s)
   -r, --range           create range list
@@ -84,23 +84,24 @@ Johannes 17:17; 2. Timotheus 3:16, 17
 ```
 from linkture import Scriptures
 
-s = Scriptures(language='English', form=1, rewrite=True)
+s = Scriptures(language="English", translate="Spanish", form="full")
 
 url = s.link_scripture("John 17:3, 26")
 codes = s.code_scripture("Psalm 83:18; Mt 6:9")
 scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '55003017')])
 scriptures = s.rewrite_scripture("EXOD 3:15; Re 21:4")
 ```
+
 Parameters:
-* *language*
+* *language* - source language for Scripture parsing
   * Chinese, Danish, Dutch, English (default), French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish
-* *form*
-  * **0** for full name format - default (eg., "Genesis")
-  * **1** for standard abbreviation format (eg., "Gen.")
-  * **2** for official abbreviation format (eg., "Ge")
-* *rewrite*
-  * **False** - book names not rewritten (default)
-  * **True** - rewrite book names (according to selected *form*)
+* *translate* - language for Bible book name translation
+  * Chinese, Danish, Dutch, English (default), French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish
+* *form* - output format of Bible book names
+  * **"full"** for full name format (eg., "Genesis")
+  * **"standard"** for standard abbreviation format (eg., "Gen.")
+  * **"official"** for official abbreviation format (eg., "Ge")
+  * *None* or not supplied - no re-write will be performed
 
 ____
 ## Feedback
