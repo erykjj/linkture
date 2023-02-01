@@ -316,10 +316,10 @@ class Scriptures():
         result = self.bk_ref.search(scripture) # get book name
         if result:
             bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = self._check_book(bk_name)
+            bk_num, last = self._check_book(bk_name) # NOTE: need last??
         else:
             return scripture
-        if self.rewrite and bk_name and bk_num:
+        if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
             output = self.tr_book_names[bk_num]+' '
         else:
             output = bk_name+' '
@@ -386,27 +386,21 @@ class Scriptures():
             return None, 0
 
         series = []
-        book = ''
-        for chunk in scripture.split(';'):
-            try: # TODO: needs fixing:
-                bk_name, rest, bk_num, last = self._process_scripture(chunk)
-                # if last == -1:
-                #     continue
-                if not bk_num:
-                    bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
-                    bk_name = ''
+        scripture = self.rewrite_scripture(scripture)
+        result = self.bk_ref.search(scripture) # get book name
+        if result:
+            bk_name, rest = result.group(1).strip(), result.group(2).strip()
+            bk_num, last = self._check_book(bk_name) # NOTE: need last??
+        else:
+            return []
+        for chunk in rest.replace(' ', '').split(';'): # process the rest
+            ch = 0
+            for bit in chunk.split(','):
+                if ch:
+                    link, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
                 else:
-                    book = bk_name.strip()
-                ch = 0
-                for bit in rest.split(','):
-                    if ch:
-                        link, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
-                    else:
-                        link, ch = code_verses(bit, bk_num, last-1)
-                    series.append(link)
-                    bk_name = ''
-            except:
-                pass
+                    link, ch = code_verses(bit, bk_num, last-1)
+                series.append(link)
         return series
 
     def code_scriptures(self, text):
