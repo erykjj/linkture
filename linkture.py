@@ -268,6 +268,16 @@ class Scriptures():
     #         return bk_name, rest, bk_num, last
     #     return '', '', None, 0
 
+    def _scripture_parts(self, scripture):
+        result = self.bk_ref.search(scripture) # get book name
+        if result:
+            bk_name, rest = result.group(1).strip(), result.group(2).strip()
+            bk_num, last = self._check_book(bk_name) # NOTE: need last??
+            if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
+                bk_name = self.tr_book_names[bk_num]
+            return bk_name, bk_num, rest, last
+        else:
+            return scripture, None, None, 0
 
     def rewrite_scripture(self, scripture):
 
@@ -313,14 +323,15 @@ class Scriptures():
                         txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
             return txt
 
-        result = self.bk_ref.search(scripture) # get book name
-        if result:
-            bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = self._check_book(bk_name) # NOTE: need last??
-        else:
+        # result = self.bk_ref.search(scripture) # get book name
+        # if result:
+        #     bk_name, rest = result.group(1).strip(), result.group(2).strip()
+        #     bk_num, last = self._check_book(bk_name) # NOTE: need last??
+        # else:
+        #     return scripture
+        bk_name, bk_num, rest, _ = self._scripture_parts(scripture)
+        if not bk_num or not rest:
             return scripture
-        if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
-            output = self.tr_book_names[bk_num]+' '
         else:
             output = bk_name+' '
         for chunk in rest.replace(' ', '').split(';'): # process the rest
@@ -385,22 +396,21 @@ class Scriptures():
 
             return None, 0
 
-        series = []
         scripture = self.rewrite_scripture(scripture)
-        result = self.bk_ref.search(scripture) # get book name
-        if result:
-            bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = self._check_book(bk_name) # NOTE: need last??
-        else:
+        _, bk_num, rest, last = self._scripture_parts(scripture)
+        print(bk_num, rest, last)
+        if not bk_num or not rest or last < 1:
             return []
+        else:
+            series = []
         for chunk in rest.replace(' ', '').split(';'): # process the rest
             ch = 0
             for bit in chunk.split(','):
                 if ch:
-                    link, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
+                    tup, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
                 else:
-                    link, ch = code_verses(bit, bk_num, last-1)
-                series.append(link)
+                    tup, ch = code_verses(bit, bk_num, last-1)
+                series.append(tup)
         return series
 
     def code_scriptures(self, text):
@@ -410,11 +420,9 @@ class Scriptures():
                 lst.append(c)
         return lst
 
-    def decode_scripture(self, reference=[]):
-        scriptures = ''
+    def decode_scriptures(self, reference=[]):
+        scriptures = []
         for item in reference:
-            if not item:
-                continue
             start, end = item
             sb = int(start[:2])
             sc = int(start[2:5])
@@ -443,9 +451,8 @@ class Scriptures():
                         scripture = f"{bk_name}{ch}{sv}-{ev}"
                 else:
                     scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
-            scriptures += f"; {scripture}"
-        return scriptures.lstrip(" ;")
-
+            scriptures.append(scripture)
+        return scriptures
 
 def _main(args):
 
@@ -469,6 +476,8 @@ def _main(args):
         form = 'full'
     s = Scriptures(args['language'], args['translate'], form)
     m = regex.compile(r'({{.*?}})')
+
+    # print(s.decode_scriptures([('40006033', '40006033'), ('40007001', '40007003'), ('40007005', '40007007'), ('40008001', '40008010'), ('40008014', '40008018'), ('40009002', '40009005'), ('40009007', '40009010'), ('62002003', '62002007'), ('62003001', '62005021')]))
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
