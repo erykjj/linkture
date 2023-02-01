@@ -340,7 +340,7 @@ class Scriptures():
         return output.replace(',', ', ').strip(' ;,')
 
 
-    def code_scripture(self, scripture):
+    def code_scriptures(self, text):
 
         def code_verses(chunk, book, multi):
             b = str(book).zfill(2)
@@ -396,28 +396,20 @@ class Scriptures():
 
             return None, 0
 
-        scripture = self.rewrite_scripture(scripture)
-        _, bk_num, rest, last = self._scripture_parts(scripture)
-        print(bk_num, rest, last)
-        if not bk_num or not rest or last < 1:
-            return []
-        else:
-            series = []
-        for chunk in rest.replace(' ', '').split(';'): # process the rest
-            ch = 0
-            for bit in chunk.split(','):
-                if ch:
-                    tup, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
-                else:
-                    tup, ch = code_verses(bit, bk_num, last-1)
-                series.append(tup)
-        return series
-
-    def code_scriptures(self, text):
         lst = []
-        for i in self.list_scriptures(text):
-            for c in self.code_scripture(i):
-                lst.append(c)
+        for scripture in self.list_scriptures(text):
+            scripture = self.rewrite_scripture(scripture)
+            _, bk_num, rest, last = self._scripture_parts(scripture)
+            if not bk_num or not rest or last < 1:
+                continue
+            for chunk in rest.replace(' ', '').split(';'):
+                ch = 0
+                for bit in chunk.split(','):
+                    if ch:
+                        tup, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
+                    else:
+                        tup, ch = code_verses(bit, bk_num, last-1)
+                    lst.append(tup)
         return lst
 
     def decode_scriptures(self, reference=[]):
@@ -463,7 +455,7 @@ def _main(args):
         if args['link']:
             return s.link_scripture(group, '<a href="jwpub://b/NWTR/', '" class="b">')
         elif args['range']:
-            return str(s.code_scripture(group))
+            return str(s.code_scriptures(group))
         else:
             return s.rewrite_scripture(group)
 
@@ -478,6 +470,7 @@ def _main(args):
     m = regex.compile(r'({{.*?}})')
 
     # print(s.decode_scriptures([('40006033', '40006033'), ('40007001', '40007003'), ('40007005', '40007007'), ('40008001', '40008010'), ('40008014', '40008018'), ('40009002', '40009005'), ('40009007', '40009010'), ('62002003', '62002007'), ('62003001', '62005021')]))
+    # print(s.code_scriptures(args['s']))
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
