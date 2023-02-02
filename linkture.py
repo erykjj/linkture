@@ -94,13 +94,25 @@ class Scriptures():
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
         self.scrpt = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
 
-    def _check_book(self, bk_name):
-        bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
-        if bk_name not in self.src_book_names:
-            return None, 0
+    def _scripture_parts(self, scripture):
+
+        def check_book(bk_name):
+            bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
+            if bk_name not in self.src_book_names:
+                return None, 0
+            else:
+                bk_num = self.src_book_names[bk_name]
+            return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+        result = self.bk_ref.search(scripture) # get book name
+        if result:
+            bk_name, rest = result.group(1).strip(), result.group(2).strip()
+            bk_num, last = check_book(bk_name)
+            if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
+                bk_name = self.tr_book_names[bk_num]
+            return bk_name, bk_num, rest, last
         else:
-            bk_num = self.src_book_names[bk_name]
-        return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+            return scripture, None, None, 0
 
     # def _process_scripture(self, scripture): # TODO: returns rewritten name, not original
 
@@ -128,15 +140,72 @@ class Scriptures():
     #             return bk_name, rest, bk_num, last
     #     return '', '', None, 0
 
+
     def list_scriptures(self, text):
         return regex.findall(self.scrpt, text)
 
     def tag_scriptures(self, text):
-        def r(match):
-            return "{{" + match.group(1) + "}}"
-        return regex.sub(self.scrpt, r, text)
+        # def r(match):
+        #     return "{{" + match.group(1) + "}}"
+        # return regex.sub(self.scrpt, r, text)
+        return regex.sub(self.scrpt, r'{{\1}}', text)
 
-    def link_scripture(self, scripture, prefix='<a href="http://', suffix='" >'):
+
+    def rewrite_scripture(self, scripture):
+
+        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
+            vv_v = regex.compile(r'(\d+)[\s\,]+(\d+)[-\u2013\u2014\s]+(\d+)')
+            v_vv = regex.compile(r'(\d+)[-\u2013\u2014\s]+(\d+)[\s\,]+(\d+)')
+            found = True
+            while found:
+                found = False
+                for result in self.d_d_d.finditer(txt):
+                    end = result.group(3)
+                    start = result.group(1)
+                    if int(end) - int(start) == 2:
+                        found = True
+                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                for result in v_vv.finditer(txt):
+                    end = result.group(3)
+                    mid = result.group(2)
+                    start = result.group(1)
+                    if int(end) - int(mid) == 1:
+                        found = True
+                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                for result in vv_v.finditer(txt):
+                    end = result.group(3)
+                    mid = result.group(2)
+                    start = result.group(1)
+                    if int(mid) - int(start) == 1:
+                        found = True
+                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                for result in self.d_d.finditer(txt):
+                    end = result.group(2)
+                    start = result.group(1)
+                    if int(end) - int(start) == 1:
+                        found = True
+                        txt = regex.sub(result.group(), f"{start},{end}", txt)
+                for result in self.ch_v_ch_v.finditer(txt):
+                    sc = result.group(1)
+                    sv = result.group(2)
+                    ec = result.group(3)
+                    ev = result.group(4)
+                    if int(sc) == int(ec):
+                        found = True
+                        txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
+            return txt
+
+        bk_name, bk_num, rest, _ = self._scripture_parts(scripture)
+        if not bk_num or not rest:
+            return scripture
+        else:
+            output = bk_name+' '
+        for chunk in rest.replace(' ', '').split(';'): # process the rest
+            chunk = reform_series(chunk)
+            output += chunk.lstrip()+'; '
+        return output.replace(',', ', ').strip(' ;,')
+
+    def link_scriptures(self, text, prefix='<a href="http://', suffix='" >'):
 
         def process_verses(chunk, book, multi):
             b = str(book)
@@ -192,152 +261,27 @@ class Scriptures():
 
             return None, 0
 
-        def undo_series(txt):
-            txt = txt.replace(' ', '')
-            for result in self.ch_v_ch_v.findall(txt):
-                if result[0] == result[2]:
-                    txt = txt.replace(f"{result[0]}:{result[1]}-{result[2]}:{result[3]}", f"{result[0]}:{result[1]}-{result[3]}")
-            for result in self.dd.findall(txt):
-                if int(result[1]) - int(result[0]) == 1:
-                    txt = txt.replace(f"{result[0]}-{result[1]}", f"{result[0]}, {result[1]}")
-            return txt
-
-        output = ''
-        book = ''
-        for chunk in scripture.split(';'):
-            try:
-                bk_name, rest, bk_num, last = self._process_scripture(chunk)
-                # if last == -1:
-                #     output = output + '; ' + '{{' + chunk.strip() + '}}'
-                #     continue
-                if not bk_num:
-                    bk_name, rest, bk_num, last = self._process_scripture(book + chunk)
-                if bk_name.strip() != book.strip():
-                    book = bk_name
-                else:
-                    bk_name = ''
+        for scripture in regex.findall(self.scrpt, text):
+            script = self.rewrite_scripture(scripture)
+            bk_name, bk_num, rest, last = self._scripture_parts(script)
+            if not bk_num or not rest:
+                continue
+            else:
+                output = bk_name+' '
+            for chunk in rest.replace(' ', '').split(';'):
                 ch = 0
-                for bit in rest.split(','):
+                for bit in chunk.split(','):
                     if ch:
                         link, ch = process_verses(f"{ch}:{bit}", bk_num, last-1)
                         output += ', '
                     else:
                         link, ch = process_verses(bit, bk_num, last-1)
                         output += '; '
-                    processed_chunk = f"{bk_name}{undo_series(bit).lstrip()}"
-                    output += f'{prefix}{link}{suffix}{processed_chunk.strip()}</a>'
+                    # processed_chunk = f"{bk_name}{bit}"
+                    output += f'{prefix}{link}{suffix}{bk_name}{bit}</a>'
                     bk_name = ''
-            except:
-                output += "{{" + chunk + "}}"
-        return output.strip(' ;,')
-
-
-
-    # def _process_scripture(self, scripture):
-
-    #     def check_book(bk_name):
-    #         bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
-    #         if bk_name not in self.src_book_names:
-    #             return None, 0
-    #         else:
-    #             bk_num = self.src_book_names[bk_name]
-    #         return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-    #     result = self.bk_ref.search(scripture)
-    #     if result:
-    #         bk_name = result.group(1).strip()
-    #         rest = scripture[len(bk_name):]
-    #         bk_num, last = check_book(bk_name)
-    #     else:
-    #         bk_name = None
-    #         rest = scripture
-    #         bk_num = None
-    #         last = None
-    #     while True:
-    #         result = self.d_d_d.search(rest)
-    #         if not result:
-    #             break
-    #         end = result.group(3)
-    #         start = result.group(1)
-    #         if int(end) - int(start) == 2:
-    #             rest = regex.sub(start+r'[\s\d\,]+'+end, f"{start.rstrip()}-{end.lstrip()}", rest)
-    #     if not bk_num:
-    #         return '', '', None, -1
-
-    #     if bk_num:
-    #         return bk_name, rest, bk_num, last
-    #     return '', '', None, 0
-
-    def _scripture_parts(self, scripture):
-        result = self.bk_ref.search(scripture) # get book name
-        if result:
-            bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = self._check_book(bk_name) # NOTE: need last??
-            if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
-                bk_name = self.tr_book_names[bk_num]
-            return bk_name, bk_num, rest, last
-        else:
-            return scripture, None, None, 0
-
-    def rewrite_scripture(self, scripture):
-
-        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
-            vv_v = regex.compile(r'(\d+)[\s\,]+(\d+)[-\u2013\u2014\s]+(\d+)')
-            v_vv = regex.compile(r'(\d+)[-\u2013\u2014\s]+(\d+)[\s\,]+(\d+)')
-            found = True
-            while found:
-                found = False
-                for result in self.d_d_d.finditer(txt):
-                    end = result.group(3)
-                    start = result.group(1)
-                    if int(end) - int(start) == 2:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in v_vv.finditer(txt):
-                    end = result.group(3)
-                    mid = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(mid) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in vv_v.finditer(txt):
-                    end = result.group(3)
-                    mid = result.group(2)
-                    start = result.group(1)
-                    if int(mid) - int(start) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self.d_d.finditer(txt):
-                    end = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(start) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start},{end}", txt)
-                for result in self.ch_v_ch_v.finditer(txt):
-                    sc = result.group(1)
-                    sv = result.group(2)
-                    ec = result.group(3)
-                    ev = result.group(4)
-                    if int(sc) == int(ec):
-                        found = True
-                        txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
-            return txt
-
-        # result = self.bk_ref.search(scripture) # get book name
-        # if result:
-        #     bk_name, rest = result.group(1).strip(), result.group(2).strip()
-        #     bk_num, last = self._check_book(bk_name) # NOTE: need last??
-        # else:
-        #     return scripture
-        bk_name, bk_num, rest, _ = self._scripture_parts(scripture)
-        if not bk_num or not rest:
-            return scripture
-        else:
-            output = bk_name+' '
-        for chunk in rest.replace(' ', '').split(';'): # process the rest
-            chunk = reform_series(chunk)
-            output += chunk.lstrip()+'; '
-        return output.replace(',', ', ').strip(' ;,')
+            text = regex.sub(scripture, output, text)
+        return text
 
 
     def code_scriptures(self, text):
@@ -446,6 +390,7 @@ class Scriptures():
             scriptures.append(scripture)
         return scriptures
 
+
 def _main(args):
 
     def r(match):
@@ -453,7 +398,7 @@ def _main(args):
         if not args['quiet']:
             print(f'...Processing "{group}"')
         if args['link']:
-            return s.link_scripture(group, '<a href="jwpub://b/NWTR/', '" class="b">')
+            return s.link_scriptures(group, '<a href="jwpub://b/NWTR/', '" class="b">')
         elif args['range']:
             return str(s.code_scriptures(group))
         else:
@@ -471,6 +416,8 @@ def _main(args):
 
     # print(s.decode_scriptures([('40006033', '40006033'), ('40007001', '40007003'), ('40007005', '40007007'), ('40008001', '40008010'), ('40008014', '40008018'), ('40009002', '40009005'), ('40009007', '40009010'), ('62002003', '62002007'), ('62003001', '62005021')]))
     # print(s.code_scriptures(args['s']))
+    # refs = args['s']
+    # print(s.list_scriptures(refs))
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
@@ -490,7 +437,7 @@ def _main(args):
     else:
         print(txt)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # TODO: adjust command-line for new functions
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description="process, translate, link/encode Bible scripture references; see README for more information")
