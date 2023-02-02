@@ -433,11 +433,13 @@ class Scriptures():
 def _main(args):
 
     def switchboard(text):
-        if args['x']:
+        if args['l']:
             return s.link_scriptures(text, '<a href="jwpub://b/NWTR/', '" class="b">')
-        elif args['b']:
+        elif args['c']:
             return s.code_scriptures(text)
-        elif args['l']:
+        # elif args['d']:
+        #     return s.code_scriptures(text)
+        elif args['x']:
             return s.list_scriptures(text)
         elif args['t']:
             return s.tag_scriptures(text)
@@ -452,10 +454,6 @@ def _main(args):
     elif args['full']:
         form = 'full'
     s = Scriptures(args['language'], args['translate'], form)
-
-    # print(s.decode_scriptures([('40006033', '40006033'), ('40007001', '40007003'), ('40007005', '40007007'), ('40008001', '40008010'), ('40008014', '40008018'), ('40009002', '40009005'), ('40009007', '40009010'), ('62002003', '62002007'), ('62003001', '62005021')]))
-    # print(s.code_scriptures(args['s']))
-    # print(s.list_scriptures(refs))
 
     if args['f']:
         if args['f'][0] == args['f'][1]:
@@ -495,10 +493,11 @@ if __name__ == "__main__": # TODO: adjust command-line for new functions
 
     type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
-    tpe.add_argument('-b', action='store_true', help='create range list in BCV notation')
-    tpe.add_argument('-l', action='store_true', help='create list of scripture references')
-    tpe.add_argument('-t', action='store_true', help='create list of scripture references')
-    tpe.add_argument('-x', action='store_true', help='create <href> links')
+    tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
+    # tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
+    tpe.add_argument('-l', action='store_true', help='create <a href></a> links')
+    tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
+    tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
     args = parser.parse_args()
 
