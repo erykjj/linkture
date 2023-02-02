@@ -142,23 +142,27 @@ class Scriptures():
 
 
     def list_scriptures(self, text):
-        if self.rewrite:
-            lst = []
-            for i in regex.findall(self.scrpt, text):
-                lst.append(self.rewrite_scripture(i))
-            return lst
-        return regex.findall(self.scrpt, text)
+        lst = []
+        for i in regex.findall(self.scrpt, text):
+            _, bk_num, _, _ = self._scripture_parts(i)
+            if bk_num:
+                if self.rewrite:
+                    script = self.rewrite_scripture(i)
+                else:
+                    script = i.strip()
+                lst.append(script)
+        return lst
 
     def tag_scriptures(self, text):
- 
-        def r(match):
-            if self.rewrite:
-                script = self.rewrite_scripture(match.group(1))
-            else:
-                script = match.group(1)
-            return "{{" + script + "}}"
-
-        return regex.sub(self.scrpt, r, text)
+        for i in regex.findall(self.scrpt, text):
+            _, bk_num, _, _ = self._scripture_parts(i)
+            if bk_num:
+                if self.rewrite:
+                    script = self.rewrite_scripture(i)
+                else:
+                    script = i
+                text = regex.sub(i, '{{'+script+'}}', text)
+        return text
 
 
     def rewrite_scripture(self, scripture):
@@ -210,9 +214,9 @@ class Scriptures():
             return scripture
         else:
             output = bk_name+' '
-        for chunk in rest.replace(' ', '').split(';'): # process the rest
+        for chunk in rest.replace(' ', '').split(';'):
             chunk = reform_series(chunk)
-            output += chunk.lstrip()+'; '
+            output += chunk.strip()+'; '
         return output.replace(',', ', ').strip(' ;,')
 
     def rewrite_scriptures(self, text):
@@ -283,7 +287,8 @@ class Scriptures():
             if not bk_num or not rest:
                 continue
             else:
-                output = bk_name+' '
+                output = ''
+                # output = bk_name+' '
             for chunk in rest.replace(' ', '').split(';'):
                 ch = 0
                 for bit in chunk.split(','):
@@ -293,10 +298,13 @@ class Scriptures():
                     else:
                         link, ch = process_verses(bit, bk_num, last-1)
                         output += '; '
-                    # processed_chunk = f"{bk_name}{bit}"
-                    output += f'{prefix}{link}{suffix}{bk_name}{bit}</a>'
+                    if not link:
+                        return
+                    if bk_name:
+                        bk_name += ' '
+                    output += f'{prefix}{link}{suffix}{bk_name}{bit.strip()}</a>'
                     bk_name = ''
-            text = regex.sub(scripture, output, text)
+            text = regex.sub(scripture, output.strip(' ;,'), text)
         return text
 
 
@@ -449,7 +457,7 @@ def _main(args):
     txt = switchboard(txt)
     if args['f']:
         with open(args['f'][1], 'w', encoding='UTF-8') as f:
-            f.write(txt)
+            f.write(str(txt))
     else:
         print(txt)
 
