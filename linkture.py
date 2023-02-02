@@ -108,7 +108,7 @@ class Scriptures():
         if result:
             bk_name, rest = result.group(1).strip(), result.group(2).strip()
             bk_num, last = check_book(bk_name)
-            if self.rewrite and bk_name and bk_num: # NOTE: necessary to even ask?
+            if self.rewrite and bk_name and bk_num:
                 bk_name = self.tr_book_names[bk_num]
             return bk_name, bk_num, rest, last
         else:
@@ -142,13 +142,23 @@ class Scriptures():
 
 
     def list_scriptures(self, text):
+        if self.rewrite:
+            lst = []
+            for i in regex.findall(self.scrpt, text):
+                lst.append(self.rewrite_scripture(i))
+            return lst
         return regex.findall(self.scrpt, text)
 
     def tag_scriptures(self, text):
-        # def r(match):
-        #     return "{{" + match.group(1) + "}}"
-        # return regex.sub(self.scrpt, r, text)
-        return regex.sub(self.scrpt, r'{{\1}}', text)
+ 
+        def r(match):
+            if self.rewrite:
+                script = self.rewrite_scripture(match.group(1))
+            else:
+                script = match.group(1)
+            return "{{" + script + "}}"
+
+        return regex.sub(self.scrpt, r, text)
 
 
     def rewrite_scripture(self, scripture):
@@ -204,6 +214,9 @@ class Scriptures():
             chunk = reform_series(chunk)
             output += chunk.lstrip()+'; '
         return output.replace(',', ', ').strip(' ;,')
+
+    def rewrite_scriptures(self, text):
+        return
 
     def link_scriptures(self, text, prefix='<a href="http://', suffix='" >'):
 
@@ -262,7 +275,10 @@ class Scriptures():
             return None, 0
 
         for scripture in regex.findall(self.scrpt, text):
-            script = self.rewrite_scripture(scripture)
+            if self.rewrite:
+                script = self.rewrite_scripture(scripture)
+            else:
+                script = scripture
             bk_name, bk_num, rest, last = self._scripture_parts(script)
             if not bk_num or not rest:
                 continue
@@ -393,16 +409,19 @@ class Scriptures():
 
 def _main(args):
 
-    def r(match):
-        group = match.group(1).strip('{}')
+    def switchboard(text):
         if not args['quiet']:
-            print(f'...Processing "{group}"')
-        if args['link']:
-            return s.link_scriptures(group, '<a href="jwpub://b/NWTR/', '" class="b">')
-        elif args['range']:
-            return str(s.code_scriptures(group))
+            print(f'...Processing "{text}"')
+        if args['x']:
+            return s.link_scriptures(text, '<a href="jwpub://b/NWTR/', '" class="b">')
+        elif args['b']:
+            return s.code_scriptures(text)
+        elif args['l']:
+            return s.list_scriptures(text)
+        elif args['t']:
+            return s.tag_scriptures(text)
         else:
-            return s.rewrite_scripture(group)
+            return s.rewrite_scriptures(text)
 
     form = None
     if args['standard']:
@@ -416,7 +435,6 @@ def _main(args):
 
     # print(s.decode_scriptures([('40006033', '40006033'), ('40007001', '40007003'), ('40007005', '40007007'), ('40008001', '40008010'), ('40008014', '40008018'), ('40009002', '40009005'), ('40009007', '40009010'), ('62002003', '62002007'), ('62003001', '62005021')]))
     # print(s.code_scriptures(args['s']))
-    # refs = args['s']
     # print(s.list_scriptures(refs))
 
     if args['f']:
@@ -426,11 +444,9 @@ def _main(args):
         with open(args['f'][0], 'r', encoding='UTF-8') as f:
             txt = f.read()
     else:
-        txt = args['s']
+        txt = args['r']
 
-    txt = s.tag_scriptures(txt)
-    txt = regex.sub(m, r, txt)
-
+    txt = switchboard(txt)
     if args['f']:
         with open(args['f'][1], 'w', encoding='UTF-8') as f:
             f.write(txt)
@@ -440,14 +456,14 @@ def _main(args):
 if __name__ == "__main__": # TODO: adjust command-line for new functions
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="process, translate, link/encode Bible scripture references; see README for more information")
+    parser = argparse.ArgumentParser(description="parse and process (translate, link, encode) Bible scripture references; see README for more information")
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='show version and exit')
 
     function_group = parser.add_argument_group('operational method', 'choose between terminal or files input/output:')
     mode = function_group.add_mutually_exclusive_group(required=True)
     mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
-    mode.add_argument('-s', metavar='reference', help='process "reference; reference; etc."')
+    mode.add_argument('-r', metavar='reference', help='process "reference; reference; etc."')
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
     parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
@@ -459,8 +475,10 @@ if __name__ == "__main__": # TODO: adjust command-line for new functions
 
     type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
-    tpe.add_argument('-l', '--link', action='store_true', help='create jwpub link(s)')
-    tpe.add_argument('-r', '--range', action='store_true', help='create range list')
+    tpe.add_argument('-b', action='store_true', help='create range list in BCV notation')
+    tpe.add_argument('-l', action='store_true', help='create list of scripture references')
+    tpe.add_argument('-t', action='store_true', help='create list of scripture references')
+    tpe.add_argument('-x', action='store_true', help='create <href> links')
 
     parser.add_argument('-q', '--quiet', action='store_true', help="don't show processing status")
     args = parser.parse_args()
