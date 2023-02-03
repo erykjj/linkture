@@ -93,34 +93,9 @@ class Scriptures():
         self.vv = regex.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
-        self.scrpt = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
-
-
-    # def _process_scripture(self, scripture): # TODO: returns rewritten name, not original
-
-    #     def check_book(bk_name):
-    #         bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
-    #         if bk_name not in self.src_book_names:
-    #             return None, 0
-    #         else:
-    #             bk_num = self.src_book_names[bk_name]
-    #         return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-    #     result = self.bk_ref.search(scripture)
-    #     if result:
-    #         bk_name, rest = result.group(1), result.group(2).lstrip()
-    #         bk_num, last = check_book(bk_name)
-    #         if not bk_num:
-    #             return '', '', None, -1
-    #         if rest == "":
+        # self.scrpt = regex.compile(r'((?:\d{0,1}\s?|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
+        self.scrpt = regex.compile(r'((?:\d{0,1}[\.\-  \t]?|[Ii]{0,3}[\.\- \t]?)?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d, \t;]*(?<!; \t)\d)')
     #             vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
-    #             rest = f"1:1-{last}:{vss}"
-    #         for result in self.v_v.findall(rest):
-    #             if int(result[1]) - int(result[0]) == 1:
-    #                 rest = rest.replace(f"{result[0]},{result[1]}", f"{result[0].rstrip()}-{result[1].lstrip()}")
-    #         if bk_num:
-    #             return bk_name, rest, bk_num, last
-    #     return '', '', None, 0
 
 
     def _rewrite_scripture(self, scripture):
@@ -211,15 +186,34 @@ class Scriptures():
         return lst
 
     def tag_scriptures(self, text):
-        for i in regex.findall(self.scrpt, text):
+
+        def r(match):
+            i = match.group(1)
             _, bk_num, _, _ = self._scripture_parts(i)
             if bk_num:
                 if self.rewrite:
                     script = self._rewrite_scripture(i)
                 else:
                     script = i
-                text = regex.sub(i, '{{'+script+'}}', text)
-        return text
+                return '{{'+script+'}}'
+            else:
+                return i
+
+        return regex.sub(self.scrpt, r, text)
+
+
+    # def tag_scriptures(self, text):
+    #     for i in regex.findall(self.scrpt, text):
+    #         i = i.strip()
+    #         _, bk_num, _, _ = self._scripture_parts(i)
+    #         if bk_num:
+    #             if self.rewrite:
+    #                 script = self._rewrite_scripture(i)
+    #             else:
+    #                 script = i
+    #             # text = text.replace(i.strip(), '{{'+script+'}}')
+    #             text = regex.sub(i, '{{'+script+'}}', text)
+    #     return text
 
 
     def code_scriptures(self, text):
@@ -434,7 +428,7 @@ def _main(args):
 
     def switchboard(text):
         if args['l']:
-            return s.link_scriptures(text, '<a href="jwpub://b/NWTR/', '" class="b">')
+            return s.link_scriptures(text, '<a href="https://my.website.org/', '">')
         elif args['c']:
             return s.code_scriptures(text)
         # elif args['d']:
