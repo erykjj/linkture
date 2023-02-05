@@ -79,58 +79,86 @@ class Scriptures():
         cur.close()
         con.close()
 
-        self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[—–\-\.   ]*[\p{L}—–\-\.]{2,})[   ]*(.*)') # CHECK: not tested with non-Latin characters
-
-        self.ch_v_ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)[-\u2013\u2014\s]+(\d+)\s*:\s*(\d+)')
-        self.ch_v_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
-        self.ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)')
-        self.ch_ch = regex.compile(r'(\d+)\s*[-\u2013\u2014]\s*(\d+)')
-        self.ch_ = regex.compile(r'(\d+)')
-        self.v_v = regex.compile(r'(?=(\d+\s*),(\s*\d+))') # NOTE: what if it's like 2:3,4,5? Should be reduced to 2:3-5
-        self.d_d_d = regex.compile(r'(\d+)[\s\,]+(\d+)[\s\,]+(\d+)')
-        self.d_d = regex.compile(r'(\d+)[-\u2013\u2014\s]+(\d+)')
-        self.vv = regex.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
-        self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
-
         self.scrpt = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
+        # self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[—–\-\.   ]*[\p{L}—–\-\.]{2,})[   ]*(.*)') # CHECK: not tested with non-Latin characters
+        self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\.]{2,})(.*)') # CHECK: not tested with non-Latin characters
+
+        self.cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
+        self.cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
+        self.cv = regex.compile(r'(\d+):(\d+)')
+
+        self.ddd = regex.compile(r'(\d+),(\d+),(\d+)')
+        self.dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
+        self.d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
+        self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
+        self.d = regex.compile(r'(\d+)')
+
+        # self.v_v = regex.compile(r'(?<!:)(\d+)-(\d+)') # not used
+        # self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)') # not used
+
         # vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+
+
+    def _scripture_parts(self, scripture):
+
+        def check_book(bk_name):
+            # bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '') # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
+            # bk_name = regex.sub(r'[—–\-\.   ]', '', bk_name.upper())
+            bk_name = regex.sub(r'[\-\.]', '', bk_name.upper())
+            bk_name = unidecode(bk_name)
+            if bk_name not in self.src_book_names:
+                return None, 0
+            else:
+                bk_num = self.src_book_names[bk_name]
+            return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+        reduced = regex.sub(r'[   ]', '', scripture)
+        reduced = regex.sub(r'[—–]', '-', reduced)
+        result = self.bk_ref.search(reduced)
+        # result = self.bk_ref.search(scripture)
+        if result:
+            bk_name, rest = result.group(1).strip(), result.group(2).strip()
+            bk_num, last = check_book(bk_name)
+            # rest = regex.sub(r'[   ]', '', rest.replace('.', ':'))
+            # rest = regex.sub(r'[—–]', '-', rest)
+            return bk_name, bk_num, rest.replace('.', ':'), last
+        else:
+            return scripture, None, None, 0
 
 
     def _rewrite_scripture(self, scripture):
 
         def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)jwpub
-            vv_v = regex.compile(r'(\d+)[\s\,]+(\d+)[-\u2013\u2014\s]+(\d+)')
-            v_vv = regex.compile(r'(\d+)[-\u2013\u2014\s]+(\d+)[\s\,]+(\d+)')
             found = True
             while found:
                 found = False
-                for result in self.d_d_d.finditer(txt):
+                for result in self.ddd.finditer(txt):
                     end = result.group(3)
                     start = result.group(1)
                     if int(end) - int(start) == 2:
                         found = True
                         txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in v_vv.finditer(txt):
+                for result in self.d_dd.finditer(txt):
                     end = result.group(3)
                     mid = result.group(2)
                     start = result.group(1)
                     if int(end) - int(mid) == 1:
                         found = True
                         txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in vv_v.finditer(txt):
+                for result in self.dd_d.finditer(txt):
                     end = result.group(3)
                     mid = result.group(2)
                     start = result.group(1)
                     if int(mid) - int(start) == 1:
                         found = True
                         txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self.d_d.finditer(txt):
+                for result in self.d_d.finditer(txt): # FIX: Mark 1:1 - 2:2 becomes Mark 1:1, 2:2
                     end = result.group(2)
                     start = result.group(1)
                     if int(end) - int(start) == 1:
                         found = True
                         txt = regex.sub(result.group(), f"{start},{end}", txt)
-                for result in self.ch_v_ch_v.finditer(txt):
+                for result in self.cv_cv.finditer(txt):
                     sc = result.group(1)
                     sv = result.group(2)
                     ec = result.group(3)
@@ -152,24 +180,6 @@ class Scriptures():
             output += chunk.strip()+'; '
         return output.replace(',', ', ').strip(' ;,')
 
-    def _scripture_parts(self, scripture):
-
-        def check_book(bk_name):
-            bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '') # FIX: this converts Génesis to Genesis and English recognizes it !! Bug or feature?
-            if bk_name not in self.src_book_names:
-                return None, 0
-            else:
-                bk_num = self.src_book_names[bk_name]
-            return self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-        result = self.bk_ref.search(scripture) # get book name
-        if result:
-            bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = check_book(bk_name)
-            return bk_name, bk_num, rest, last
-        else:
-            return scripture, None, None, 0
-
 
     def list_scriptures(self, text):
         lst = []
@@ -181,6 +191,7 @@ class Scriptures():
                 else:
                     script = i.strip()
                 lst.append(script)
+                print (i, '-->', script, '-->', self.code_scriptures(i))
         return lst
 
     def tag_scriptures(self, text):
@@ -200,26 +211,12 @@ class Scriptures():
         return regex.sub(self.scrpt, r, text)
 
 
-    # def tag_scriptures(self, text):
-    #     for i in regex.findall(self.scrpt, text):
-    #         i = i.strip()
-    #         _, bk_num, _, _ = self._scripture_parts(i)
-    #         if bk_num:
-    #             if self.rewrite:
-    #                 script = self._rewrite_scripture(i)
-    #             else:
-    #                 script = i
-    #             # text = text.replace(i.strip(), '{{'+script+'}}')
-    #             text = regex.sub(i, '{{'+script+'}}', text)
-    #     return text
-
-
     def code_scriptures(self, text):
 
         def code_verses(chunk, book, multi):
             b = str(book).zfill(2)
 
-            result = self.ch_v_ch_v.search(chunk)
+            result = self.cv_cv.search(chunk)
             if result:
                 ch1 = result.group(1).zfill(3)
                 v1 = result.group(2).zfill(3)
@@ -227,7 +224,7 @@ class Scriptures():
                 v2 = result.group(4).zfill(3)
                 return (b+ch1+v1, b+ch2+v2), 0
 
-            result = self.ch_v_v.search(chunk)
+            result = self.cv_v.search(chunk)
             if result:
                 ch1 = result.group(1).zfill(3)
                 v1 = result.group(2).zfill(3)
@@ -235,13 +232,13 @@ class Scriptures():
                 v2 = result.group(3).zfill(3)
                 return (b+ch1+v1, b+ch2+v2), ch1
 
-            result = self.ch_v.search(chunk)
+            result = self.cv.search(chunk)
             if result:
                 ch1 = result.group(1).zfill(3)
                 v1 = result.group(2).zfill(3)
                 return (b+ch1+v1, b+ch1+v1), ch1
 
-            result = self.ch_ch.search(chunk)
+            result = self.d_d.search(chunk)
             if result:
                 if multi:
                     ch1 = result.group(1).zfill(3)
@@ -255,7 +252,7 @@ class Scriptures():
                     v2 = result.group(2).zfill(3)
                 return (b+ch1+v1, b+ch2+v2), 0
 
-            result = self.ch_.search(chunk)
+            result = self.d.search(chunk)
             if result:
                 if multi:
                     ch1 = result.group(1).zfill(3)
@@ -273,7 +270,8 @@ class Scriptures():
         lst = []
         for i in regex.findall(self.scrpt, text):
             _, bk_num, rest, last = self._scripture_parts(i)
-            if not bk_num or not rest or last < 1:
+            # if not bk_num or not rest or last < 1:
+            if not bk_num or not rest:
                 continue
             for chunk in rest.replace(' ', '').split(';'):
                 ch = 0
@@ -330,7 +328,7 @@ class Scriptures():
         def process_verses(chunk, book, multi):
             b = str(book)
 
-            result = self.ch_v_ch_v.search(chunk)
+            result = self.cv_cv.search(chunk)
             if result:
                 ch1 = result.group(1)
                 v1 = result.group(2)
@@ -338,7 +336,7 @@ class Scriptures():
                 v2 = result.group(4)
                 return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
 
-            result = self.ch_v_v.search(chunk)
+            result = self.cv_v.search(chunk)
             if result:
                 ch1 = result.group(1)
                 v1 = result.group(2)
@@ -346,13 +344,13 @@ class Scriptures():
                 v2 = result.group(3)
                 return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch1
 
-            result = self.ch_v.search(chunk)
+            result = self.cv.search(chunk)
             if result:
                 ch1 = result.group(1)
                 v1 = result.group(2)
                 return f"{b}:{ch1}:{v1}", ch1
 
-            result = self.ch_ch.search(chunk)
+            result = self.d_d.search(chunk)
             if result:
                 if multi:
                     ch1 = result.group(1)
@@ -366,7 +364,7 @@ class Scriptures():
                     v2 = result.group(2)
                 return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", 0
 
-            result = self.ch_.search(chunk)
+            result = self.d.search(chunk)
             if result:
                 if multi:
                     ch1 = result.group(1)
