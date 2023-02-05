@@ -79,9 +79,8 @@ class Scriptures():
         cur.close()
         con.close()
 
-        self.bk_ref = regex.compile(r'(\d?(?:\s?[\p{L}\.-]+)+)\s?(.*)') # CHECK: not tested with non-Latin characters
-        # self.bk_ref = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+)(\d.*)') # CHECK: not tested with non-Latin characters
-        # self.bk_ref = regex.compile(r'((?:\d{0,1}|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+)')
+        self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[—–\-\.   ]*[\p{L}—–\-\.]{2,})[   ]*(.*)') # CHECK: not tested with non-Latin characters
+
         self.ch_v_ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)[-\u2013\u2014\s]+(\d+)\s*:\s*(\d+)')
         self.ch_v_v = regex.compile(r'(\d+)\s*:\s*(\d+)\s*[-\u2013\u2014]\s*(\d+)')
         self.ch_v = regex.compile(r'(\d+)\s*:\s*(\d+)')
@@ -93,9 +92,8 @@ class Scriptures():
         self.vv = regex.compile(r'(?<!:)(\d+)\s*-\s*(\d+)')
         self.dd = regex.compile(r'(\d+)\s*-\s*(\d+)\s*(?!:)')
 
-        # self.scrpt = regex.compile(r'((?:\d{0,1}\s?|[Ii]{0,3})[\.\-\s]?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d,\s;]*(?<!;\s)\d)')
-        self.scrpt = regex.compile(r'((?:\d{0,1}[\.\-  \t]?|[Ii]{0,3}[\.\- \t]?)?\p{Lu}[\p{L}.\-]+[:​\.\-\u2013\u2014\d, \t;]*(?<!; \t)\d)')
-    #             vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+        self.scrpt = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
+        # vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
 
 
     def _rewrite_scripture(self, scripture):
@@ -157,7 +155,7 @@ class Scriptures():
     def _scripture_parts(self, scripture):
 
         def check_book(bk_name):
-            bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '')
+            bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '') # FIX: this converts Génesis to Genesis and English recognizes it !! Bug or feature?
             if bk_name not in self.src_book_names:
                 return None, 0
             else:
