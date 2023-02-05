@@ -91,12 +91,11 @@ class Scriptures():
         self.dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
         self.d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
         self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
+        self.dd = regex.compile(r'(\d+),(\d+)')
         self.d = regex.compile(r'(\d+)')
 
         # self.v_v = regex.compile(r'(?<!:)(\d+)-(\d+)') # not used
         # self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)') # not used
-
-        # vss = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
 
 
     def _scripture_parts(self, scripture):
@@ -270,17 +269,25 @@ class Scriptures():
         lst = []
         for i in regex.findall(self.scrpt, text):
             _, bk_num, rest, last = self._scripture_parts(i)
-            # if not bk_num or not rest or last < 1:
-            if not bk_num or not rest:
+            if not bk_num:
                 continue
-            for chunk in rest.replace(' ', '').split(';'):
+            if rest == '': # whole book
+                v = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+                if last == 1:
+                    rest = f'1-{v}'
+                else:
+                    rest = f'1:1-{last}:{v}'
+            for result in regex.finditer(self.dd, rest, overlapped=True):
+                if int(result.group(2)) - int(result.group(1)) == 1:
+                    rest = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', rest)
+            for chunk in rest.split(';'):
                 ch = 0
                 for bit in chunk.split(','):
                     try:
                         if ch:
-                            tup, ch = code_verses(f"{ch}:{bit}", bk_num, last-1)
+                            tup, ch = code_verses(f"{ch}:{bit}", bk_num, last>1)
                         else:
-                            tup, ch = code_verses(bit, bk_num, last-1)
+                            tup, ch = code_verses(bit, bk_num, last>1)
                     except:
                         continue
                     if not tup:
@@ -380,7 +387,7 @@ class Scriptures():
             return None, 0
 
         for scripture in regex.findall(self.scrpt, text):
-            bk_name, bk_num, _, last = self._scripture_parts(scripture)
+            bk_name, bk_num, rest, last = self._scripture_parts(scripture)
             if self.rewrite:
                 script = self._rewrite_scripture(scripture)
                 _, _, rest, _ = self._scripture_parts(script)
