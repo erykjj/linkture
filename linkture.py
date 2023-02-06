@@ -80,22 +80,17 @@ class Scriptures():
         con.close()
 
         self.scrpt = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
-        # self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[—–\-\.   ]*[\p{L}—–\-\.]{2,})[   ]*(.*)') # CHECK: not tested with non-Latin characters
         self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\.]{2,})(.*)') # CHECK: not tested with non-Latin characters
 
         self.cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self.cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
         self.cv = regex.compile(r'(\d+):(\d+)')
-
         self.ddd = regex.compile(r'(\d+),(\d+),(\d+)')
         self.dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
         self.d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
         self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
         self.dd = regex.compile(r'(\d+),(\d+)')
         self.d = regex.compile(r'(\d+)')
-
-        # self.v_v = regex.compile(r'(?<!:)(\d+)-(\d+)') # not used
-        # self.d_d = regex.compile(r'(\d+)-(\d+)(?!:)') # not used
 
 
     def _scripture_parts(self, scripture):
@@ -151,7 +146,7 @@ class Scriptures():
                     if int(mid) - int(start) == 1:
                         found = True
                         txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self.d_d.finditer(txt): # FIX: Mark 1:1 - 2:2 becomes Mark 1:1, 2:2
+                for result in self.d_d.finditer(txt):
                     end = result.group(2)
                     start = result.group(1)
                     if int(end) - int(start) == 1:
@@ -168,13 +163,14 @@ class Scriptures():
             return txt
 
         bk_name, bk_num, rest, _ = self._scripture_parts(scripture)
-        if not bk_num or not rest:
+        rest = rest or ''
+        if not bk_num:
             return scripture
         else:
             if self.rewrite:
                 bk_name = self.tr_book_names[bk_num]
             output = bk_name+' '
-        for chunk in rest.replace(' ', '').split(';'):
+        for chunk in rest.split(';'):
             chunk = reform_series(chunk)
             output += chunk.strip()+'; '
         return output.replace(',', ', ').strip(' ;,')
@@ -208,6 +204,19 @@ class Scriptures():
                 return i
 
         return regex.sub(self.scrpt, r, text)
+
+    # def tag_scriptures(self, text):
+    #     for i in regex.findall(self.scrpt, text):
+    #         i = i.strip()
+    #         _, bk_num, _, _ = self._scripture_parts(i)
+    #         if bk_num:
+    #             if self.rewrite:
+    #                 script = self._rewrite_scripture(i)
+    #             else:
+    #                 script = i
+    #             # text = text.replace(i.strip(), '{{'+script+'}}')
+    #             text = regex.sub(i, '{{'+script+'}}', text)
+    #     return text
 
 
     def code_scriptures(self, text):
@@ -269,6 +278,7 @@ class Scriptures():
         lst = []
         for i in regex.findall(self.scrpt, text):
             _, bk_num, rest, last = self._scripture_parts(i)
+            rest = rest or ''
             if not bk_num:
                 continue
             if rest == '': # whole book
