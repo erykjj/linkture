@@ -79,7 +79,7 @@ class Scriptures():
         cur.close()
         con.close()
 
-        self.scrpt = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
+        self.scrpt = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
         self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\.]{2,})(.*)') # CHECK: not tested with non-Latin characters
 
         self.cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
@@ -340,7 +340,9 @@ class Scriptures():
         return scriptures
 
 
-    def link_scriptures(self, text, prefix='<a href="http://', suffix='" >'):
+# IDEA: two-pass search: with book number and without; for extraction, first tag then remove tags
+
+    def link_scriptures(self, text, prefix='<a href="http://', suffix='" >'): # TODO: redo like tag_scriptures
 
         def process_verses(chunk, book, multi):
             b = str(book)
@@ -405,19 +407,27 @@ class Scriptures():
                 script = scripture
             if self.rewrite and bk_num:
                 bk_name = self.tr_book_names[bk_num]
-            if not bk_num or not rest:
+            rest = rest or ''
+            if not bk_num:
                 continue
             else:
                 output = ''
-            for chunk in rest.replace(' ', '').split(';'):
+            if rest == '': # whole book
+                v = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+                if last == 1:
+                    rest = f'1-{v}'
+                else:
+                    rest = f'1:1-{last}:{v}'
+            for chunk in rest.split(';'):
+                print(script, chunk)
                 ch = 0
                 for bit in chunk.split(','):
                     try:
                         if ch:
-                            link, ch = process_verses(f"{ch}:{bit}", bk_num, last-1)
+                            link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
                             output += ', '
                         else:
-                            link, ch = process_verses(bit, bk_num, last-1)
+                            link, ch = process_verses(bit, bk_num, last>1)
                             output += '; '
                     except:
                         continue
