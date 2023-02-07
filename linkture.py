@@ -361,7 +361,7 @@ class Scriptures():
     def _decode_scripture(self, bcv_range):
         if not bcv_range:
             return None
-        start, end = bcv_range[0]
+        start, end = bcv_range
         sb = int(start[:2])
         sc = int(start[2:5])
         sv = int(start[5:])
