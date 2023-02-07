@@ -39,7 +39,8 @@ available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'Germa
 
 class Scriptures():
 
-    def __init__(self, language='English', translate=None, form=None):
+    def __init__(self, language='English', translate=None, form=None, verbose=False):
+        self.verbose = verbose
         if language not in available_languages:
             raise ValueError("Indicated source language is not an option!")
         if translate:
@@ -95,6 +96,9 @@ class Scriptures():
         self.dd = regex.compile(r'(\d+),(\d+)')
         self.d = regex.compile(r'(\d+)')
 
+    def _error_report(self, scripture, message):
+        if self.verbose:
+            print(f'** "{scripture}" - {message} **')
 
     def _scripture_parts(self, scripture):
 
@@ -191,11 +195,11 @@ class Scriptures():
             lst.append(i.strip('{}'))
         return lst
 
-    def tag_scriptures(self, text): # TODO: verify via decode(code(scripture))
+    def tag_scriptures(self, text):
 
         def r(match):
             i = match.group(1)
-            _, bk_num, _, _ = self._scripture_parts(i)
+            bk, bk_num, _, _ = self._scripture_parts(i)
             if bk_num:
                 if self.rewrite:
                     script = self._rewrite_scripture(i)
@@ -203,6 +207,8 @@ class Scriptures():
                     script = i
                 if self._decode_scripture(self._code_scripture(script)):
                     return '{{'+script+'}}'
+            else:
+                self._error_report(i, f'UNKNOWN BOOK: "{bk}"')
             return i
 
         text = regex.sub(self.first_pass, r, text)
@@ -323,18 +329,15 @@ class Scriptures():
         for chunk in rest.split(';'):
             ch = 0
             for bit in chunk.split(','):
-                # try:
                 if ch:
                     tup, ch = code_verses(f"{ch}:{bit}", bk_num, last>1)
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
-                # except:
-                #     return None
                 if not tup:
+                    self._error_report(scripture, f'OUT OF RANGE: "{bit}"')
                     return None
                 lst.append(tup)
         return lst
-
 
     def code_scriptures(self, text):
 
@@ -513,7 +516,7 @@ def _main(args):
         form = 'official'
     elif args['full']:
         form = 'full'
-    s = Scriptures(args['language'], args['translate'], form)
+    s = Scriptures(args['language'], args['translate'], form, not args['q'])
 
     if args['f']:
         if args['o'] and (args['o'] == args['f']):
@@ -536,7 +539,8 @@ if __name__ == "__main__":
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description="parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more information")
 
-    parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='show version and exit')
+    parser.add_argument('-v', action='version', version=f"{APP} {VERSION}", help='show version and exit')
+    parser.add_argument('-q', action='store_true', help="don't show errors")
 
     function_group = parser.add_argument_group('data source (one required)', 'choose between terminal or file input:')
     mode = function_group.add_mutually_exclusive_group(required=True)
