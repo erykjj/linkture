@@ -28,6 +28,7 @@
 
 VERSION = '2.0.0'
 
+
 import argparse, json, regex, sqlite3
 import pandas as pd
 
@@ -35,7 +36,9 @@ from ast import literal_eval
 from pathlib import Path
 from unidecode import unidecode
 
+
 available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish')
+
 
 class Scriptures():
 
@@ -86,6 +89,7 @@ class Scriptures():
         self.second_pass = regex.compile(r'(?![^{]*})(\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
         self.bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\.]{2,})(.*)') # CHECK: not tested with non-Latin characters
         self.tagged = regex.compile(r'({{.*?}})')
+        self.pretagged = regex.compile(r'{{(.*?)}}')
 
         self.cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self.cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
@@ -202,11 +206,11 @@ class Scriptures():
             i = match.group(1)
             bk, bk_num, _, _ = self._scripture_parts(i)
             if bk_num:
+                code = self._code_scripture(i)
                 if self.rewrite:
                     script = self._rewrite_scripture(i)
                 else:
                     script = i
-                code = self._code_scripture(script)
                 if code:
                     self.coded.append(code)
                     return '{{'+script+'}}'
@@ -215,6 +219,7 @@ class Scriptures():
             return i
 
         self.coded = []
+        text = regex.sub(self.pretagged, r, text)
         text = regex.sub(self.first_pass, r, text)
         return regex.sub(self.second_pass, r, text)
 
@@ -320,8 +325,8 @@ class Scriptures():
         lst = []
         _, bk_num, rest, last = self._scripture_parts(scripture)
         rest = rest or ''
-        if not bk_num:
-            return None
+        # if not bk_num:
+        #     return None
         if rest == '': # whole book
             v = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
             if last == 1:
@@ -465,22 +470,20 @@ class Scriptures():
             for chunk in rest.split(';'):
                 ch = 0
                 for bit in chunk.split(','):
-                    try: # CHECK: any way to ensure it never fails??
-                        if ch:
-                            link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
-                            output += ', '
-                        else:
-                            link, ch = process_verses(bit, bk_num, last>1)
-                            output += '; '
-                    except:
-                        continue
-                    if not link:
-                        continue
+                    if ch:
+                        link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
+                        output += ', '
+                    else:
+                        link, ch = process_verses(bit, bk_num, last>1)
+                        output += '; '
+                    # if not link:
+                    #     continue
                     if bk_name:
                         bk_name += ' '
                     output += f'{prefix}{link}{suffix}{bk_name}{bit.strip()}</a>'
                     bk_name = ''
                 return output.strip(' ;,')
+            return scripture
 
         text = self.tag_scriptures(text)
         return regex.sub(self.tagged, r, text)
