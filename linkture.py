@@ -117,6 +117,17 @@ class Scriptures():
         else:
             return scripture, None, None, 0
 
+    def _validate(self, b, ch, vs):
+        c = int(ch)
+        v = int(vs)
+        if not (0 < b <= 66): # book out of range
+            return None
+        if not (0 < c <= self.ranges.loc[(self.ranges.Book == b) & (self.ranges.Chapter.isnull()), ['Last']].values[0]): # chapter out of range
+            return None
+        if not (0 < v <= self.ranges.loc[(self.ranges.Book == b) & (self.ranges.Chapter == c), ['Last']].values[0]): # verse out of range
+            return None
+        return True
+
     def _rewrite_scripture(self, scripture):
 
         def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
@@ -190,133 +201,191 @@ class Scriptures():
                     script = self._rewrite_scripture(i)
                 else:
                     script = i
-                return '{{'+script+'}}'
-            else:
-                return i
+                if self._decode_scripture(self._code_scripture(script)):
+                    return '{{'+script+'}}'
+            return i
 
         text = regex.sub(self.first_pass, r, text)
         return regex.sub(self.second_pass, r, text)
 
-
-    def code_scriptures(self, text):
+    def _code_scripture(self, scripture):
 
         def code_verses(chunk, book, multi):
             b = str(book).zfill(2)
 
             result = self.cv_cv.search(chunk)
             if result:
-                ch1 = result.group(1).zfill(3)
-                v1 = result.group(2).zfill(3)
-                ch2 = result.group(3).zfill(3)
-                v2 = result.group(4).zfill(3)
+                c = result.group(1)
+                v = result.group(2)
+                if not self._validate(book, c, v):
+                    return None, 0
+                ch1 = c.zfill(3)
+                v1 = v.zfill(3)
+
+                c = result.group(3)
+                v = result.group(4)
+                if not self._validate(book, c, v):
+                    return None, 0
+                ch2 = c.zfill(3)
+                v2 = v.zfill(3)
                 return (b+ch1+v1, b+ch2+v2), 0
 
             result = self.cv_v.search(chunk)
             if result:
-                ch1 = result.group(1).zfill(3)
-                v1 = result.group(2).zfill(3)
-                ch2 = ch1
-                v2 = result.group(3).zfill(3)
-                return (b+ch1+v1, b+ch2+v2), ch1
+                c = result.group(1)
+                v = result.group(2)
+                if not self._validate(book, c, v):
+                    return None, 0
+                ch1 = c.zfill(3)
+                v1 = v.zfill(3)
+
+                v = result.group(3)
+                if not self._validate(book, c, v):
+                    return None, 0
+                v2 = v.zfill(3)
+                return (b+ch1+v1, b+ch1+v2), ch1
 
             result = self.cv.search(chunk)
             if result:
-                ch1 = result.group(1).zfill(3)
-                v1 = result.group(2).zfill(3)
+                c = result.group(1)
+                v = result.group(2)
+                if not self._validate(book, c, v):
+                    return None, 0
+                ch1 = c.zfill(3)
+                v1 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v1), ch1
 
             result = self.d_d.search(chunk)
             if result:
                 if multi:
-                    ch1 = result.group(1).zfill(3)
+                    c = result.group(1)
+                    v = 1
+                    if not self._validate(book, c, v):
+                        return None, 0
+                    ch1 = c.zfill(3)
                     v1 = '001'
-                    ch2 = result.group(2).zfill(3)
+
+                    c = result.group(2)
+                    if not self._validate(book, c, v):
+                        return None, 0
+                    ch2 = c.zfill(3)
                     v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
                 else:
+                    c = 1
+                    v = result.group(1)
+                    if not self._validate(book, c, v):
+                        return None, 0
                     ch1 = '001'
-                    v1 = result.group(1).zfill(3)
-                    ch2 = ch1
-                    v2 = result.group(2).zfill(3)
-                return (b+ch1+v1, b+ch2+v2), 0
+                    v1 = v.zfill(3)
+
+                    v = result.group(2)
+                    if not self._validate(book, c, v):
+                        return None, 0
+                    v2 = v.zfill(3)
+                return (b+ch1+v1, b+ch1+v2), 0
 
             result = self.d.search(chunk)
             if result:
                 if multi:
-                    ch1 = result.group(1).zfill(3)
+                    c = result.group(1)
+                    v = 1
+                    if not self._validate(book, c, v):
+                        return None, 0
+                    ch1 = c.zfill(3)
                     v1 = '001'
-                    ch2 = ch1
-                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
-                    return (b+ch1+v1, b+ch2+v2), 0
+                    v2 = str(self.ranges.loc[(self.ranges.Book == book) & (self.ranges.Chapter == int(ch1)), ['Last']].values[0][0]).zfill(3)
+                    return (b+ch1+v1, b+ch1+v2), 0
                 else:
+                    c = 1
+                    v = result.group(1)
+                    if not self._validate(book, c, v):
+                        return None, 0
                     ch1 = '001'
-                    v1 = result.group(1).zfill(3)
+                    v1 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v1), 0
 
             return None, 0
 
         lst = []
-        text = self.tag_scriptures(text)
-        for i in regex.findall(self.tagged, text):
-            _, bk_num, rest, last = self._scripture_parts(i.strip('{}'))
-            rest = rest or ''
-            if not bk_num:
-                continue
-            if rest == '': # whole book
-                v = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
-                if last == 1:
-                    rest = f'1-{v}'
+        _, bk_num, rest, last = self._scripture_parts(scripture)
+        rest = rest or ''
+        if not bk_num:
+            return None
+        if rest == '': # whole book
+            v = self.ranges.loc[(self.ranges.Book == bk_num) & (self.ranges.Chapter == last), ['Last']].values[0][0]
+            if last == 1:
+                rest = f'1-{v}'
+            else:
+                rest = f'1:1-{last}:{v}'
+        for result in regex.finditer(self.dd, rest, overlapped=True):
+            if int(result.group(2)) - int(result.group(1)) == 1:
+                rest = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', rest)
+        for chunk in rest.split(';'):
+            ch = 0
+            for bit in chunk.split(','):
+                # try:
+                if ch:
+                    tup, ch = code_verses(f"{ch}:{bit}", bk_num, last>1)
                 else:
-                    rest = f'1:1-{last}:{v}'
-            for result in regex.finditer(self.dd, rest, overlapped=True):
-                if int(result.group(2)) - int(result.group(1)) == 1:
-                    rest = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', rest)
-            for chunk in rest.split(';'):
-                ch = 0
-                for bit in chunk.split(','):
-                    try:
-                        if ch:
-                            tup, ch = code_verses(f"{ch}:{bit}", bk_num, last>1)
-                        else:
-                            tup, ch = code_verses(bit, bk_num, last>1)
-                    except:
-                        continue
-                    if not tup:
-                        continue
-                    lst.append(tup)
+                    tup, ch = code_verses(bit, bk_num, last>1)
+                # except:
+                #     return None
+                if not tup:
+                    return None
+                lst.append(tup)
         return lst
+
+
+    def code_scriptures(self, text):
+
+        lst = []
+        text = self.tag_scriptures(text)
+        for scripture in regex.findall(self.tagged, text):
+            bcv_ranges = self._code_scripture(scripture.strip('{}'))
+            if bcv_ranges:
+                for bcv_range in bcv_ranges:
+                    lst.append(bcv_range)
+        return lst
+
+    def _decode_scripture(self, bcv_range):
+        if not bcv_range:
+            return None
+        start, end = bcv_range[0]
+        sb = int(start[:2])
+        sc = int(start[2:5])
+        sv = int(start[5:])
+        eb = int(end[:2])
+        ec = int(end[2:5])
+        ev = int(end[5:])
+        if not ((0 < sb <= 66) & (sb == eb)): # book out of range
+            return None
+        if not (0 < sc <= ec <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
+            return None
+        if not ((0 < sv <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
+            return None
+        bk_name = self.tr_book_names[sb]
+        if self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0] == 1:
+            ch = ' '
+        else:
+            ch = f" {sc}:"
+        if start == end:
+            scripture = f"{bk_name}{ch}{sv}"
+        else:
+            if sc == ec:
+                if ev - sv == 1:
+                    scripture = f"{bk_name}{ch}{sv}, {ev}"
+                else:
+                    scripture = f"{bk_name}{ch}{sv}-{ev}"
+            else:
+                scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
+        return scripture
 
     def decode_scriptures(self, reference=[]):
         scriptures = []
-        for item in reference:
-            start, end = item
-            sb = int(start[:2])
-            sc = int(start[2:5])
-            sv = int(start[5:])
-            eb = int(end[:2])
-            ec = int(end[2:5])
-            ev = int(end[5:])
-            if not ((0 < sb <= 66) & (sb == eb)): # book out of range
-                continue
-            if not (0 < sc <= ec <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
-                continue
-            if not ((0 < sv <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
-                continue
-            bk_name = self.tr_book_names[sb]
-            if self.ranges.loc[(self.ranges.Book == sb) & (self.ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-                ch = ' '
-            else:
-                ch = f" {sc}:"
-            if start == end:
-                scripture = f"{bk_name}{ch}{sv}"
-            else:
-                if sc == ec:
-                    if ev - sv == 1:
-                        scripture = f"{bk_name}{ch}{sv}, {ev}"
-                    else:
-                        scripture = f"{bk_name}{ch}{sv}-{ev}"
-                else:
-                    scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
-            scriptures.append(scripture)
+        for bcv_range in reference:
+            scripture = self._decode_scripture(bcv_range)
+            if scripture:
+                scriptures.append(scripture)
         return scriptures
 
 
@@ -390,7 +459,7 @@ class Scriptures():
             for chunk in rest.split(';'):
                 ch = 0
                 for bit in chunk.split(','):
-                    try:
+                    try: # CHECK: any way to ensure it never fails??
                         if ch:
                             link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
                             output += ', '
@@ -437,7 +506,7 @@ def _main(args):
         else:
             return s.rewrite_scriptures(text)
 
-    form = 'full'
+    form = 'full' # default is rewrite
     if args['standard']:
         form = 'standard'
     elif args['official']:
