@@ -4,7 +4,7 @@
 
 ### Added
 
-- Big code changes, as a **parser is included** now
+- Big code rewrite to include **parser** and **validation**
 
 ### Changed
 
