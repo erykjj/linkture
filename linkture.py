@@ -218,6 +218,7 @@ class Scriptures():
         text = regex.sub(self.first_pass, r, text)
         return regex.sub(self.second_pass, r, text)
 
+
     def _code_scripture(self, scripture):
 
         def code_verses(chunk, book, multi):
@@ -351,6 +352,7 @@ class Scriptures():
                 lst.append(bcv_range)
         return lst
 
+
     def _decode_scripture(self, bcv_range):
         if not bcv_range:
             return None
@@ -384,9 +386,9 @@ class Scriptures():
                 scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
         return scripture
 
-    def decode_scriptures(self, reference=[]):
+    def decode_scriptures(self, bcv_ranges=[]):
         scriptures = []
-        for bcv_range in reference:
+        for bcv_range in bcv_ranges:
             scripture = self._decode_scripture(bcv_range)
             if scripture:
                 scriptures.append(scripture)
@@ -517,6 +519,7 @@ def _main(args):
         form = 'official'
     elif args['full']:
         form = 'full'
+
     s = Scriptures(args['language'], args['translate'], form, not args['q'])
 
     if args['f']:
@@ -529,6 +532,7 @@ def _main(args):
         txt = args['r']
 
     txt = switchboard(txt)
+
     if args['o']:
         with open(args['o'], 'w', encoding='UTF-8') as f:
             f.write(str(txt))
