@@ -428,7 +428,9 @@ def _main(args):
 
     def switchboard(text):
         if args['l']:
-            return s.link_scriptures(text, '<a href="https://my.website.org/', '">')
+            prefix = args['l'][0] #or 'https://my.website.org/'
+            suffix = args['l'][1] or '">'
+            return s.link_scriptures(text, '<a href="'+prefix, suffix)
         elif args['c']:
             return s.code_scriptures(text)
         elif args['d']:
@@ -440,7 +442,7 @@ def _main(args):
         else:
             return s.rewrite_scriptures(text)
 
-    form = None
+    form = 'full'
     if args['standard']:
         form = 'standard'
     elif args['official']:
@@ -450,17 +452,17 @@ def _main(args):
     s = Scriptures(args['language'], args['translate'], form)
 
     if args['f']:
-        if args['f'][0] == args['f'][1]:
+        if args['o'] and (args['o'] == args['f']):
             print('Make sure in-file and out-file are different!\n')
             exit()
-        with open(args['f'][0], 'r', encoding='UTF-8') as f:
+        with open(args['f'], 'r', encoding='UTF-8') as f:
             txt = f.read()
     else:
         txt = args['r']
 
     txt = switchboard(txt)
-    if args['f']:
-        with open(args['f'][1], 'w', encoding='UTF-8') as f:
+    if args['o']:
+        with open(args['o'], 'w', encoding='UTF-8') as f:
             f.write(str(txt))
     else:
         print(txt)
@@ -468,14 +470,15 @@ def _main(args):
 if __name__ == "__main__": # TODO: adjust command-line for new functions
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="parse and process (translate, link, encode) Bible scripture references; see README for more information")
+    parser = argparse.ArgumentParser(description="parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more information")
 
     parser.add_argument('-v', '--version', action='version', version=f"{APP} {VERSION}", help='show version and exit')
 
-    function_group = parser.add_argument_group('operational method', 'choose between terminal or files input/output:')
+    function_group = parser.add_argument_group('data source (one required)', 'choose between terminal or file input:')
     mode = function_group.add_mutually_exclusive_group(required=True)
-    mode.add_argument('-f', metavar=('in-file', 'out-file'), nargs=2, help='work with files (UTF-8)')
+    mode.add_argument('-f', metavar='in-file', help='get input from file (UTF-8)')
     mode.add_argument('-r', metavar='reference', help='process "reference; reference; etc."')
+    parser.add_argument('-o', metavar='out-file', help='output file (terminal output if not provided)')
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
     parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
@@ -489,7 +492,7 @@ if __name__ == "__main__": # TODO: adjust command-line for new functions
     tpe = type_group.add_mutually_exclusive_group(required=False)
     tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
     tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
-    tpe.add_argument('-l', action='store_true', help='create <a href></a> links')
+    tpe.add_argument('-l', nargs=2, metavar=('prefix', 'suffix'), help='create <a href></a> links')
     tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
