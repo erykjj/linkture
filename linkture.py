@@ -84,6 +84,7 @@ class Scriptures():
         cur.close()
         con.close()
         self.coded = []
+        self.reported = []
 
         self.first_pass = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
         self.second_pass = regex.compile(r'(?![^{]*})(\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
@@ -102,8 +103,9 @@ class Scriptures():
         self.d = regex.compile(r'(\d+)')
 
     def _error_report(self, scripture, message):
-        if self.verbose:
+        if self.verbose and (scripture not in self.reported):
             print(f'** "{scripture}" - {message} **')
+            self.reported.append(scripture)
 
     def _scripture_parts(self, scripture):
 
@@ -219,6 +221,7 @@ class Scriptures():
             return i
 
         self.coded = []
+        self.reported = []
         text = regex.sub(self.pretagged, r, text)
         text = regex.sub(self.first_pass, r, text)
         return regex.sub(self.second_pass, r, text)
