@@ -99,10 +99,8 @@ class Scriptures():
     def _scripture_parts(self, scripture):
 
         def check_book(bk_name):
-            # bk_name = unidecode(bk_name).upper().replace(' ', '').replace('.', '').replace('-', '') # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
-            # bk_name = regex.sub(r'[—–\-\.   ]', '', bk_name.upper())
             bk_name = regex.sub(r'[\-\.]', '', bk_name.upper())
-            bk_name = unidecode(bk_name)
+            bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
             if bk_name not in self.src_book_names:
                 return None, 0
             else:
@@ -112,19 +110,16 @@ class Scriptures():
         reduced = regex.sub(r'[   ]', '', scripture)
         reduced = regex.sub(r'[—–]', '-', reduced)
         result = self.bk_ref.search(reduced)
-        # result = self.bk_ref.search(scripture)
         if result:
             bk_name, rest = result.group(1).strip(), result.group(2).strip()
             bk_num, last = check_book(bk_name)
-            # rest = regex.sub(r'[   ]', '', rest.replace('.', ':'))
-            # rest = regex.sub(r'[—–]', '-', rest)
             return bk_name, bk_num, rest.replace('.', ':'), last
         else:
             return scripture, None, None, 0
 
     def _rewrite_scripture(self, scripture):
 
-        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)jwpub
+        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
             found = True
             while found:
                 found = False
@@ -185,7 +180,7 @@ class Scriptures():
             lst.append(i.strip('{}'))
         return lst
 
-    def tag_scriptures(self, text):
+    def tag_scriptures(self, text): # TODO: verify via decode(code(scripture))
 
         def r(match):
             i = match.group(1)
@@ -467,7 +462,7 @@ def _main(args):
     else:
         print(txt)
 
-if __name__ == "__main__": # TODO: adjust command-line for new functions
+if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
     parser = argparse.ArgumentParser(description="parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more information")
