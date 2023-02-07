@@ -3,11 +3,12 @@
 
 ## Purpose
 
-Functions to translate and/or convert Bible scripture references to a list of coded (non-contiguous) ranges (and vice-versa) or to HTML \<href> links (specifically for use in *jwpub* archives, but these can be easily modified as needed). The ranges are in the format `bbcccvvv`, where `b` is book, `c` is chapter, and `v` is verse.
+This module contains functions to parse and process Bible scripture references.
 
-The *res/books.json* list contains Bible book names in Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish. Any other variants of book names can be added to the *res/custom.json* list.
+The parser can work in **Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
+It *does not* work with whole books (like *James*) unless they are preceded by a number (like *1 John*); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}"). These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
 
-**Note** that this script _does not_ (yet) parse text files for scriptures - it only parses what is enclosed within `{{ }}`, or provided as a string argument.
+These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML \<href> **links** (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages. 
 
 ____
 ## Installation
@@ -18,27 +19,29 @@ ____
 ## Command-line usage
 
 ```
-python3 linkture.py [-h] [-v] (-f in-file out-file | -s reference)
+python3 linkture.py [-h] [-v] [-q] (-f in-file | -r reference) [-o out-file]
                     [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
                     [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                    [--full | --official | --standard] [-l | -r] [-q]
+                    [--full | --official | --standard] [-c | -d | -l prefix suffix | -t | -x]
 
-process, translate, link/encode Bible scripture references; see README for more information
+parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more
+information
 
 options:
   -h, --help            show this help message and exit
-  -v, --version         show version and exit
+  -v                    show version and exit
+  -q                    don't show errors
+  -o out-file           output file (terminal output if not provided)
   --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate source language for book names (English if unspecified)
   --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate output language for book names (same as source if unspecified)
-  -q, --quiet           don't show processing status
 
-operational method:
-  choose between terminal or files input/output:
+data source (one required):
+  choose between terminal or file input:
 
-  -f in-file out-file   work with files (UTF-8)
-  -s reference          process "reference; reference; etc."
+  -f in-file            get input from file (UTF-8)
+  -r reference          process "reference; reference; etc."
 
 output format (optional):
   if provided, book names will be rewritten accordingly:
@@ -50,33 +53,40 @@ output format (optional):
 type of conversion:
   if not specified, references are simply rewritten according to chosen (or default) output format:
 
-  -l, --link            create jwpub link(s)
-  -r, --range           create range list
-
+  -c                    encode as BCV-notation ranges
+  -d                    decode list of BCV-notation ranges
+  -l prefix suffix      create <a href></a> links
+  -t                    tag scriptures with {{ }}
+  -x                    extract list of scripture references
 ```
 
 Or, make it executable first and run directly:
 ```
 $ chmod +x linkture.py
+```
 
-$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17"
-...Processing "Joh 17:17; 2Ti 3:16, 17"
+Some examples:
+```
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17"
 John 17:17; 2 Timothy 3:16, 17
 
-$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" --standard -q
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --standard
 John 17:17; 2 Tim. 3:16, 17
 
-$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" --official -q
+$ /linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
-$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" -r -q
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -c
 [('43017017', '43017017'), ('55003016', '55003017')]
 
-$ ./linkture.py -s "Joh 17:17; 2Ti 3:16, 17" --translate Chinese -q
+$ ./linkture.py -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
+['Johannes 17:17', '2. Timotheus 3:16, 17']
+
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
 
-$ ./linkture.py -s "Jean 17:17; 2 Timothée 3:16, 17" --language French --translate German -q
-Johannes 17:17; 2. Timotheus 3:16, 17
+$ ./linkture.py -r "Jean 17:17; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
+Juan 17:17; 2 Tim. 3:16, 17
 ```
 
 ## Script/import usage
