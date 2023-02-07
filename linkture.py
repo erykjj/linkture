@@ -31,6 +31,7 @@ VERSION = '2.0.0'
 import argparse, json, regex, sqlite3
 import pandas as pd
 
+from ast import literal_eval
 from pathlib import Path
 from unidecode import unidecode
 
@@ -430,8 +431,8 @@ def _main(args):
             return s.link_scriptures(text, '<a href="https://my.website.org/', '">')
         elif args['c']:
             return s.code_scriptures(text)
-        # elif args['d']:
-        #     return s.code_scriptures(text)
+        elif args['d']:
+            return s.decode_scriptures(literal_eval(text))
         elif args['x']:
             return s.list_scriptures(text)
         elif args['t']:
@@ -487,7 +488,7 @@ if __name__ == "__main__": # TODO: adjust command-line for new functions
     type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
     tpe = type_group.add_mutually_exclusive_group(required=False)
     tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
-    # tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
+    tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
     tpe.add_argument('-l', action='store_true', help='create <a href></a> links')
     tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
