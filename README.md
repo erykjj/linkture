@@ -89,6 +89,15 @@ $ ./linkture.py -r "Jean 17:17; 2 Timothée 3:16, 17" --language French --transl
 Juan 17:17; 2 Tim. 3:16, 17
 ```
 
+Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
+
+Unless you use `-q`, ou will see in the terminal any errors encountered while parsing, such as unknow book names or out-of-range values. Of course, these entries will not be processed, but they will not affect the rest of the operation:
+```
+$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full
+** "Paul 3:16, 17" - UNKNOWN BOOK: "Paul" **
+Matthew 17:17; Paul 3:16, 17
+```
+
 ## Script/import usage
 
 ```
