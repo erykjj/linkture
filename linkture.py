@@ -131,11 +131,17 @@ class Scriptures():
             if result:
                 bk_name, rest = result.group(1).strip(), result.group(2).strip()
                 bk_num, last = check_book(bk_name)
-                return bk_name, bk_num, rest.replace('.', ':'), last
-            else:
-                return scripture, None, None, 0
+                if bk_num:
+                    if self._rewrite:
+                        script = rewrite_scripture(scripture, bk_name, bk_num, rest)
+                        tr_name = self._tr_book_names[bk_num]
+                    else:
+                        script = scripture
+                        tr_name = bk_name
+                    return bk_name, tr_name, bk_num, script, rest.replace('.', ':'), last
+            return scripture, None, None, None, None, 0
 
-        def rewrite_scripture(scripture):
+        def rewrite_scripture(scripture, bk_name, bk_num, rest):
 
             def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
                 found = True
@@ -177,7 +183,6 @@ class Scriptures():
                             txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
                 return txt
 
-            bk_name, bk_num, rest, _ = self.scripture_parts(scripture)
             rest = rest or ''
             if not bk_num:
                 return scripture
@@ -192,21 +197,15 @@ class Scriptures():
 
         def r(match):
             i = match.group(1)
-            bk, bk_num, rest, last = scripture_parts(i)
+            bk_name, tr_name, bk_num, script, rest, last = scripture_parts(i)
             if bk_num:
-                code = self._code_scripture(i, bk_num, rest, last)
-                if self._rewrite:
-                    script = rewrite_scripture(i)
-                    bk_name = self._tr_book_names[bk_num]
-                else:
-                    script = i
-                    bk_name = bk
+                code = self._code_scripture(script, bk_num, rest, last)
                 if code:
                     self._coded.append(code)
-                    rec = f'{script}|{bk_name}|{bk_num}|{rest}|{last}'
+                    rec = f'{script}|{bk_name}|{tr_name}|{bk_num}|{rest}|{last}'
                     return '{{'+rec+'}}'
             else:
-                self._error_report(i, f'UNKNOWN BOOK: "{bk}"')
+                self._error_report(i, f'UNKNOWN BOOK: "{bk_name}"')
             return i
 
         self._coded = []
@@ -221,14 +220,14 @@ class Scriptures():
         lst = []
         text = self._locate_scriptures(text)
         for i in regex.findall(self._tagged, text):
-            scripture, _, _, _, _ = i.strip('}{').split('|')
+            scripture, _, _, _, _, _ = i.strip('}{').split('|')
             lst.append(scripture)
         return lst
 
     def tag_scriptures(self, text):
 
         def r(match):
-            scripture, _, _, _, _ = match.group(1).strip('}{').split('|')
+            scripture, _, _, _, _,_ = match.group(1).strip('}{').split('|')
             return '{{'+scripture+'}}'
 
         text = self._locate_scriptures(text)
@@ -477,16 +476,17 @@ class Scriptures():
 
         def r(match):
             scripture = match.group(1).strip('}{')
-            _, bk_name, bk_num, rest, last = scripture.split('|')
+            _, _, tr_name, bk_num, rest, last = scripture.split('|')
             bk_num = int(bk_num)
             last = int(last)
+            if rest == '': # whole book
+                v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
+                if last == 1:
+                    output = f'{prefix}{bk_num}:1:1-{bk_num}:1:{v}{suffix}{tr_name}</a>'
+                else:
+                    output = f'{prefix}{bk_num}:1:1-{bk_num}:{last}:{v}{suffix}{tr_name}</a>'
+                return output.strip(' ;,')
             output = ''
-            # if rest == '': # whole book
-            #     v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
-            #     if last == 1:
-            #         rest = f'1-{v}'
-            #     else:
-            #         rest = f'1:1-{last}:{v}'
             rest = rest or ''
             for chunk in rest.split(';'):
                 ch = 0
@@ -499,10 +499,10 @@ class Scriptures():
                         output += '; '
                     # if not link:
                     #     continue
-                    if bk_name and rest:
-                        bk_name += ' '
-                    output += f'{prefix}{link}{suffix}{bk_name}{bit.strip()}</a>'
-                    bk_name = ''
+                    if tr_name and rest:
+                        tr_name += ' '
+                    output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
+                    tr_name = ''
                 return output.strip(' ;,')
             return scripture
 
@@ -512,7 +512,7 @@ class Scriptures():
     def rewrite_scriptures(self, text):
 
         def r(match):
-            scripture, _, _, _, _ = match.group(1).strip('}{').split('|')
+            scripture, _, _, _, _, _ = match.group(1).strip('}{').split('|')
             return scripture
 
         text = self._locate_scriptures(text)
