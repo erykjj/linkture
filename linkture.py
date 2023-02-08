@@ -518,7 +518,7 @@ def _main(args):
         else:
             return s.rewrite_scriptures(text)
 
-    form = 'full' # default is rewrite
+    form = None
     if args['standard']:
         form = 'standard'
     elif args['official']:
