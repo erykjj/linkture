@@ -12,7 +12,7 @@ setuptools.setup(
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
-    description="Parse, list, link, tag, translate Bible scripture references",
+    description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
@@ -23,6 +23,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'sqlite3', 'unidecode' ]
+    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'unidecode' ]
 
 )
