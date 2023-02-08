@@ -8,11 +8,11 @@ long_description = (work_dir / "README.md").read_text()
 setuptools.setup(
 
     name="linkture",
-    version="1.5.0",
+    version="2.0.0",
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
-    description="Process and link/(de-)code Bible scripture references",
+    description="Parse, list, link, tag, translate Bible scripture references",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
@@ -23,6 +23,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'unidecode' ]
+    install_requires=[ 'argparse', 'pandas', 'pathlib', 'regex', 'sqlite3', 'unidecode' ]
 
 )
