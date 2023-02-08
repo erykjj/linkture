@@ -6,9 +6,10 @@
 This module contains functions to parse and process Bible scripture references.
 
 The parser can work in **Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, and Spanish**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
-It *does not* work with whole books (like *James*) unless they are preceded by a number (like *1 John*); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}"). These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
 
-These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML \<href> **links** (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages. 
+It *does not* work with whole books (like "James") unless they are preceded by a number (like "1 John"); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}"). These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
+
+These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML \<a> **links** (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages. 
 
 ____
 ## Installation
@@ -91,7 +92,7 @@ Juan 17:17; 2 Tim. 3:16, 17
 
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
 
-Unless you use `-q`, ou will see in the terminal any errors encountered while parsing, such as unknow book names or out-of-range values. Of course, these entries will not be processed, but they will not affect the rest of the operation:
+Unless you use `-q`, you will see in the terminal any errors encountered while parsing, such as unknow book names or out-of-range values. Of course, these entries will not be processed, but they will not affect the rest of the operation:
 ```
 $ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full
 ** "Paul 3:16, 17" - UNKNOWN BOOK: "Paul" **
