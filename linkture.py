@@ -113,7 +113,7 @@ class Scriptures():
             i = match.group(1)
             bk, bk_num, rest, last = self._scripture_parts(i)
             if bk_num:
-                code = self._code_scripture(i)
+                code = self._code_scripture(i, bk_num, rest, last)
                 if self._rewrite:
                     script = self._rewrite_scripture(i)
                     bk_name = self._tr_book_names[bk_num]
@@ -130,6 +130,7 @@ class Scriptures():
 
         self._coded = []
         self._reported = []
+        # TODO: this makes _coded dis-ordered
         text = regex.sub(self._pretagged, r, text)
         text = regex.sub(self._first_pass, r, text)
         return regex.sub(self._second_pass, r, text)
@@ -245,7 +246,7 @@ class Scriptures():
         return regex.sub(self._tagged, r, text)
 
 
-    def _code_scripture(self, scripture):
+    def _code_scripture(self, scripture, bk_num, rest, last):
 
         def code_verses(chunk, book, multi):
             b = str(book).zfill(2)
@@ -344,10 +345,7 @@ class Scriptures():
             return None, 0
 
         lst = []
-        _, bk_num, rest, last = self._scripture_parts(scripture)
         rest = rest or ''
-        # if not bk_num:
-        #     return None
         if rest == '': # whole book
             v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
             if last == 1:
