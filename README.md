@@ -67,7 +67,7 @@ $ chmod +x linkture.py
 
 Some examples:
 ```
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17"
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --full
 John 17:17; 2 Timothy 3:16, 17
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --standard
@@ -100,15 +100,26 @@ Matthew 17:17; Paul 3:16, 17
 
 ## Script/import usage
 
+Assume the text (short string or long document) you want to process is in the variable `txt`. It's in English, but you would like the scriptures to be in Spanish, with the full book name:
 ```
 from linkture import Scriptures
 
 s = Scriptures(language="English", translate="Spanish", form="full")
 
-url = s.link_scripture("John 17:3, 26")
-codes = s.code_scripture("Psalm 83:18; Mt 6:9")
-scriptures = s.decode_scripture([('43017017', '43017017'), ('55003016', '55003017')])
-scriptures = s.rewrite_scripture("EXOD 3:15; Re 21:4")
+lst = s.list_scriptures(txt)
+# returns a list of (valid) extracted scriptures in the desired language and format
+
+lst = s.code_scriptures(txt)
+# returns a list of BCV-range tuples (start, end)
+
+html = s.link_scriptures(txt, prefix='<a href="http://mywebsite.com/', suffix='" class="b"')
+# this will turn all references into HTML links
+
+tagged = s.tag_scriptures(txt)
+# tagged will contain your document with the translated references enclosed within double braces
+
+txt = s.rewrite_scriptures(txt)
+# the references will simply be rewritten in the desired language and format
 ```
 
 Parameters:
@@ -120,7 +131,7 @@ Parameters:
   * **"full"** for full name format (eg., "Genesis")
   * **"standard"** for standard abbreviation format (eg., "Gen.")
   * **"official"** for official abbreviation format (eg., "Ge")
-  * *None* or not supplied - no re-write will be performed
+  * *None* or not supplied - no re-write will be performed, *unless* translation is performed (in which case, "full" is the default)
 
 ____
 ## Feedback
