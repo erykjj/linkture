@@ -7,8 +7,11 @@
 ### Changed
 
 - Renamed internal variables
+- Separated parsing from tagging
 
 ### Fixed
+
+- Fixed linking and translation not working well together
 
 ### Removed
 
