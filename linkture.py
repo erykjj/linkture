@@ -107,15 +107,96 @@ class Scriptures():
         self._dd = regex.compile(r'(\d+),(\d+)')
         self._d = regex.compile(r'(\d+)')
 
+    def _error_report(self, scripture, message):
+        if self._verbose and (scripture not in self._reported):
+            print(f'** "{scripture}" - {message} **')
+            self._reported.append(scripture)
+
     def _locate_scriptures(self, text):
+
+        def scripture_parts(scripture):
+
+            def check_book(bk_name):
+                bk_name = regex.sub(r'[\-\.]', '', bk_name.upper())
+                bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
+                if bk_name not in self._src_book_names:
+                    return None, 0
+                else:
+                    bk_num = self._src_book_names[bk_name]
+                return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+            reduced = regex.sub(r'[   ]', '', scripture)
+            reduced = regex.sub(r'[—–]', '-', reduced)
+            result = self._bk_ref.search(reduced)
+            if result:
+                bk_name, rest = result.group(1).strip(), result.group(2).strip()
+                bk_num, last = check_book(bk_name)
+                return bk_name, bk_num, rest.replace('.', ':'), last
+            else:
+                return scripture, None, None, 0
+
+        def rewrite_scripture(scripture):
+
+            def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
+                found = True
+                while found:
+                    found = False
+                    for result in self._ddd.finditer(txt):
+                        end = result.group(3)
+                        start = result.group(1)
+                        if int(end) - int(start) == 2:
+                            found = True
+                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                    for result in self._d_dd.finditer(txt):
+                        end = result.group(3)
+                        mid = result.group(2)
+                        start = result.group(1)
+                        if int(end) - int(mid) == 1:
+                            found = True
+                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                    for result in self._dd_d.finditer(txt):
+                        end = result.group(3)
+                        mid = result.group(2)
+                        start = result.group(1)
+                        if int(mid) - int(start) == 1:
+                            found = True
+                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
+                    for result in self._d_d.finditer(txt):
+                        end = result.group(2)
+                        start = result.group(1)
+                        if int(end) - int(start) == 1:
+                            found = True
+                            txt = regex.sub(result.group(), f"{start},{end}", txt)
+                    for result in self._cv_cv.finditer(txt):
+                        sc = result.group(1)
+                        sv = result.group(2)
+                        ec = result.group(3)
+                        ev = result.group(4)
+                        if int(sc) == int(ec):
+                            found = True
+                            txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
+                return txt
+
+            bk_name, bk_num, rest, _ = self.scripture_parts(scripture)
+            rest = rest or ''
+            if not bk_num:
+                return scripture
+            else:
+                if self._rewrite:
+                    bk_name = self._tr_book_names[bk_num]
+                output = bk_name+' '
+            for chunk in rest.split(';'):
+                chunk = reform_series(chunk)
+                output += chunk.strip()+'; '
+            return output.replace(',', ', ').strip(' ;,')
 
         def r(match):
             i = match.group(1)
-            bk, bk_num, rest, last = self._scripture_parts(i)
+            bk, bk_num, rest, last = scripture_parts(i)
             if bk_num:
                 code = self._code_scripture(i, bk_num, rest, last)
                 if self._rewrite:
-                    script = self._rewrite_scripture(i)
+                    script = rewrite_scripture(i)
                     bk_name = self._tr_book_names[bk_num]
                 else:
                     script = i
@@ -134,98 +215,6 @@ class Scriptures():
         text = regex.sub(self._pretagged, r, text)
         text = regex.sub(self._first_pass, r, text)
         return regex.sub(self._second_pass, r, text)
-
-    def _error_report(self, scripture, message):
-        if self._verbose and (scripture not in self._reported):
-            print(f'** "{scripture}" - {message} **')
-            self._reported.append(scripture)
-
-    def _scripture_parts(self, scripture):
-
-        def check_book(bk_name):
-            bk_name = regex.sub(r'[\-\.]', '', bk_name.upper())
-            bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
-            if bk_name not in self._src_book_names:
-                return None, 0
-            else:
-                bk_num = self._src_book_names[bk_name]
-            return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-        reduced = regex.sub(r'[   ]', '', scripture)
-        reduced = regex.sub(r'[—–]', '-', reduced)
-        result = self._bk_ref.search(reduced)
-        if result:
-            bk_name, rest = result.group(1).strip(), result.group(2).strip()
-            bk_num, last = check_book(bk_name)
-            return bk_name, bk_num, rest.replace('.', ':'), last
-        else:
-            return scripture, None, None, 0
-
-    def _validate(self, b, ch, vs):
-        c = int(ch)
-        v = int(vs)
-        if not (0 < b <= 66): # book out of range
-            return None
-        if not (0 < c <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter.isnull()), ['Last']].values[0]): # chapter out of range
-            return None
-        if not (0 < v <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter == c), ['Last']].values[0]): # verse out of range
-            return None
-        return True
-
-    def _rewrite_scripture(self, scripture):
-
-        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
-            found = True
-            while found:
-                found = False
-                for result in self._ddd.finditer(txt):
-                    end = result.group(3)
-                    start = result.group(1)
-                    if int(end) - int(start) == 2:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self._d_dd.finditer(txt):
-                    end = result.group(3)
-                    mid = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(mid) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self._dd_d.finditer(txt):
-                    end = result.group(3)
-                    mid = result.group(2)
-                    start = result.group(1)
-                    if int(mid) - int(start) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                for result in self._d_d.finditer(txt):
-                    end = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(start) == 1:
-                        found = True
-                        txt = regex.sub(result.group(), f"{start},{end}", txt)
-                for result in self._cv_cv.finditer(txt):
-                    sc = result.group(1)
-                    sv = result.group(2)
-                    ec = result.group(3)
-                    ev = result.group(4)
-                    if int(sc) == int(ec):
-                        found = True
-                        txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
-            return txt
-
-        bk_name, bk_num, rest, _ = self._scripture_parts(scripture)
-        rest = rest or ''
-        if not bk_num:
-            return scripture
-        else:
-            if self._rewrite:
-                bk_name = self._tr_book_names[bk_num]
-            output = bk_name+' '
-        for chunk in rest.split(';'):
-            chunk = reform_series(chunk)
-            output += chunk.strip()+'; '
-        return output.replace(',', ', ').strip(' ;,')
 
 
     def list_scriptures(self, text):
@@ -248,6 +237,17 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
+        def validate(b, ch, vs):
+            c = int(ch)
+            v = int(vs)
+            if not (0 < b <= 66): # book out of range
+                return None
+            if not (0 < c <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter.isnull()), ['Last']].values[0]): # chapter out of range
+                return None
+            if not (0 < v <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter == c), ['Last']].values[0]): # verse out of range
+                return None
+            return True
+
         def code_verses(chunk, book, multi):
             b = str(book).zfill(2)
 
@@ -255,14 +255,14 @@ class Scriptures():
             if result:
                 c = result.group(1)
                 v = result.group(2)
-                if not self._validate(book, c, v):
+                if not validate(book, c, v):
                     return None, 0
                 ch1 = c.zfill(3)
                 v1 = v.zfill(3)
 
                 c = result.group(3)
                 v = result.group(4)
-                if not self._validate(book, c, v):
+                if not validate(book, c, v):
                     return None, 0
                 ch2 = c.zfill(3)
                 v2 = v.zfill(3)
@@ -272,13 +272,13 @@ class Scriptures():
             if result:
                 c = result.group(1)
                 v = result.group(2)
-                if not self._validate(book, c, v):
+                if not validate(book, c, v):
                     return None, 0
                 ch1 = c.zfill(3)
                 v1 = v.zfill(3)
 
                 v = result.group(3)
-                if not self._validate(book, c, v):
+                if not validate(book, c, v):
                     return None, 0
                 v2 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v2), ch1
@@ -287,7 +287,7 @@ class Scriptures():
             if result:
                 c = result.group(1)
                 v = result.group(2)
-                if not self._validate(book, c, v):
+                if not validate(book, c, v):
                     return None, 0
                 ch1 = c.zfill(3)
                 v1 = v.zfill(3)
@@ -298,26 +298,26 @@ class Scriptures():
                 if multi:
                     c = result.group(1)
                     v = 1
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
                     v1 = '001'
 
                     c = result.group(2)
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     ch2 = c.zfill(3)
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
                 else:
                     c = 1
                     v = result.group(1)
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     ch1 = '001'
                     v1 = v.zfill(3)
 
                     v = result.group(2)
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     v2 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v2), 0
@@ -327,7 +327,7 @@ class Scriptures():
                 if multi:
                     c = result.group(1)
                     v = 1
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
                     v1 = '001'
@@ -336,7 +336,7 @@ class Scriptures():
                 else:
                     c = 1
                     v = result.group(1)
-                    if not self._validate(book, c, v):
+                    if not validate(book, c, v):
                         return None, 0
                     ch1 = '001'
                     v1 = v.zfill(3)
