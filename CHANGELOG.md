@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Renamed internal variables
+
 ### Fixed
 
 ### Removed
