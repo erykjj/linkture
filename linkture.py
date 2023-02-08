@@ -83,7 +83,6 @@ class Scriptures():
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
         con.close()
-        self._coded = []
         self._reported = []
 
         # With CAPITAL letter to start book name
@@ -201,16 +200,13 @@ class Scriptures():
             if bk_num:
                 code = self._code_scripture(script, bk_num, rest, last)
                 if code:
-                    self._coded.append(code)
                     rec = f'{script}|{bk_name}|{tr_name}|{bk_num}|{rest}|{last}'
                     return '{{'+rec+'}}'
             else:
                 self._error_report(i, f'UNKNOWN BOOK: "{bk_name}"')
             return i
 
-        self._coded = []
         self._reported = []
-        # TODO: this makes _coded dis-ordered
         text = regex.sub(self._pretagged, r, text)
         text = regex.sub(self._first_pass, r, text)
         return regex.sub(self._second_pass, r, text)
@@ -370,7 +366,9 @@ class Scriptures():
     def code_scriptures(self, text):
         text = self._locate_scriptures(text)
         lst = []
-        for bcv_ranges in self._coded:
+        for i in regex.findall(self._tagged, text):
+            scripture, _, tr_name, bk_num, rest, last = i.strip('}{').split('|')
+            bcv_ranges = self._code_scripture(scripture, int(bk_num), rest, int(last)) or []
             for bcv_range in bcv_ranges:
                 lst.append(bcv_range)
         return lst
