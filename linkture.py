@@ -195,16 +195,16 @@ class Scriptures():
             return output.replace(',', ', ').strip(' ;,')
 
         def r(match):
-            i = match.group(1)
-            script, bk_name, tr_name, bk_num, rest, last = scripture_parts(i)
+            scripture = match.group(1)
+            script, bk_name, tr_name, bk_num, rest, last = scripture_parts(scripture)
             if bk_num:
                 code = self._code_scripture(script, bk_num, rest, last)
                 if code:
                     rec = f'{script}|{bk_name}|{tr_name}|{bk_num}|{rest}|{last}'
                     return '{{'+rec+'}}'
             else:
-                self._error_report(i, 'UNKNOWN BOOK')
-            return i
+                self._error_report(scripture, 'UNKNOWN BOOK')
+            return scripture
 
         self._reported = []
         text = regex.sub(self._pretagged, r, text)
@@ -215,9 +215,9 @@ class Scriptures():
     def list_scriptures(self, text):
         lst = []
         text = self._locate_scriptures(text)
-        for i in regex.findall(self._tagged, text):
-            scripture, _, _, _, _, _ = i.strip('}{').split('|')
-            lst.append(scripture)
+        for scripture in regex.findall(self._tagged, text):
+            script, _, _, _, _, _ = scripture.strip('}{').split('|')
+            lst.append(script)
         return lst
 
     def tag_scriptures(self, text):
@@ -366,9 +366,9 @@ class Scriptures():
     def code_scriptures(self, text):
         text = self._locate_scriptures(text)
         lst = []
-        for i in regex.findall(self._tagged, text):
-            scripture, _, _, bk_num, rest, last = i.strip('}{').split('|')
-            bcv_ranges = self._code_scripture(scripture, int(bk_num), rest, int(last)) or []
+        for scripture in regex.findall(self._tagged, text):
+            script, _, _, bk_num, rest, last = scripture.strip('}{').split('|')
+            bcv_ranges = self._code_scripture(script, int(bk_num), rest, int(last)) or []
             for bcv_range in bcv_ranges:
                 lst.append(bcv_range)
         return lst
