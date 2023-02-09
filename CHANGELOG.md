@@ -6,6 +6,14 @@
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+____
+## [2.0.1] - 2023-02-08
+### Changed
+
 - Renamed internal variables
 - Separated parsing from tagging
 
@@ -14,9 +22,6 @@
 - Fixed linking and translation not working well together
 - Fixed linking whole book (eg., '2 John')
 
-### Removed
-
-____
 ## [2.0.0] - 2023-02-07
 ### Added
 
@@ -116,6 +121,7 @@ ____
 ____
 [Unreleased]: https://github.com/erykjj/linkture
 [2.0.0]:https://github.com/erykjj/linkture/releases/tag/v2.0.0
+[2.0.1]:https://github.com/erykjj/linkture/releases/tag/v2.0.1
 [1.5.0]:https://github.com/erykjj/linkture/releases/tag/v1.5.0
 [1.4.3]:https://github.com/erykjj/linkture/releases/tag/v1.4.3
 [1.4.2]:https://github.com/erykjj/linkture/releases/tag/v1.4.2
