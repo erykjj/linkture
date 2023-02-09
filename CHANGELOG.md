@@ -12,6 +12,7 @@
 ### Fixed
 
 - Fixed linking and translation not working well together
+- Fixed linking whole book (eg., '2 John')
 
 ### Removed
 
