@@ -5,7 +5,7 @@
 
   Description:    Parse and process Bible scripture references
 
-  MIT License     Copyright (c) 2023 Eryk J.
+  MIT License:    Copyright (c) 2023 Eryk J.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -108,7 +108,7 @@ class Scriptures():
 
     def _error_report(self, scripture, message):
         if self._verbose and (scripture not in self._reported):
-            print(f'** "{scripture}" - {message} **')
+            print(f'** "{scripture}" - {message}')
             self._reported.append(scripture)
 
     def _locate_scriptures(self, text):
@@ -137,8 +137,8 @@ class Scriptures():
                     else:
                         script = scripture
                         tr_name = bk_name
-                    return bk_name, tr_name, bk_num, script, rest.replace('.', ':'), last
-            return scripture, None, None, None, None, 0
+                    return script, bk_name, tr_name, bk_num, rest.replace('.', ':'), last
+            return None, None, None, None, None, 0
 
         def rewrite_scripture(scripture, bk_name, bk_num, rest):
 
@@ -196,14 +196,14 @@ class Scriptures():
 
         def r(match):
             i = match.group(1)
-            bk_name, tr_name, bk_num, script, rest, last = scripture_parts(i)
+            script, bk_name, tr_name, bk_num, rest, last = scripture_parts(i)
             if bk_num:
                 code = self._code_scripture(script, bk_num, rest, last)
                 if code:
                     rec = f'{script}|{bk_name}|{tr_name}|{bk_num}|{rest}|{last}'
                     return '{{'+rec+'}}'
             else:
-                self._error_report(i, f'UNKNOWN BOOK: "{bk_name}"')
+                self._error_report(i, 'UNKNOWN BOOK')
             return i
 
         self._reported = []
@@ -223,7 +223,7 @@ class Scriptures():
     def tag_scriptures(self, text):
 
         def r(match):
-            scripture, _, _, _, _,_ = match.group(1).strip('}{').split('|')
+            scripture, _, _, _, _, _ = match.group(1).strip('}{').split('|')
             return '{{'+scripture+'}}'
 
         text = self._locate_scriptures(text)
@@ -358,7 +358,7 @@ class Scriptures():
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
                 if not tup:
-                    self._error_report(scripture, f'OUT OF RANGE: "{bit}"')
+                    self._error_report(scripture, f'"{bit}" OUT OF RANGE')
                     return None
                 lst.append(tup)
         return lst
@@ -367,7 +367,7 @@ class Scriptures():
         text = self._locate_scriptures(text)
         lst = []
         for i in regex.findall(self._tagged, text):
-            scripture, _, tr_name, bk_num, rest, last = i.strip('}{').split('|')
+            scripture, _, _, bk_num, rest, last = i.strip('}{').split('|')
             bcv_ranges = self._code_scripture(scripture, int(bk_num), rest, int(last)) or []
             for bcv_range in bcv_ranges:
                 lst.append(bcv_range)
@@ -495,8 +495,6 @@ class Scriptures():
                     else:
                         link, ch = process_verses(bit, bk_num, last>1)
                         output += '; '
-                    # if not link:
-                    #     continue
                     if tr_name and rest:
                         tr_name += ' '
                     output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
