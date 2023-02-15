@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.0.1'
+VERSION = '2.0.2'
 
 
 import argparse, json, regex, sqlite3
@@ -70,7 +70,7 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], rec[form])
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
+                normalized = unidecode(rec[i].replace(' ', ' ').replace('.', '').replace('-', '').upper()) # non-breaking space
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
@@ -78,7 +78,7 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
-                    normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                    normalized = unidecode(item.replace(' ', ' ').replace('.', '').replace('-', '').upper()) # non-breaking space
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
@@ -92,7 +92,8 @@ class Scriptures():
         # no capitals required (bit slower)
         self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{L}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
         self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
-        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\.]{2,})(.*)') # CHECK: not tested with non-Latin characters
+        # CHECK: not tested with non-Latin characters:
+        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\. ]{2,})(.*)') # non-breaking space 
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
@@ -124,7 +125,7 @@ class Scriptures():
                     bk_num = self._src_book_names[bk_name]
                 return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
-            reduced = regex.sub(r'[   ]', '', scripture)
+            reduced = regex.sub(r'[   ]', ' ', scripture) # non-breaking space
             reduced = regex.sub(r'[—–]', '-', reduced)
             result = self._bk_ref.search(reduced)
             if result:
@@ -188,7 +189,7 @@ class Scriptures():
             else:
                 if self._rewrite:
                     bk_name = self._tr_book_names[bk_num]
-                output = bk_name+' '
+                output = bk_name+' ' # non-breaking space
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
                 output += chunk.strip()+'; '
@@ -392,9 +393,9 @@ class Scriptures():
             return None
         bk_name = self._tr_book_names[sb]
         if self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-            ch = ' '
+            ch = ' ' # non-breaking space
         else:
-            ch = f" {sc}:"
+            ch = f" {sc}:" # non-breaking space
         if start == end:
             scripture = f"{bk_name}{ch}{sv}"
         else:
@@ -474,7 +475,8 @@ class Scriptures():
 
         def r(match):
             scripture = match.group(1).strip('}{')
-            _, _, tr_name, bk_num, rest, last = scripture.split('|')
+            _, bk_name, tr_name, bk_num, rest, last = scripture.split('|')
+            print(bk_name,tr_name)
             bk_num = int(bk_num)
             last = int(last)
             if rest == '': # whole book
