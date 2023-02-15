@@ -475,8 +475,7 @@ class Scriptures():
 
         def r(match):
             scripture = match.group(1).strip('}{')
-            _, bk_name, tr_name, bk_num, rest, last = scripture.split('|')
-            print(bk_name,tr_name)
+            _, _, tr_name, bk_num, rest, last = scripture.split('|')
             bk_num = int(bk_num)
             last = int(last)
             if rest == '': # whole book

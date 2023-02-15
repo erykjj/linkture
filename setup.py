@@ -8,7 +8,7 @@ long_description = (work_dir / "README.md").read_text()
 setuptools.setup(
 
     name="linkture",
-    version="2.0.1",
+    version="2.0.2",
     author="Eryk J.",
     url="https://github.com/erykjj/linkture",
 
