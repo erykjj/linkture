@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.0.2] - 2023-02-14
+### Fixed
+
+- Fixed: books with numbers that were't supposed to be rewritten were actually rewritten with out a space (eg. '1 Timothy' was turned into '1Timothy')
+
 ## [2.0.1] - 2023-02-08
 ### Changed
 
@@ -120,8 +125,9 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
-[2.0.0]:https://github.com/erykjj/linkture/releases/tag/v2.0.0
+[2.0.2]:https://github.com/erykjj/linkture/releases/tag/v2.0.2
 [2.0.1]:https://github.com/erykjj/linkture/releases/tag/v2.0.1
+[2.0.0]:https://github.com/erykjj/linkture/releases/tag/v2.0.0
 [1.5.0]:https://github.com/erykjj/linkture/releases/tag/v1.5.0
 [1.4.3]:https://github.com/erykjj/linkture/releases/tag/v1.4.3
 [1.4.2]:https://github.com/erykjj/linkture/releases/tag/v1.4.2
