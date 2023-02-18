@@ -94,9 +94,9 @@ Of course, you can pass a whole text file to parse and process using the `-f in_
 
 Unless you use `-q`, you will see in the terminal any errors encountered while parsing, such as unknow book names or out-of-range values. Of course, these entries will not be processed, but they will not affect the rest of the operation:
 ```
-$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full
-** "Paul 3:16, 17" - UNKNOWN BOOK: "Paul" **
-Matthew 17:17; Paul 3:16, 17
+$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
+** "Paul 3:16, 17" - UNKNOWN BOOK
+['Matthew 17:17']
 ```
 
 ## Script/import usage
