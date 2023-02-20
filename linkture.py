@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.0.2'
+VERSION = '2.0.3'
 
 
 import argparse, json, regex, sqlite3
@@ -42,7 +42,7 @@ available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'Germa
 
 class Scriptures():
 
-    def __init__(self, language='English', translate=None, form=None, verbose=False):
+    def __init__(self, language='English', translate=None, form=None, verbose=False, upper=False):
         self._verbose = verbose
         if language not in available_languages:
             raise ValueError("Indicated source language is not an option!")
@@ -52,6 +52,7 @@ class Scriptures():
         else:
             translate = language
         self._rewrite = bool((language != translate) or form)
+        self._upper = upper
         if form == "full":
             form = 3
         elif form == "standard":
@@ -67,7 +68,11 @@ class Scriptures():
         con = sqlite3.connect(path / 'res/resources.db')
         cur = con.cursor()
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{translate}';").fetchall():
-            self._tr_book_names.insert(rec[2], rec[form])
+            if self._upper:
+                tr = rec[form].upper()
+            else:
+                tr = rec[form]
+            self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
                 normalized = unidecode(rec[i].replace(' ', ' ').replace('.', '').replace('-', '').upper()) # non-breaking space
@@ -125,6 +130,8 @@ class Scriptures():
                     bk_num = self._src_book_names[bk_name]
                 return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
+            if self._upper:
+                scripture = scripture.upper()
             reduced = regex.sub(r'[   ]', ' ', scripture) # non-breaking space
             reduced = regex.sub(r'[—–]', '-', reduced)
             result = self._bk_ref.search(reduced)
@@ -542,7 +549,7 @@ def _main(args):
     elif args['full']:
         form = 'full'
 
-    s = Scriptures(args['language'], args['translate'], form, not args['q'])
+    s = Scriptures(args['language'], args['translate'], form, not args['q'], args['u'])
 
     if args['f']:
         if args['o'] and (args['o'] == args['f']):
@@ -577,6 +584,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
     parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
+    parser.add_argument('-u', action='store_true', help='capitalize (upper-case) book names')
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     formats = format_group.add_mutually_exclusive_group(required=False)
     formats.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
