@@ -21,9 +21,9 @@ ____
 
 ```
 python3 linkture.py [-h] [-v] [-q] (-f in-file | -r reference) [-o out-file]
-                    [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                    [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                    [--full | --official | --standard] [-c | -d | -l prefix suffix | -t | -x]
+                   [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                   [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t | -x]
 
 parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more
 information
@@ -37,6 +37,7 @@ options:
                         indicate source language for book names (English if unspecified)
   --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate output language for book names (same as source if unspecified)
+  -u                    capitalize (upper-case) book names
 
 data source (one required):
   choose between terminal or file input:
@@ -56,7 +57,8 @@ type of conversion:
 
   -c                    encode as BCV-notation ranges
   -d                    decode list of BCV-notation ranges
-  -l prefix suffix      create <a href></a> links
+  -l [prefix [suffix ...]]
+                        create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)
   -t                    tag scriptures with {{ }}
   -x                    extract list of scripture references
 ```
@@ -68,13 +70,13 @@ $ chmod +x linkture.py
 
 Some examples:
 ```
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --full
-John 17:17; 2 Timothy 3:16, 17
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --full -u
+JOHN 17:17; 2 TIMOTHY 3:16, 17
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --standard
 John 17:17; 2 Tim. 3:16, 17
 
-$ /linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --official
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -c
@@ -82,6 +84,9 @@ $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -c
 
 $ ./linkture.py -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
 ['Johannes 17:17', '2. Timotheus 3:16, 17']
+
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -l 'https://my.website.com/' '/index.html" class="test"'
+<a href="https://my.website.com/43:17:17/index.html" class="test">Joh 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2Ti 3:16, 17</a>
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
@@ -133,6 +138,8 @@ Parameters:
   * **"standard"** for standard abbreviation format (eg., "Gen.")
   * **"official"** for official abbreviation format (eg., "Ge")
   * *None* or not supplied - no re-write will be performed, *unless* translation is performed (in which case, "full" is the default)
+* *upper* - if **True**, outputs book names in UPPER CASE (**False** by default)
+* *verbose* - if **True**, show (in terminal) any errors encountered while parsing (**False** by default)
 
 ____
 ## Feedback
