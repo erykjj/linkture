@@ -42,7 +42,7 @@ available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'Germa
 
 class Scriptures():
 
-    def __init__(self, language='English', translate=None, form=None, verbose=False, upper=False):
+    def __init__(self, language='English', translate=None, form=None, upper=False, verbose=False):
         self._verbose = verbose
         if language not in available_languages:
             raise ValueError("Indicated source language is not an option!")
@@ -200,7 +200,7 @@ class Scriptures():
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
                 output += chunk.strip('\u00A0 ')+'; '
-            return output.replace(',', ',\u00A0').replace('\u00A0\u00A0', '\u00A0').strip(';,\u00A0 ')
+            return output.replace(',', ',\u00A0').strip(';,\u00A0 ')
 
         def r(match):
             scripture = match.group(1)
