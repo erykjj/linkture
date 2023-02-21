@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.0.3'
+VERSION = '2.1.0'
 
 
 import argparse, json, regex, sqlite3
@@ -72,10 +72,10 @@ class Scriptures():
                 tr = rec[form].upper()
             else:
                 tr = rec[form]
-            self._tr_book_names.insert(rec[2], tr)
+            self._tr_book_names.insert(rec[2], tr.replace(' ', '\u00A0'))
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                normalized = unidecode(rec[i].replace(' ', ' ').replace('.', '').replace('-', '').upper()) # non-breaking space
+                normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
@@ -83,7 +83,7 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
-                    normalized = unidecode(item.replace(' ', ' ').replace('.', '').replace('-', '').upper()) # non-breaking space
+                    normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
@@ -95,10 +95,10 @@ class Scriptures():
         # self._second_pass = regex.compile(r'(?![^{]*})(\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
 
         # no capitals required (bit slower)
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{L}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
-        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
+        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))')
+        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\s)\d)')
         # CHECK: not tested with non-Latin characters:
-        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\-\.]?[\p{L}\-\. ]{2,})(.*)') # non-breaking space 
+        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
@@ -122,7 +122,7 @@ class Scriptures():
         def scripture_parts(scripture):
 
             def check_book(bk_name):
-                bk_name = regex.sub(r'[\-\.]', '', bk_name.upper())
+                bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
                 bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
                 if bk_name not in self._src_book_names:
                     return None, 0
@@ -132,11 +132,11 @@ class Scriptures():
 
             if self._upper:
                 scripture = scripture.upper()
-            reduced = regex.sub(r'[   ]', ' ', scripture) # non-breaking space
-            reduced = regex.sub(r'[—–]', '-', reduced)
+            reduced = regex.sub(r'\p{Z}', '', scripture)
+            reduced = regex.sub(r'\p{Pd}', '-', reduced)
             result = self._bk_ref.search(reduced)
             if result:
-                bk_name, rest = result.group(1).strip(), result.group(2).strip()
+                bk_name, rest = result.group(1).strip('\u00A0 '), result.group(2).strip('\u00A0 ')
                 bk_num, last = check_book(bk_name)
                 if bk_num:
                     if self._rewrite:
@@ -196,11 +196,11 @@ class Scriptures():
             else:
                 if self._rewrite:
                     bk_name = self._tr_book_names[bk_num]
-                output = bk_name+' ' # non-breaking space
+                output = bk_name+'\u00A0' # non-breaking space
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
-                output += chunk.strip()+'; '
-            return output.replace(',', ', ').strip(' ;,')
+                output += chunk.strip('\u00A0 ')+'; '
+            return output.replace(',', ',\u00A0').replace('\u00A0\u00A0', '\u00A0').strip(';,\u00A0 ')
 
         def r(match):
             scripture = match.group(1)
@@ -400,15 +400,15 @@ class Scriptures():
             return None
         bk_name = self._tr_book_names[sb]
         if self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-            ch = ' ' # non-breaking space
+            ch = '\u00A0' # non-breaking space
         else:
-            ch = f" {sc}:" # non-breaking space
+            ch = f"\u00A0{sc}:" # non-breaking space
         if start == end:
             scripture = f"{bk_name}{ch}{sv}"
         else:
             if sc == ec:
                 if ev - sv == 1:
-                    scripture = f"{bk_name}{ch}{sv}, {ev}"
+                    scripture = f"{bk_name}{ch}{sv},\u00A0{ev}"
                 else:
                     scripture = f"{bk_name}{ch}{sv}-{ev}"
             else:
@@ -491,7 +491,7 @@ class Scriptures():
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:1:{v}{suffix}{tr_name}</a>'
                 else:
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:{last}:{v}{suffix}{tr_name}</a>'
-                return output.strip(' ;,')
+                return output.strip('\u00A0 ;,')
             output = ''
             rest = rest or ''
             for chunk in rest.split(';'):
@@ -499,15 +499,15 @@ class Scriptures():
                 for bit in chunk.split(','):
                     if ch:
                         link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
-                        output += ', '
+                        output += ',\u00A0'
                     else:
                         link, ch = process_verses(bit, bk_num, last>1)
-                        output += '; '
+                        output += ';\u00A0'
                     if tr_name and rest:
-                        tr_name += ' '
+                        tr_name += '\u00A0'
                     output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
                     tr_name = ''
-                return output.strip(' ;,')
+                return output.strip('\u00A0 ;,')
             return scripture
 
         text = self._locate_scriptures(text)

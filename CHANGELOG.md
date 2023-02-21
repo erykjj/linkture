@@ -4,7 +4,11 @@
 
 ### Added
 
+- Added capitalization (upper-case) option -u
+
 ### Changed
+
+- Rewriting now with non-breaking spaces (except after semi-colons)
 
 ### Fixed
 
