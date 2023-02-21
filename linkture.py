@@ -534,10 +534,16 @@ class Scriptures():
 def _main(args):
 
     def switchboard(text):
-        if args['l']:
-            prefix = args['l'][0] #or 'https://my.website.org/'
-            suffix = args['l'][1] or '">'
-            return s.link_scriptures(text, '<a href="'+prefix, suffix)
+        if args['l'] is not False:
+            if len(args['l']) > 1:
+                suffix = args['l'][1]
+            else:
+                suffix = ''
+            if len(args['l']) > 0:
+                prefix = args['l'][0] #or 'https://my.website.org/'
+            else:
+                prefix = ''
+            return s.link_scriptures(text, '<a href="'+prefix, suffix+'">')
         elif args['c']:
             return s.code_scriptures(text)
         elif args['d']:
@@ -557,7 +563,7 @@ def _main(args):
     elif args['full']:
         form = 'full'
 
-    s = Scriptures(args['language'], args['translate'], form, not args['q'], args['u'])
+    s = Scriptures(args['language'], args['translate'], form, args['u'], not args['q'])
 
     if args['f']:
         if args['o'] and (args['o'] == args['f']):
@@ -603,7 +609,7 @@ if __name__ == "__main__":
     tpe = type_group.add_mutually_exclusive_group(required=False)
     tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
     tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
-    tpe.add_argument('-l', nargs=2, metavar=('prefix', 'suffix'), help='create <a href></a> links')
+    tpe.add_argument('-l', nargs='*', metavar=('prefix', 'suffix'), help='create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)')
     tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
