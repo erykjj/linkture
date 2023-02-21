@@ -534,15 +534,14 @@ class Scriptures():
 def _main(args):
 
     def switchboard(text):
-        if args['l'] is not False:
+        print(args)
+        if args['l'] is not None:
+            prefix = ''
+            suffix = ''
             if len(args['l']) > 1:
                 suffix = args['l'][1]
-            else:
-                suffix = ''
             if len(args['l']) > 0:
                 prefix = args['l'][0] #or 'https://my.website.com/'
-            else:
-                prefix = ''
             return s.link_scriptures(text, '<a href="'+prefix, suffix+'>')
         elif args['c']:
             return s.code_scriptures(text)
