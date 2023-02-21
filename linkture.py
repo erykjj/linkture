@@ -424,7 +424,7 @@ class Scriptures():
         return scriptures
 
 
-    def link_scriptures(self, text, prefix='<a href="http://', suffix='" >'):
+    def link_scriptures(self, text, prefix='<a href="https://', suffix='>'):
 
         def process_verses(chunk, book, multi):
             b = str(book)
@@ -540,10 +540,10 @@ def _main(args):
             else:
                 suffix = ''
             if len(args['l']) > 0:
-                prefix = args['l'][0] #or 'https://my.website.org/'
+                prefix = args['l'][0] #or 'https://my.website.com/'
             else:
                 prefix = ''
-            return s.link_scriptures(text, '<a href="'+prefix, suffix+'">')
+            return s.link_scriptures(text, '<a href="'+prefix, suffix+'>')
         elif args['c']:
             return s.code_scriptures(text)
         elif args['d']:
