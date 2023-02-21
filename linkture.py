@@ -495,6 +495,9 @@ class Scriptures():
             output = ''
             rest = rest or ''
             for chunk in rest.split(';'):
+                for result in regex.finditer(self._dd, rest, overlapped=True):
+                    if int(result.group(2)) - int(result.group(1)) == 1:
+                        chunk = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', chunk)
                 ch = 0
                 for bit in chunk.split(','):
                     if ch:
@@ -505,6 +508,11 @@ class Scriptures():
                         output += ';\u00A0'
                     if tr_name and rest:
                         tr_name += '\u00A0'
+                    for result in self._d_d.finditer(bit):
+                        end = result.group(2)
+                        start = result.group(1)
+                        if int(end) - int(start) == 1:
+                            bit = regex.sub(result.group(), f"{start},\u00A0{end}", bit)
                     output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
                     tr_name = ''
                 return output.strip('\u00A0 ;,')
