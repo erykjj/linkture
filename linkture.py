@@ -401,20 +401,20 @@ class Scriptures():
             return None
         bk_name = self._tr_book_names[sb]
         if self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-            ch = '\u00A0'
+            ch = ' '
         else:
-            ch = f"\u00A0{sc}:"
+            ch = f" {sc}:"
         if start == end:
             scripture = f"{bk_name}{ch}{sv}"
         else:
             if sc == ec:
                 if ev - sv == 1:
-                    scripture = f"{bk_name}{ch}{sv},\u00A0{ev}"
+                    scripture = f"{bk_name}{ch}{sv}, {ev}"
                 else:
                     scripture = f"{bk_name}{ch}{sv}-{ev}"
             else:
                 scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
-        return scripture
+        return scripture.replace('\u00A0', ' ')
 
     def decode_scriptures(self, bcv_ranges=[]):
         scriptures = []
@@ -492,7 +492,7 @@ class Scriptures():
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:1:{v}{suffix}{tr_name}</a>'
                 else:
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:{last}:{v}{suffix}{tr_name}</a>'
-                return output.strip('\u00A0 ;,')
+                return output #.strip('\u00A0 ;,')
             output = ''
             rest = rest or ''
             for chunk in rest.split(';'):
