@@ -517,8 +517,7 @@ class Scriptures():
                             bit = regex.sub(result.group(), f"{start}, {end}", bit)
                     output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
                     tr_name = ''
-                return output.strip(' ;,')
-            return scripture
+            return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
