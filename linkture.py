@@ -72,7 +72,7 @@ class Scriptures():
                 tr = rec[form].upper()
             else:
                 tr = rec[form]
-            self._tr_book_names.insert(rec[2], tr.replace(' ', '\u00A0'))
+            self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
                 normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
@@ -135,7 +135,7 @@ class Scriptures():
                 scripture = scripture.upper()
             result = self._bk_ref.search(scripture)
             if result:
-                bk_name, rest = result.group(1).strip('\u00A0 '), result.group(2).strip('\u00A0 ')
+                bk_name, rest = result.group(1).strip(), result.group(2).strip()
                 reduced = regex.sub(r'\p{Z}', '', rest)
                 reduced = regex.sub(r'\p{Pd}', '-', reduced)
                 bk_num, last = check_book(bk_name)
@@ -197,11 +197,11 @@ class Scriptures():
             else:
                 if self._rewrite:
                     bk_name = self._tr_book_names[bk_num]
-                output = bk_name+'\u00A0'
+                output = bk_name+' '
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
-                output += chunk.strip('\u00A0 ')+'; '
-            return output.replace(',', ',\u00A0').strip(';,\u00A0 ')
+                output += chunk.strip()+'; '
+            return output.replace(',', ', ').strip(';, ')
 
         def r(match):
             scripture = match.group(1)
@@ -414,7 +414,7 @@ class Scriptures():
                     scripture = f"{bk_name}{ch}{sv}-{ev}"
             else:
                 scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
-        return scripture.replace('\u00A0', ' ')
+        return scripture
 
     def decode_scriptures(self, bcv_ranges=[]):
         scriptures = []
@@ -482,6 +482,7 @@ class Scriptures():
             return None, 0
 
         def r(match):
+            # \u00A0 = non-breaking space
             scripture = match.group(1).strip('}{')
             _, _, tr_name, bk_num, rest, last = scripture.split('|')
             bk_num = int(bk_num)
@@ -492,7 +493,7 @@ class Scriptures():
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:1:{v}{suffix}{tr_name}</a>'
                 else:
                     output = f'{prefix}{bk_num}:1:1-{bk_num}:{last}:{v}{suffix}{tr_name}</a>'
-                return output #.strip('\u00A0 ;,')
+                return output
             output = ''
             rest = rest or ''
             for chunk in rest.split(';'):
@@ -503,23 +504,20 @@ class Scriptures():
                 for bit in chunk.split(','):
                     if ch:
                         link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
-                        output += ',\u00A0'
+                        output += ', '
                     else:
                         link, ch = process_verses(bit, bk_num, last>1)
-                        if regex.match(r'\d', bit.strip('\u00A0 ')):
-                            output += ';\u00A0'
-                        else:
-                            output += '; '
+                        output += '; '
                     if tr_name and rest:
-                        tr_name += '\u00A0'
+                        tr_name += ' '
                     for result in self._d_d.finditer(bit):
                         end = result.group(2)
                         start = result.group(1)
                         if int(end) - int(start) == 1:
-                            bit = regex.sub(result.group(), f"{start},\u00A0{end}", bit)
+                            bit = regex.sub(result.group(), f"{start}, {end}", bit)
                     output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
                     tr_name = ''
-                return output.strip('\u00A0 ;,')
+                return output.strip(' ;,')
             return scripture
 
         text = self._locate_scriptures(text)
