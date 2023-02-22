@@ -95,10 +95,11 @@ class Scriptures():
         # self._second_pass = regex.compile(r'(?![^{]*})(\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
 
         # no capitals required (bit slower)
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))')
-        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\s)\d)')
+        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))')
+        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
         # CHECK: not tested with non-Latin characters:
-        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
+        # self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
+        self._bk_ref = regex.compile(r'((?:[1-5][\p{P}\p{Z}]*\p{L}{0,2}|[iIvV]{1,3})?[\p{P}\p{Z}]*[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
@@ -132,11 +133,11 @@ class Scriptures():
 
             if self._upper:
                 scripture = scripture.upper()
-            reduced = regex.sub(r'\p{Z}', '', scripture)
-            reduced = regex.sub(r'\p{Pd}', '-', reduced)
-            result = self._bk_ref.search(reduced)
+            result = self._bk_ref.search(scripture)
             if result:
                 bk_name, rest = result.group(1).strip('\u00A0 '), result.group(2).strip('\u00A0 ')
+                reduced = regex.sub(r'\p{Z}', '', rest)
+                reduced = regex.sub(r'\p{Pd}', '-', reduced)
                 bk_num, last = check_book(bk_name)
                 if bk_num:
                     if self._rewrite:
@@ -196,7 +197,7 @@ class Scriptures():
             else:
                 if self._rewrite:
                     bk_name = self._tr_book_names[bk_num]
-                output = bk_name+'\u00A0' # non-breaking space
+                output = bk_name+'\u00A0'
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
                 output += chunk.strip('\u00A0 ')+'; '
@@ -400,9 +401,9 @@ class Scriptures():
             return None
         bk_name = self._tr_book_names[sb]
         if self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-            ch = '\u00A0' # non-breaking space
+            ch = '\u00A0'
         else:
-            ch = f"\u00A0{sc}:" # non-breaking space
+            ch = f"\u00A0{sc}:"
         if start == end:
             scripture = f"{bk_name}{ch}{sv}"
         else:
@@ -505,7 +506,10 @@ class Scriptures():
                         output += ',\u00A0'
                     else:
                         link, ch = process_verses(bit, bk_num, last>1)
-                        output += ';\u00A0'
+                        if regex.match(r'\d', bit.strip('\u00A0 ')):
+                            output += ';\u00A0'
+                        else:
+                            output += '; '
                     if tr_name and rest:
                         tr_name += '\u00A0'
                     for result in self._d_d.finditer(bit):
@@ -534,7 +538,6 @@ class Scriptures():
 def _main(args):
 
     def switchboard(text):
-        print(args)
         if args['l'] is not None:
             prefix = ''
             suffix = ''
