@@ -8,9 +8,12 @@
 
 ### Changed
 
-- Rewriting now with non-breaking spaces (except after semi-colons)
+- Providing prefix and suffix for linking from commandline is optional now (just -l works)
+- Links always rewritten (--full by default)
 
 ### Fixed
+
+- Fixed minor (edge-case) rewriting issues in links
 
 ### Removed
 
