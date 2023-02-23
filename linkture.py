@@ -142,10 +142,9 @@ class Scriptures():
                 if bk_num:
                     if self._rewrite:
                         script = rewrite_scripture(scripture, bk_name, bk_num, rest)
-                        tr_name = self._tr_book_names[bk_num]
                     else:
                         script = scripture
-                        tr_name = bk_name
+                    tr_name = self._tr_book_names[bk_num]
                     return script, bk_name, tr_name, bk_num, rest.replace('.', ':'), last
             return None, None, None, None, None, 0
 
