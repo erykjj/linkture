@@ -75,7 +75,8 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
+                # normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
+                normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(rec[i]).upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
@@ -83,27 +84,25 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
-                    normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                    # normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
+                    normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(item).upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
         con.close()
         self._reported = []
 
-        # With CAPITAL letter to start book name
-        # self._first_pass = regex.compile(r'((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[—–\-\.   ]*)?\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.—–\-   ]*\p{Lu}[\p{L}\.—–\-]+))')
-        # self._second_pass = regex.compile(r'(?![^{]*})(\p{Lu}[\p{L}\.—–\-]+(?![,—–\-])[:\.—–\-\d,   ;]*(?<!;\s)\d)')
-
-        # no capitals required (bit slower)
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))')
-        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
+        # Scripture reference parser:
+        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))') # TODO: check for \d \d (digits separated by space(s)
+        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)') # TODO: check for \d \d (digits separated by space(s)
         # CHECK: not tested with non-Latin characters:
-        # self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
-        self._bk_ref = regex.compile(r'((?:[1-5][\p{P}\p{Z}]*\p{L}{0,2}|[iIvV]{1,3})?[\p{P}\p{Z}]*[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
+        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
+        # self._bk_ref = regex.compile(r'((?:[1-5][\p{P}\p{Z}]*\p{L}{0,2}|[iIvV]{1,3})?[\p{P}\p{Z}]*[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
+        # TODO: add v_cv: Eph. 4:29, 31–5:2
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
         self._cv = regex.compile(r'(\d+):(\d+)')
         self._ddd = regex.compile(r'(\d+),(\d+),(\d+)')
@@ -120,35 +119,7 @@ class Scriptures():
 
     def _locate_scriptures(self, text):
 
-        def scripture_parts(scripture):
-
-            def check_book(bk_name):
-                bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
-                bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
-                if bk_name not in self._src_book_names:
-                    return None, 0
-                else:
-                    bk_num = self._src_book_names[bk_name]
-                return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-            if self._upper:
-                scripture = scripture.upper()
-            result = self._bk_ref.search(scripture)
-            if result:
-                bk_name, rest = result.group(1).strip(), result.group(2).strip()
-                reduced = regex.sub(r'\p{Z}', '', rest)
-                reduced = regex.sub(r'\p{Pd}', '-', reduced)
-                bk_num, last = check_book(bk_name)
-                if bk_num:
-                    if self._rewrite:
-                        script = rewrite_scripture(scripture, bk_name, bk_num, rest)
-                    else:
-                        script = scripture
-                    tr_name = self._tr_book_names[bk_num]
-                    return script, bk_name, tr_name, bk_num, rest.replace('.', ':'), last
-            return None, None, None, None, None, 0
-
-        def rewrite_scripture(scripture, bk_name, bk_num, rest):
+        def rewrite_scripture(rest=''):
 
             def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
                 found = True
@@ -190,28 +161,48 @@ class Scriptures():
                             txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
                 return txt
 
-            rest = rest or ''
-            if not bk_num:
-                return scripture
-            else:
-                if self._rewrite:
-                    bk_name = self._tr_book_names[bk_num]
-                output = bk_name+' '
+            output = ''
             for chunk in rest.split(';'):
                 chunk = reform_series(chunk)
                 output += chunk.strip()+'; '
             return output.replace(',', ', ').strip(';, ')
 
+        def scripture_parts(scripture):
+
+            def check_book(bk_name):
+                bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
+                bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
+                if bk_name not in self._src_book_names:
+                    return None, 0
+                else:
+                    bk_num = self._src_book_names[bk_name]
+                return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+
+            # TODO: \d \d (digits separated by space(s)?!
+            reduced = regex.sub(r'\p{Z}', '', scripture)
+            reduced = regex.sub(r'\p{Pd}', '-', reduced)
+            result = self._bk_ref.search(reduced)
+            if result:
+                bk_name, rest = result.group(1).strip(), result.group(2).strip()
+                bk_num, last = check_book(bk_name)
+                if bk_num:
+                    tr_name = self._tr_book_names[bk_num]
+                    script = rewrite_scripture(rest)
+                    return tr_name, script, bk_num, last
+                    # return script, bk_name, tr_name, bk_num, rest.replace('.', ':'), last # TODO: why the replacement??
+            return None, None, None, 0
+
         def r(match):
             scripture = match.group(1)
-            script, bk_name, tr_name, bk_num, rest, last = scripture_parts(scripture)
-            if bk_num:
-                code = self._code_scripture(script, bk_num, rest, last)
+            tr_name, script, bk_num, last = scripture_parts(scripture)
+            if bk_num and tr_name:
+                code = self._code_scripture(script, bk_num, script, last)
                 if code:
-                    rec = f'{script}|{bk_name}|{tr_name}|{bk_num}|{rest}|{last}'
-                    return '{{'+rec+'}}'
-            else:
-                self._error_report(scripture, 'UNKNOWN BOOK')
+                    if self._upper:
+                        tr_name = tr_name.upper()
+                    return '{{' +f'{scripture}|{tr_name}|{script}|{bk_num}|{last}' +'}}'
+            self._error_report(scripture, 'UNKNOWN BOOK')
             return scripture
 
         self._reported = []
@@ -224,15 +215,21 @@ class Scriptures():
         lst = []
         text = self._locate_scriptures(text)
         for scripture in regex.findall(self._tagged, text):
-            script, _, _, _, _, _ = scripture.strip('}{').split('|')
-            lst.append(script)
+            script, tr_name, rest, _, _ = scripture.strip('}{').split('|')
+            if self._rewrite:
+                lst.append(tr_name+' '+rest)
+            else:
+                lst.append(script)
         return lst
 
     def tag_scriptures(self, text):
 
         def r(match):
-            scripture, _, _, _, _, _ = match.group(1).strip('}{').split('|')
-            return '{{'+scripture+'}}'
+            script, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
+            if self._rewrite:
+                return '{{'+tr_name+' '+rest+'}}'
+            else:
+                return '{{'+script+'}}'
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
@@ -375,7 +372,7 @@ class Scriptures():
         text = self._locate_scriptures(text)
         lst = []
         for scripture in regex.findall(self._tagged, text):
-            script, _, _, bk_num, rest, last = scripture.strip('}{').split('|')
+            script, _, rest, bk_num, last = scripture.strip('}{').split('|')
             bcv_ranges = self._code_scripture(script, int(bk_num), rest, int(last)) or []
             for bcv_range in bcv_ranges:
                 lst.append(bcv_range)
@@ -524,8 +521,8 @@ class Scriptures():
     def rewrite_scriptures(self, text):
 
         def r(match):
-            scripture, _, _, _, _, _ = match.group(1).strip('}{').split('|')
-            return scripture
+            _, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
+            return tr_name+' '+rest
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
