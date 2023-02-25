@@ -119,9 +119,14 @@ class Scriptures():
                                 \p{Pd}))
                 \p{L}[\p{L}\p{Pd}\.]*\p{L}
             )""", flags=regex.VERBOSE | regex.IGNORECASE)
-        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
+        self._second_pass = regex.compile(r"""(
+                \p{L}[\p{L}\p{Pd}\.]+\p{Z}?
+                (?:\d+\p{Z}?[:,\p{Pd};]\p{Z}?)*\d+
+                (?![,\p{Pd}\p{L}])
+            )""", flags=regex.VERBOSE)
+        # self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
         # CHECK: not tested with non-Latin characters:
-        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)', regex.I)
+        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)', regex.IGNORECASE)
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
