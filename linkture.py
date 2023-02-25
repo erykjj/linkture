@@ -197,7 +197,7 @@ class Scriptures():
             scripture = match.group(1)
             tr_name, script, bk_num, last = scripture_parts(scripture)
             if bk_num and tr_name:
-                code = self._code_scripture(script, bk_num, script, last)
+                code = self._code_scripture(scripture, bk_num, script, last)
                 if code:
                     if self._upper:
                         tr_name = tr_name.upper()
@@ -480,7 +480,7 @@ class Scriptures():
         def r(match):
             # \u00A0 = non-breaking space
             scripture = match.group(1).strip('}{')
-            _, _, tr_name, bk_num, rest, last = scripture.split('|')
+            _, tr_name, rest, bk_num, last = scripture.split('|')
             bk_num = int(bk_num)
             last = int(last)
             if rest == '': # whole book
