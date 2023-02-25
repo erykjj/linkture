@@ -75,7 +75,6 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                # normalized = unidecode(rec[i].replace(' ', '').replace('.', '').replace('-', '').upper())
                 normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(rec[i]).upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
@@ -84,7 +83,6 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
-                    # normalized = unidecode(item.replace(' ', '').replace('.', '').replace('-', '').upper())
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(item).upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
@@ -216,7 +214,6 @@ class Scriptures():
                     bk_num = self._src_book_names[bk_name]
                 return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
-            # reduced = regex.sub(r'(\d+)\p{Z}+(\d+)', r'\1,\2', scripture) # comma added between digits separated by space(s)
             reduced = regex.sub(r'\p{Z}', '', scripture)
             reduced = regex.sub(r'\p{Pd}', '-', reduced)
             result = self._bk_ref.search(reduced)
