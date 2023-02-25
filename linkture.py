@@ -93,11 +93,11 @@ class Scriptures():
         self._reported = []
 
         # Scripture reference parser:
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\.\p{Pd}\p{Z}]*\p{L}[\p{L}\.\p{Pd}]+))', regex.I) # TODO: check for \d \d (digits separated by space(s)
-        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)') # TODO: check for \d \d (digits separated by space(s)
+        # TODO: check for \d \d (digits separated by space(s)
+        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\.\p{Pd}\p{Z}]*\p{L}[\p{L}\.\p{Pd}]+))', regex.I)
+        self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
         # CHECK: not tested with non-Latin characters:
         self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)', regex.I)
-        # self._bk_ref = regex.compile(r'((?:[1-5][\p{P}\p{Z}]*\p{L}{0,2}|[iIvV]{1,3})?[\p{P}\p{Z}]*[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
@@ -180,7 +180,8 @@ class Scriptures():
 
 
             # TODO: \d \d (digits separated by space(s)?!
-            reduced = regex.sub(r'\p{Z}', '', scripture)
+            reduced = regex.sub(r'(\d+)\p{Z}+(\d+)', r'\1,\2', scripture)
+            reduced = regex.sub(r'\p{Z}', '', reduced)
             reduced = regex.sub(r'\p{Pd}', '-', reduced)
             result = self._bk_ref.search(reduced)
             if result:
@@ -216,7 +217,10 @@ class Scriptures():
         for scripture in regex.findall(self._tagged, text):
             script, tr_name, rest, _, _ = scripture.strip('}{').split('|')
             if self._rewrite:
-                lst.append(tr_name+' '+rest)
+                if rest:
+                    lst.append(tr_name+' '+rest)
+                else:
+                    lst.append(tr_name)
             else:
                 lst.append(script)
         return lst
@@ -226,7 +230,10 @@ class Scriptures():
         def r(match):
             script, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
             if self._rewrite:
-                return '{{'+tr_name+' '+rest+'}}'
+                if rest:
+                    return '{{'+tr_name+' '+rest+'}}'
+                else:
+                    return '{{'+tr_name+'}}'
             else:
                 return '{{'+script+'}}'
 
