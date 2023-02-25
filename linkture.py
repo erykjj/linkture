@@ -120,22 +120,26 @@ class Scriptures():
                                 \p{Pd})             )
                 \p{L}[\p{L}\p{Pd}\.]*\p{L}
             )""", flags=regex.VERBOSE | regex.IGNORECASE)
+
         self._second_pass = regex.compile(r"""(
                 (?![^{]*}) # ignore already marked
                 \p{L}[\p{L}\p{Pd}\.]+\p{Z}?
                 (?:\d+\p{Z}?[:,\p{Pd};]\p{Z}?)*\d+
                 (?![,\p{Pd}\p{L}])
             )""", flags=regex.VERBOSE)
+
         # CHECK: not tested with non-Latin characters:
         self._bk_ref = regex.compile(r"""
                 ((?:[1-5]\p{L}{0,2} |
                     [IV]{1,3}         )?
                 [\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)
             """, flags=regex.VERBOSE | regex.IGNORECASE)
+
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
+        self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
         # TODO: add v_cv: Eph. 4:29, 31–5:2
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
         self._cv = regex.compile(r'(\d+):(\d+)')
@@ -320,6 +324,23 @@ class Scriptures():
                     return None, 0
                 v2 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v2), ch1
+
+            result = self._v_cv.search(chunk)
+            if result:
+                c = str(ch)
+                v = result.group(1)
+                if not validate(book, c, v):
+                    return None, 0
+                ch1 = c
+                v1 = v.zfill(3)
+
+                c = result.group(2)
+                v = result.group(3)
+                if not validate(book, c, v):
+                    return None, 0
+                ch2 = c.zfill(3)
+                v2 = v.zfill(3)
+                return (b+ch1+v1, b+ch2+v2), ch2
 
             result = self._cv.search(chunk)
             if result:
