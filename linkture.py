@@ -93,8 +93,32 @@ class Scriptures():
         self._reported = []
 
         # Scripture reference parser:
-        # TODO: check for \d \d (digits separated by space(s)
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\.\p{Pd}\p{Z}]*\p{L}[\p{L}\.\p{Pd}]+))', regex.I)
+        self._first_pass = regex.compile(r"""(
+                (?![^{]*})
+                (?:[1-5] (?:\p{Z} |
+                            \.\p{Z}? |
+                            \p{Pd} |
+                            \p{L}{1,2} (?:\p{Z} |
+                                        \.\p{Z}? |
+                                        \p{Pd}))? |
+                [IV]{1,3} (?:\p{Z} |
+                                \.\p{Z}? |
+                                \p{Pd}))?
+                \p{L}[\p{L}\p{Pd}\.]+\p{Z}?
+                (?:\d+\p{Z}?[:,\p{Pd};]\p{Z}?)*\d+
+                (?![,\p{Pd}\p{L}]) |
+
+                (?:[1-5] (?:\p{Z} |
+                            \.\p{Z}? |
+                            \p{Pd} |
+                            \p{L}{1,2} (?:\p{Z} |
+                                        \.\p{Z}? |
+                                        \p{Pd}))? |
+                [IV]{1,3} (?:\p{Z} |
+                                \.\p{Z}? |
+                                \p{Pd}))
+                \p{L}[\p{L}\p{Pd}\.]*\p{L}
+            )""", flags=regex.VERBOSE | regex.IGNORECASE)
         self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)')
         # CHECK: not tested with non-Latin characters:
         self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)', regex.I)
@@ -178,10 +202,8 @@ class Scriptures():
                     bk_num = self._src_book_names[bk_name]
                 return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
 
-
-            # TODO: \d \d (digits separated by space(s)?!
-            reduced = regex.sub(r'(\d+)\p{Z}+(\d+)', r'\1,\2', scripture)
-            reduced = regex.sub(r'\p{Z}', '', reduced)
+            # reduced = regex.sub(r'(\d+)\p{Z}+(\d+)', r'\1,\2', scripture) # comma added between digits separated by space(s)
+            reduced = regex.sub(r'\p{Z}', '', scripture)
             reduced = regex.sub(r'\p{Pd}', '-', reduced)
             result = self._bk_ref.search(reduced)
             if result:
