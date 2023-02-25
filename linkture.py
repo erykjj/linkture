@@ -93,10 +93,10 @@ class Scriptures():
         self._reported = []
 
         # Scripture reference parser:
-        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[iIvV]{1,3})[\.\p{Pd}\p{Z}]*\p{Lu}[\p{L}\.\p{Pd}]+))') # TODO: check for \d \d (digits separated by space(s)
+        self._first_pass = regex.compile(r'(?![^{]*})((?:(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.\p{Z}]*)?\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)|(?:(?:[1-5]\p{L}{0,2}|[IV]{1,3})[\.\p{Pd}\p{Z}]*\p{L}[\p{L}\.\p{Pd}]+))', regex.I) # TODO: check for \d \d (digits separated by space(s)
         self._second_pass = regex.compile(r'(?![^{]*})(\p{L}[\p{L}\.\p{Pd}]+(?![,\p{Pd}])[:\.\p{Pd}\d,\p{Z};]*(?<!;\p{Z})\d)') # TODO: check for \d \d (digits separated by space(s)
         # CHECK: not tested with non-Latin characters:
-        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[iIvV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
+        self._bk_ref = regex.compile(r'((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)', regex.I)
         # self._bk_ref = regex.compile(r'((?:[1-5][\p{P}\p{Z}]*\p{L}{0,2}|[iIvV]{1,3})?[\p{P}\p{Z}]*[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)')
         self._tagged = regex.compile(r'({{.*?}})')
         self._pretagged = regex.compile(r'{{(.*?)}}')
@@ -189,8 +189,7 @@ class Scriptures():
                 if bk_num:
                     tr_name = self._tr_book_names[bk_num]
                     script = rewrite_scripture(rest)
-                    return tr_name, script, bk_num, last
-                    # return script, bk_name, tr_name, bk_num, rest.replace('.', ':'), last # TODO: why the replacement??
+                    return tr_name, script.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
             return None, None, None, 0
 
         def r(match):
