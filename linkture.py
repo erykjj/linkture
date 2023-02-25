@@ -235,7 +235,6 @@ class Scriptures():
                     if self._upper:
                         tr_name = tr_name.upper()
                     return '{{' +f'{scripture}|{tr_name}|{script}|{bk_num}|{last}' +'}}'
-            self._error_report(scripture, 'UNKNOWN BOOK')
             return scripture
 
         self._reported = []
@@ -419,7 +418,7 @@ class Scriptures():
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
                 if not tup:
-                    self._error_report(scripture, f'"{bit}" OUT OF RANGE')
+                    self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE')
                     return None
                 lst.append(tup)
         return lst
