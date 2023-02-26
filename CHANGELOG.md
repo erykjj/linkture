@@ -9,7 +9,8 @@
 ### Changed
 
 - Much **code clean-up/optimization**
-- Providing prefix and suffix for linking from commandline is optional (ie., just -l provides a default prefix and suffix)
+- Providing prefix and suffix for linking from commandline is optional
+  - *-l* provides a default prefix and suffix
 - Links always rewritten (--full by default)
 
 ### Fixed
@@ -17,6 +18,9 @@
 - Fixed variour edge-case in link re-writing
 
 ### Removed
+
+- Removed unidecode dependence
+  - already handled by regex
 
 ____
 ## [2.0.2] - 2023-02-14
