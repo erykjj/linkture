@@ -9,6 +9,7 @@
 ### Fixed
 
 - Restricted greediness of parser
+- Don't add space if no chapter(s)/verse(s) follow book name
 
 ### Removed
 
