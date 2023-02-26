@@ -4,6 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [2.1.0] - 2023-02-25
+### Added
+
 - Added option (-u) for **capitalization** (upper-case) of book names
 
 ### Changed
@@ -22,7 +32,6 @@
 - Removed unidecode dependence
   - already handled by regex
 
-____
 ## [2.0.2] - 2023-02-14
 ### Fixed
 
@@ -137,6 +146,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.1.0]:https://github.com/erykjj/linkture/releases/tag/v2.1.0
 [2.0.2]:https://github.com/erykjj/linkture/releases/tag/v2.0.2
 [2.0.1]:https://github.com/erykjj/linkture/releases/tag/v2.0.1
 [2.0.0]:https://github.com/erykjj/linkture/releases/tag/v2.0.0
