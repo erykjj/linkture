@@ -138,7 +138,6 @@ class Scriptures():
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
-        # TODO: add v_cv: Eph. 4:29, 31–5:2
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
         self._cv = regex.compile(r'(\d+):(\d+)')
         self._ddd = regex.compile(r'(\d+),(\d+),(\d+)')
