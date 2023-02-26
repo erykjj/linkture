@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Restricted greediness of parser
+
 ### Removed
 
 ____
