@@ -14,14 +14,14 @@ ____
 ## [2.1.0] - 2023-02-25
 ### Added
 
-- Added option (-u) for **capitalization** (upper-case) of book names
+- Added option (`-u`) for **capitalization** (upper-case) of book names
 
 ### Changed
 
 - Much **code clean-up/optimization**
 - Providing prefix and suffix for linking from commandline is optional
-  - *-l* provides a default prefix and suffix
-- Links always rewritten (--full by default)
+  - `-l` provides a default prefix and suffix
+- Links always rewritten (`--full` by default)
 
 ### Fixed
 
