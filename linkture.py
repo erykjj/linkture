@@ -34,7 +34,6 @@ import pandas as pd
 
 from ast import literal_eval
 from pathlib import Path
-from unidecode import unidecode
 
 
 available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish')
@@ -75,7 +74,7 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(rec[i]).upper())
+                normalized = regex.sub(r'\p{P}|\p{Z}', '', rec[i].upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
@@ -83,7 +82,7 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
-                    normalized = regex.sub(r'\p{P}|\p{Z}', '', unidecode(item).upper())
+                    normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         cur.close()
@@ -126,7 +125,6 @@ class Scriptures():
                 (?![,\p{Pd}\p{L}])
             )""", flags=regex.VERBOSE)
 
-        # CHECK: not tested with non-Latin characters:
         self._bk_ref = regex.compile(r"""
                 ((?:[1-5]\p{L}{0,2} |
                     [IV]{1,3}         )?
@@ -206,7 +204,6 @@ class Scriptures():
 
             def check_book(bk_name):
                 bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
-                bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
                 if bk_name not in self._src_book_names:
                     return None, 0
                 else:
