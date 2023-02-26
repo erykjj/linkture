@@ -363,6 +363,8 @@ class Scriptures():
                         return None, 0
                     ch2 = c.zfill(3)
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                    return (b+ch1+v1, b+ch2+v2), None
+
                 else:
                     c = 1
                     v = result.group(1)
@@ -376,7 +378,7 @@ class Scriptures():
                         return None, 0
                     ch2 = ch1
                     v2 = v.zfill(3)
-                return (b+ch1+v1, b+ch2+v2), ch2
+                    return (b+ch1+v1, b+ch2+v2), ch2
 
             result = self._d.search(chunk)
             if result:
@@ -388,7 +390,7 @@ class Scriptures():
                     ch1 = c.zfill(3)
                     v1 = '001'
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch1)), ['Last']].values[0][0]).zfill(3)
-                    # return (b+ch1+v1, b+ch1+v2), ch1
+                    return (b+ch1+v1, b+ch1+v2), None
                 else:
                     c = 1
                     v = result.group(1)
@@ -396,7 +398,7 @@ class Scriptures():
                         return None, 0
                     ch1 = '001'
                     v1 = v.zfill(3)
-                return (b+ch1+v1, b+ch1+v1), ch1
+                return (b+ch1+v1, b+ch1+v1), None
 
             return None, 0
 
@@ -523,12 +525,12 @@ class Scriptures():
                     v1 = '1'
                     ch2 = result.group(2)
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0])
+                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", None
                 else:
                     ch1 = '1'
                     v1 = result.group(1)
-                    ch2 = ch1
                     v2 = result.group(2)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch2
+                    return f"{b}:{ch1}:{v1}-{b}:{ch1}:{v2}", ch1
 
             result = self._d.search(chunk)
             if result:
@@ -537,11 +539,11 @@ class Scriptures():
                     v1 = '1'
                     ch2 = ch1
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0])
-                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch2
+                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", None
                 else:
                     ch1 = '1'
                     v1 = result.group(1)
-                return f"{b}:{ch1}:{v1}", 0
+                return f"{b}:{ch1}:{v1}", None
 
             return None, 0
 
@@ -567,10 +569,11 @@ class Scriptures():
                 for bit in chunk.split(','):
                     if ch:
                         link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
-                        output += ', '
+                        # output += ', '
                     else:
                         link, ch = process_verses(bit, bk_num, last>1)
-                        output += '; '
+                        # output += '; '
+                    output += ', '
                     if tr_name and rest:
                         tr_name += ' '
                     for result in self._d_d.finditer(bit):
