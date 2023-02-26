@@ -364,7 +364,6 @@ class Scriptures():
                     ch2 = c.zfill(3)
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
                     return (b+ch1+v1, b+ch2+v2), None
-
                 else:
                     c = 1
                     v = result.group(1)
@@ -400,7 +399,7 @@ class Scriptures():
                     v1 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v1), None
 
-            return None, 0
+            return None, None
 
         lst = []
         rest = rest or ''
@@ -500,7 +499,6 @@ class Scriptures():
                 v2 = result.group(3)
                 return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch1
 
-
             result = self._v_cv.search(chunk)
             if result:
                 v1 = result.group(1)
@@ -510,7 +508,6 @@ class Scriptures():
                 if result:
                     ch1 = result.group(1)
                     return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch2
-
 
             result = self._cv.search(chunk)
             if result:
@@ -545,7 +542,7 @@ class Scriptures():
                     v1 = result.group(1)
                 return f"{b}:{ch1}:{v1}", None
 
-            return None, 0
+            return None, None
 
         def r(match):
             scripture = match.group(1).strip('}{')
