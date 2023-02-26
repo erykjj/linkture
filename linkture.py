@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.1.0'
+VERSION = '2.1.1'
 
 
 import argparse, json, regex, sqlite3
@@ -103,7 +103,10 @@ class Scriptures():
                                 \.\p{Z}? |
                                 \p{Pd})             )?
                 \p{L}[\p{L}\p{Pd}\.]+\p{Z}?
-                (?:\d+\p{Z}?[:,\p{Pd};]\p{Z}?)*\d+
+                (?:\d+\p{Z}?[:,\.\p{Pd};]\p{Z}?)*
+                (?<=[\p{L},:\p{Pd}]\p{Z} |
+                    [\p{L},:\p{Pd}]      |
+                    \.)\d+
                 (?![,\p{Pd}\p{L}])                  |
 
                 (?:[1-5] (?:\p{Z}    |
