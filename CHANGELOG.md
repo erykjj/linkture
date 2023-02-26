@@ -4,16 +4,17 @@
 
 ### Added
 
-- Added capitalization (upper-case) option -u
+- Added option (-u) for **capitalization** (upper-case) of book names
 
 ### Changed
 
-- Providing prefix and suffix for linking from commandline is optional now (just -l works)
+- Much **code clean-up/optimization**
+- Providing prefix and suffix for linking from commandline is optional (ie., just -l provides a default prefix and suffix)
 - Links always rewritten (--full by default)
 
 ### Fixed
 
-- Fixed minor (edge-case) rewriting issues in links
+- Fixed variour edge-case in link re-writing
 
 ### Removed
 
