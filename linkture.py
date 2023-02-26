@@ -588,7 +588,10 @@ class Scriptures():
 
         def r(match):
             _, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
-            return tr_name+' '+rest.replace(',', ', ')
+            if rest:
+                return tr_name+' '+rest.replace(',', ', ')
+            else:
+                return tr_name
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
