@@ -23,19 +23,19 @@ ____
 
 ```
 python3 linkture.py [-h] [-v] [-q] (-f in-file | -r reference) [-o out-file]
-                   [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                   [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t | -x]
+                    [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                    [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                    [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t | -x]
 
-parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more
-information
+parse and process (tag, translate, link, encode/decode) Bible scripture references;
+see README for more information
 
 options:
   -h, --help            show this help message and exit
   -v                    show version and exit
   -q                    don't show errors
   -o out-file           output file (terminal output if not provided)
-  --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
+  --language  {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate source language for book names (English if unspecified)
   --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate output language for book names (same as source if unspecified)
@@ -50,7 +50,7 @@ data source (one required):
 output format (optional):
   if provided, book names will be rewritten accordingly:
 
-  --full                output as full name - default (eg., "Genesis")
+  --full                output as full name  -  default (eg., "Genesis")
   --official            output as official abbreviation (eg., "Ge")
   --standard            output as standard abbreviation (eg., "Gen.")
 
@@ -88,12 +88,12 @@ $ ./linkture.py -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --t
 ['Johannes 17:17', '2. Timotheus 3:16, 17']
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -l 'https://my.website.com/' '/index.html" class="test"'
-<a href="https://my.website.com/43:17:17/index.html" class="test">Joh 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2Ti 3:16, 17</a>
+<a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
 
-$ ./linkture.py -r "Jean 17:17; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
+$ ./linkture.py -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
 Juan 17:17; 2 Tim. 3:16, 17
 ```
 
@@ -141,7 +141,7 @@ Parameters:
   * **"official"** for official abbreviation format (eg., "Ge")
   * *None* or not supplied - no re-write will be performed, *unless* translation is performed or *linking* (in which case, "full" is the default)
 * *upper* - if **True**, outputs book names in UPPER CASE (**False** by default)
-* *verbose* - if **True**, show (in terminal) any errors encountered while parsing (**False** by default)
+* *verbose* - if **True**, show (in terminal) any out-of-range errors encountered while parsing (**False** by default)
 
 ____
 ## Feedback
