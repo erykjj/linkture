@@ -8,12 +8,15 @@
 
 ### Fixed
 
-- Restricted greediness of parser
-- Don't add space if no chapter(s)/verse(s) follow book name
-
 ### Removed
 
 ____
+## [2.1.1] - 2023-02-27
+### Fixed
+
+- Restricted greediness of parser
+- Don't add space if no chapter(s)/verse(s) follow book name
+
 ## [2.1.0] - 2023-02-25
 ### Added
 
@@ -149,6 +152,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.1.1]:https://github.com/erykjj/linkture/releases/tag/v2.1.1
 [2.1.0]:https://github.com/erykjj/linkture/releases/tag/v2.1.0
 [2.0.2]:https://github.com/erykjj/linkture/releases/tag/v2.0.2
 [2.0.1]:https://github.com/erykjj/linkture/releases/tag/v2.0.1
