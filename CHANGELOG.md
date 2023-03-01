@@ -7,6 +7,7 @@
 ### Changed
 
 - code optimization
+- decoding expands into combined strings
 
 ### Fixed
 
