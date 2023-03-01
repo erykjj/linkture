@@ -221,25 +221,19 @@ class Scriptures():
                 bk_name, rest = result.group(1).strip(), result.group(2).strip()
                 bk_num, last = check_book(bk_name)
                 if bk_num:
-                    tr_name = self._tr_book_names[bk_num]
-                    script = rewrite_scripture(rest)
-                    return tr_name, script.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
-            return None, None, None, 0
+                    return rest.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
+            return None, None, 0
 
         def r(match):
             scripture = match.group(1)
-            tr_name, script, bk_num, last = scripture_parts(scripture)
-            if bk_num and tr_name:
-                if scripture in self._encoded.keys():
-                    code = self._encoded[scripture]
-                else:
-                    code = self._code_scripture(scripture, bk_num, script, last)
+            if scripture in self._encoded.keys():
+                return '{{' + scripture +'}}'
+            rest, bk_num, last = scripture_parts(scripture)
+            if bk_num:
+                code = self._code_scripture(scripture, bk_num, rest, last) # validation performed
                 if code:
                     self._encoded[scripture] = code
                     return '{{' + scripture +'}}'
-                    if self._upper:
-                        tr_name = tr_name.upper()
-                    return '{{' +f'{scripture}|{tr_name}|{script}|{bk_num}|{last}' +'}}'
             return scripture
 
         self._reported = []
