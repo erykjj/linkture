@@ -154,81 +154,34 @@ class Scriptures():
             print(f'** "{scripture}" - {message}')
             self._reported.append(scripture)
 
+    def _scripture_parts(self, scripture):
+
+        def check_book(bk_name):
+            bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
+            if bk_name not in self._src_book_names:
+                return None, 0
+            else:
+                bk_num = self._src_book_names[bk_name]
+            return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+
+        reduced = regex.sub(r'\p{Z}', '', scripture)
+        reduced = regex.sub(r'\p{Pd}', '-', reduced)
+        result = self._bk_ref.search(reduced)
+        if result:
+            bk_name, rest = result.group(1).strip(), result.group(2).strip()
+            bk_num, last = check_book(bk_name)
+            if bk_num:
+                tr_name = self._tr_book_names[bk_num]
+                return tr_name, rest.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
+        return None, None, None, 0
+
     def _locate_scriptures(self, text):
-
-        def rewrite_scripture(rest=''):
-
-            def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3) and consecutive ranges (1-2) as comma-separated sequences (1, 2)
-                found = True
-                while found:
-                    found = False
-                    for result in self._ddd.finditer(txt):
-                        end = result.group(3)
-                        start = result.group(1)
-                        if int(end) - int(start) == 2:
-                            found = True
-                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                    for result in self._d_dd.finditer(txt):
-                        end = result.group(3)
-                        mid = result.group(2)
-                        start = result.group(1)
-                        if int(end) - int(mid) == 1:
-                            found = True
-                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                    for result in self._dd_d.finditer(txt):
-                        end = result.group(3)
-                        mid = result.group(2)
-                        start = result.group(1)
-                        if int(mid) - int(start) == 1:
-                            found = True
-                            txt = regex.sub(result.group(), f"{start}-{end}", txt)
-                    for result in self._d_d.finditer(txt):
-                        end = result.group(2)
-                        start = result.group(1)
-                        if int(end) - int(start) == 1:
-                            found = True
-                            txt = regex.sub(result.group(), f"{start},{end}", txt)
-                    for result in self._cv_cv.finditer(txt):
-                        sc = result.group(1)
-                        sv = result.group(2)
-                        ec = result.group(3)
-                        ev = result.group(4)
-                        if int(sc) == int(ec):
-                            found = True
-                            txt = regex.sub(result.group(), f"{sc}:{sv}-{ev}", txt)
-                return txt
-
-            output = ''
-            for chunk in rest.split(';'):
-                chunk = reform_series(chunk)
-                output += chunk.strip()+'; '
-            return output.strip(';, ')
-
-        def scripture_parts(scripture):
-
-            def check_book(bk_name):
-                bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
-                if bk_name not in self._src_book_names:
-                    return None, 0
-                else:
-                    bk_num = self._src_book_names[bk_name]
-                return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
-
-            reduced = regex.sub(r'\p{Z}', '', scripture)
-            reduced = regex.sub(r'\p{Pd}', '-', reduced)
-            result = self._bk_ref.search(reduced)
-            if result:
-                bk_name, rest = result.group(1).strip(), result.group(2).strip()
-                bk_num, last = check_book(bk_name)
-                if bk_num:
-                    return rest.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
-            return None, None, 0
 
         def r(match):
             scripture = match.group(1)
             if scripture in self._encoded.keys():
                 return '{{' + scripture +'}}'
-            rest, bk_num, last = scripture_parts(scripture)
+            _, rest, bk_num, last = self._scripture_parts(scripture)
             if bk_num:
                 code = self._code_scripture(scripture, bk_num, rest, last) # validation performed
                 if code:
@@ -598,8 +551,9 @@ class Scriptures():
 
         def r(match):
             scripture = match.group(1).strip('}{')
-            _, tr_name, rest, bk_num, last = scripture.split('|')
-            bk_num = int(bk_num)
+            tr_name, rest, bk_num, last = self._scripture_parts(scripture)
+            if bk_num:
+                bk_num = int(bk_num)
             last = int(last)
             if rest == '': # whole book
                 v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
@@ -636,6 +590,7 @@ class Scriptures():
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
+
 
 def _main(args):
 
