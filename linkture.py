@@ -261,6 +261,9 @@ class Scriptures():
         return lst
 
     def tag_scriptures(self, text):
+        return self.rewrite_scriptures(text, True)
+
+    def rewrite_scriptures(self, text, tag=False):
 
         def r(match):
             script = match.group(1).strip('}{')
@@ -268,7 +271,10 @@ class Scriptures():
                 script = self.decode_scriptures(self._encoded[script])[0]
             if self._upper:
                 script = script.upper()
-            return '{{'+script+'}}'
+            if tag:
+                return '{{'+script+'}}'
+            else:
+                return script
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
@@ -636,19 +642,6 @@ class Scriptures():
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
-
-    def rewrite_scriptures(self, text):
-
-        def r(match):
-            _, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
-            if rest:
-                return tr_name+' '+rest.replace(',', ', ')
-            else:
-                return tr_name
-
-        text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r, text)
-
 
 def _main(args):
 
