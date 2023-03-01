@@ -435,7 +435,8 @@ class Scriptures():
         return lst
 
 
-    def _decode_scripture(self, bcv_range):
+    def _decode_scripture(self, bcv_range, book=None, chap=None):
+        cont = False
         if not bcv_range:
             return None
         start, end = bcv_range
@@ -445,35 +446,61 @@ class Scriptures():
         eb = int(end[:2])
         ec = int(end[2:5])
         ev = int(end[5:])
+        if not (sb == eb):
+            return None
         if not ((0 < sb <= 66) & (sb == eb)): # book out of range
             return None
-        if not (0 < sc <= ec <= self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0]): # chapter(s) out of range
+        lc = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0][0]
+        if not (0 < sc <= ec <= lc): # chapter(s) out of range
             return None
-        if not ((0 < sv <= self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0]) & (0 < ev <= self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0])): # verse(s) out of range
+        se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
+        le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
+        if not ((0 < sv <= se) & (0 < ev <= le)): # verse(s) out of range
             return None
         bk_name = self._tr_book_names[sb]
-        if self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0] == 1:
-            ch = ' '
-        else:
-            ch = f" {sc}:"
-        if start == end:
-            scripture = f"{bk_name}{ch}{sv}"
-        else:
-            if sc == ec:
-                if ev - sv == 1:
-                    scripture = f"{bk_name}{ch}{sv}, {ev}"
-                else:
-                    scripture = f"{bk_name}{ch}{sv}-{ev}"
+        c = ec - sc + 1
+        v = ev - sv + 1
+        if lc == 1:
+            if v == le:
+                scripture = f"{bk_name}"
+            elif v == 1:
+                scripture = f"{bk_name} {sv}"
+            elif v == 2:
+                scripture = f"{bk_name} {sv}, {ev}"
             else:
-                scripture = f"{bk_name}{ch}{sv}-{ec}:{ev}"
-        return scripture
+                scripture = f"{bk_name} {sv}-{ev}"
+        else:
+            if v == le:
+                if c == lc:
+                    scripture = f"{bk_name}"
+                elif c == 1:
+                    scripture = f"{bk_name} {sc}"
+                elif c == 2:
+                    scripture = f"{bk_name} {sc}, {ec}"
+                else:
+                    scripture = f"{bk_name} {sc}-{ec}"
+            elif c == 1:
+                if v == 1:
+                    scripture = f"{bk_name} {sc}:{sv}"
+                elif v == 2:
+                    scripture = f"{bk_name} {sc}:{sv}, {ev}"
+                else:
+                    scripture = f"{bk_name} {sc}:{sv}-{ev}"
+            else:
+                scripture = f"{bk_name} {sc}:{sv}-{ec}:{ev}"
+        return scripture, book, ec, False #cont
 
     def decode_scriptures(self, bcv_ranges=[]):
         scriptures = []
+        bk = None
+        ch = None
         for bcv_range in bcv_ranges:
-            scripture = self._decode_scripture(bcv_range)
+            scripture, bk, ch, cont = self._decode_scripture(bcv_range, bk, ch)
             if scripture:
-                scriptures.append(scripture)
+                if cont:
+                    scriptures[-1] = scriptures[-1] + scripture
+                else:
+                    scriptures.append(scripture)
         return scriptures
 
 
