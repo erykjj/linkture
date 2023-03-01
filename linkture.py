@@ -88,6 +88,7 @@ class Scriptures():
         cur.close()
         con.close()
         self._reported = []
+        self._encoded = {}
 
         # Scripture reference parser:
         self._first_pass = regex.compile(r"""(
@@ -229,8 +230,13 @@ class Scriptures():
             scripture = match.group(1)
             tr_name, script, bk_num, last = scripture_parts(scripture)
             if bk_num and tr_name:
-                code = self._code_scripture(scripture, bk_num, script, last)
+                if scripture in self._encoded.keys():
+                    code = self._encoded[scripture]
+                else:
+                    code = self._code_scripture(scripture, bk_num, script, last)
                 if code:
+                    self._encoded[scripture] = code
+                    return '{{' + scripture +'}}'
                     if self._upper:
                         tr_name = tr_name.upper()
                     return '{{' +f'{scripture}|{tr_name}|{script}|{bk_num}|{last}' +'}}'
@@ -246,27 +252,23 @@ class Scriptures():
         lst = []
         text = self._locate_scriptures(text)
         for scripture in regex.findall(self._tagged, text):
-            script, tr_name, rest, _, _ = scripture.strip('}{').split('|')
+            script = scripture.strip('}{')
             if self._rewrite:
-                if rest:
-                    lst.append(tr_name+' '+rest.replace(',', ', '))
-                else:
-                    lst.append(tr_name)
-            else:
-                lst.append(script)
+                script = self.decode_scriptures(self._encoded[script])[0]
+            if self._upper:
+                script = script.upper()
+            lst.append(script)
         return lst
 
     def tag_scriptures(self, text):
 
         def r(match):
-            script, tr_name, rest, _, _ = match.group(1).strip('}{').split('|')
+            script = match.group(1).strip('}{')
             if self._rewrite:
-                if rest:
-                    return '{{'+tr_name+' '+rest.replace(',', ', ')+'}}'
-                else:
-                    return '{{'+tr_name+'}}'
-            else:
-                return '{{'+script+'}}'
+                script = self.decode_scriptures(self._encoded[script])[0]
+            if self._upper:
+                script = script.upper()
+            return '{{'+script+'}}'
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text)
