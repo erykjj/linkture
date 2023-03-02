@@ -90,6 +90,7 @@ class Scriptures():
         con.close()
         self._reported = []
         self._encoded = {}
+        self._linked = {}
 
         # Scripture reference parser:
         self._first_pass = regex.compile(r"""(
@@ -531,6 +532,8 @@ class Scriptures():
                 return f'{prefix}{lnk}{suffix}{match.group(1)}</a>'
 
             scripture = match.group(1).strip('}{')
+            if scripture in self._linked.keys():
+                return self._linked[scripture]
             output = ''
             bk = ''
             ch = 0
@@ -540,6 +543,7 @@ class Scriptures():
                 scrip, bk, ch, _ = self._decode_scripture(bcv_range, bk, ch)
                 lnk = convert_range(bcv_range)
                 output += regex.sub(self._chunk, r2, scrip)
+            self._linked[scripture] = output.strip(' ;,')
             return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
