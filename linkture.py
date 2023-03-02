@@ -74,6 +74,7 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
+                # TODO: processing accented chars without unidecode?
                 normalized = regex.sub(r'\p{P}|\p{Z}', '', rec[i].upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
@@ -179,7 +180,19 @@ class Scriptures():
 
     def _locate_scriptures(self, text):
 
-        def r(match):
+        def r1(match):
+            scripture = match.group(1)
+            if scripture in self._encoded.keys():
+                return '{{' + scripture +'}}'
+            _, rest, bk_num, last = self._scripture_parts(scripture)
+            if bk_num:
+                code = self._code_scripture(scripture, bk_num, rest, last) # validation performed
+                if code:
+                    self._encoded[scripture] = code
+                    return '{{' + scripture +'}}'
+            return '@%%@' + scripture +'%@@%' # So as not to lose {{ }} on unrecognized pre-tagged scriptures (other language, etc.)
+
+        def r2(match):
             scripture = match.group(1)
             if scripture in self._encoded.keys():
                 return '{{' + scripture +'}}'
@@ -192,9 +205,9 @@ class Scriptures():
             return scripture
 
         self._reported = []
-        text = regex.sub(self._pretagged, r, text)
-        text = regex.sub(self._first_pass, r, text)
-        return regex.sub(self._second_pass, r, text)
+        text = regex.sub(self._pretagged, r1, text)
+        text = regex.sub(self._first_pass, r2, text)
+        return regex.sub(self._second_pass, r2, text)
 
 
     def list_scriptures(self, text):
@@ -226,7 +239,7 @@ class Scriptures():
                 return script
 
         text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r, text)
+        return regex.sub(self._tagged, r, text).replace('@%%@', '{{').replace('%@@%', '}}')
 
 
     def _code_scripture(self, scripture, bk_num, rest, last):
@@ -398,7 +411,7 @@ class Scriptures():
                 lst.append(tup)
         return lst
 
-    def code_scriptures(self, text):
+    def code_scriptures(self, text): # FIX:
         text = self._locate_scriptures(text)
         lst = []
         for scripture in regex.findall(self._tagged, text):
@@ -537,7 +550,7 @@ class Scriptures():
             return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r1, text)
+        return regex.sub(self._tagged, r1, text).replace('@%%@', '{{').replace('%@@%', '}}')
 
 
 def _main(args):
