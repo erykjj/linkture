@@ -136,7 +136,7 @@ class Scriptures():
                 [\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
-        self._tagged = regex.compile(r'({{.*?}})')
+        self._tagged = regex.compile(r'({{.*?}})') # CHECK: necessary to include braces?
         self._pretagged = regex.compile(r'{{(.*?)}}')
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
