@@ -231,6 +231,25 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
+        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3)
+            for result in self._d_dd.finditer(txt, overlapped=True):
+                    end = result.group(3)
+                    mid = result.group(2)
+                    start = result.group(1)
+                    if int(end) - int(mid) == 1:
+                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
+            for result in self._ddd.finditer(txt, overlapped=True):
+                end = result.group(3)
+                start = result.group(1)
+                if int(end) - int(start) == 2:
+                    txt = regex.sub(result.group(), f"{start}-{end}", txt)
+            for result in self._ddd.finditer(txt, overlapped=True):
+                end = result.group(3)
+                start = result.group(1)
+                if int(end) - int(start) == 2:
+                    txt = regex.sub(result.group(), f"{start}-{end}", txt)
+            return txt
+
         def validate(b, ch, vs):
             c = int(ch)
             v = int(vs)
@@ -358,16 +377,14 @@ class Scriptures():
             return None, None
 
         lst = []
-        rest = rest or ''
         if rest == '': # whole book
             v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
             if last == 1:
                 rest = f'1-{v}'
             else:
                 rest = f'1:1-{last}:{v}'
-        for result in regex.finditer(self._dd, rest, overlapped=True):
-            if int(result.group(2)) - int(result.group(1)) == 1:
-                rest = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', rest)
+        else:
+            rest = reform_series(rest)
         for chunk in rest.split(';'):
             ch = None
             for bit in chunk.split(','):
@@ -456,7 +473,7 @@ class Scriptures():
                         bk_name = ''
                         ch = ', '
                     else:
-                        bk_name = '; '
+                        bk_name = ';'
                 if v == 1:
                     scripture = f"{bk_name} {ch}{sv}"
                 elif v == 2:
@@ -575,7 +592,7 @@ def _main(args):
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
     APP = Path(__file__).stem
-    parser = argparse.ArgumentParser(description="parse and process (tag, translate, link, encode/decode) Bible scripture references; see README for more information")
+    parser = argparse.ArgumentParser(description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information")
 
     parser.add_argument('-v', action='version', version=f"{APP} {VERSION}", help='show version and exit')
     parser.add_argument('-q', action='store_true', help="don't show errors")
