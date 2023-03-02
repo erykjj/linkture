@@ -411,12 +411,11 @@ class Scriptures():
                 lst.append(tup)
         return lst
 
-    def code_scriptures(self, text): # FIX:
+    def code_scriptures(self, text):
         text = self._locate_scriptures(text)
         lst = []
         for scripture in regex.findall(self._tagged, text):
-            script, _, rest, bk_num, last = scripture.strip('}{').split('|')
-            bcv_ranges = self._code_scripture(script, int(bk_num), rest, int(last)) or []
+            bcv_ranges = self._encoded[scripture.strip('}{')]
             for bcv_range in bcv_ranges:
                 lst.append(bcv_range)
         return lst
