@@ -93,7 +93,7 @@ class Scriptures():
 
         # Scripture reference parser:
         self._first_pass = regex.compile(r"""(
-                (?![^{]*}) # ignore already marked
+                {{.*?}}                              |
 
                 (?:[1-5] (?:\p{Z}    |
                             \.\p{Z}? |
@@ -137,7 +137,6 @@ class Scriptures():
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._tagged = regex.compile(r'({{.*?}})') # CHECK: necessary to include braces?
-        self._pretagged = regex.compile(r'{{(.*?)}}')
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
@@ -180,8 +179,13 @@ class Scriptures():
 
     def _locate_scriptures(self, text):
 
-        def r1(match):
+        def r(match):
             scripture = match.group(1)
+            if regex.match(r'{{.*}}', scripture):
+                tag = True
+                scripture = scripture.strip('}{')
+            else:
+                tag = False
             if scripture in self._encoded.keys():
                 return '{{' + scripture +'}}'
             _, rest, bk_num, last = self._scripture_parts(scripture)
@@ -190,24 +194,14 @@ class Scriptures():
                 if code:
                     self._encoded[scripture] = code
                     return '{{' + scripture +'}}'
-            return '@%%@' + scripture +'%@@%' # So as not to lose {{ }} on unrecognized pre-tagged scriptures (other language, etc.)
-
-        def r2(match):
-            scripture = match.group(1)
-            if scripture in self._encoded.keys():
-                return '{{' + scripture +'}}'
-            _, rest, bk_num, last = self._scripture_parts(scripture)
-            if bk_num:
-                code = self._code_scripture(scripture, bk_num, rest, last) # validation performed
-                if code:
-                    self._encoded[scripture] = code
-                    return '{{' + scripture +'}}'
-            return scripture
+            if tag:
+                return '»»|' + scripture +'|««' # So as not to lose {{ }} on unrecognized pre-tagged scriptures (other language, etc.)
+            else:
+                return scripture
 
         self._reported = []
-        text = regex.sub(self._pretagged, r1, text)
-        text = regex.sub(self._first_pass, r2, text)
-        return regex.sub(self._second_pass, r2, text)
+        text = regex.sub(self._first_pass, r, text)
+        return regex.sub(self._second_pass, r, text)
 
 
     def list_scriptures(self, text):
@@ -239,7 +233,7 @@ class Scriptures():
                 return script
 
         text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r, text).replace('@%%@', '{{').replace('%@@%', '}}')
+        return regex.sub(self._tagged, r, text).replace('»»|', '{{').replace('|««', '}}')
 
 
     def _code_scripture(self, scripture, bk_num, rest, last):
@@ -549,7 +543,7 @@ class Scriptures():
             return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r1, text).replace('@%%@', '{{').replace('%@@%', '}}')
+        return regex.sub(self._tagged, r1, text).replace('»»|', '{{').replace('|««', '}}')
 
 
 def _main(args):
