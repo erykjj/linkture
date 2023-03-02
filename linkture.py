@@ -149,6 +149,8 @@ class Scriptures():
         self._dd = regex.compile(r'(\d+),(\d+)')
         self._d = regex.compile(r'(\d+)')
 
+        self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
+
     def _error_report(self, scripture, message):
         if self._verbose and (scripture not in self._reported):
             print(f'** "{scripture}" - {message}')
@@ -485,111 +487,40 @@ class Scriptures():
 
     def link_scriptures(self, text, prefix='<a href="https://', suffix='>'):
 
-        def process_verses(chunk, book, multi):
-            b = str(book)
+        def convert_range(bcv_range):
+            if not bcv_range:
+                return None, None
+            start, end = bcv_range
+            sb = int(start[:2])
+            sc = int(start[2:5])
+            sv = int(start[5:])
+            eb = int(end[:2])
+            ec = int(end[2:5])
+            ev = int(end[5:])
+            if start == end:
+                return f"{sb}:{sc}:{sv}"
+            else:
+                return f"{sb}:{sc}:{sv}-{eb}:{ec}:{ev}"
 
-            result = self._cv_cv.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                ch2 = result.group(3)
-                v2 = result.group(4)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch2
+        def r1(match):
 
-            result = self._cv_v.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                ch2 = ch1
-                v2 = result.group(3)
-                return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch1
+            def r2(match):
+                return f'{prefix}{lnk}{suffix}{match.group(1)}</a>'
 
-            result = self._v_cv.search(chunk)
-            if result:
-                v1 = result.group(1)
-                ch2 = result.group(2)
-                v2 = result.group(3)
-                result = regex.match(r'(.*?):', chunk)
-                if result:
-                    ch1 = result.group(1)
-                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", ch2
-
-            result = self._cv.search(chunk)
-            if result:
-                ch1 = result.group(1)
-                v1 = result.group(2)
-                return f"{b}:{ch1}:{v1}", ch1
-
-            result = self._d_d.search(chunk)
-            if result:
-                if multi:
-                    ch1 = result.group(1)
-                    v1 = '1'
-                    ch2 = result.group(2)
-                    v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0])
-                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", None
-                else:
-                    ch1 = '1'
-                    v1 = result.group(1)
-                    v2 = result.group(2)
-                    return f"{b}:{ch1}:{v1}-{b}:{ch1}:{v2}", ch1
-
-            result = self._d.search(chunk)
-            if result:
-                if multi:
-                    ch1 = result.group(1)
-                    v1 = '1'
-                    ch2 = ch1
-                    v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0])
-                    return f"{b}:{ch1}:{v1}-{b}:{ch2}:{v2}", None
-                else:
-                    ch1 = '1'
-                    v1 = result.group(1)
-                return f"{b}:{ch1}:{v1}", None
-
-            return None, None
-
-        def r(match):
             scripture = match.group(1).strip('}{')
-            tr_name, rest, bk_num, last = self._scripture_parts(scripture)
-            if bk_num:
-                bk_num = int(bk_num)
-            last = int(last)
-            if rest == '': # whole book
-                v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
-                if last == 1:
-                    output = f'{prefix}{bk_num}:1:1-{bk_num}:1:{v}{suffix}{tr_name}</a>'
-                else:
-                    output = f'{prefix}{bk_num}:1:1-{bk_num}:{last}:{v}{suffix}{tr_name}</a>'
-                return output
             output = ''
-            rest = rest or ''
-            for chunk in rest.split(';'):
-                for result in regex.finditer(self._dd, rest, overlapped=True):
-                    if int(result.group(2)) - int(result.group(1)) == 1:
-                        chunk = regex.sub(result.group(), f'{result.group(1)}-{result.group(2)}', chunk)
-                ch = 0
-                for bit in chunk.split(','):
-                    if ch:
-                        link, ch = process_verses(f"{ch}:{bit}", bk_num, last>1)
-                        # output += ', '
-                    else:
-                        link, ch = process_verses(bit, bk_num, last>1)
-                        # output += '; '
-                    output += ', '
-                    if tr_name and rest:
-                        tr_name += ' '
-                    for result in self._d_d.finditer(bit):
-                        end = result.group(2)
-                        start = result.group(1)
-                        if int(end) - int(start) == 1:
-                            bit = regex.sub(result.group(), f"{start}, {end}", bit)
-                    output += f'{prefix}{link}{suffix}{tr_name}{bit.strip()}</a>'
-                    tr_name = ''
+            bk = ''
+            ch = 0
+            if self._upper:
+                scripture = scripture.upper()
+            for bcv_range in self._encoded[scripture]:
+                scrip, bk, ch, _ = self._decode_scripture(bcv_range, bk, ch)
+                lnk = convert_range(bcv_range)
+                output += regex.sub(self._chunk, r2, scrip)
             return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
-        return regex.sub(self._tagged, r, text)
+        return regex.sub(self._tagged, r1, text)
 
 
 def _main(args):
