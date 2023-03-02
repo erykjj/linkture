@@ -7,7 +7,7 @@
 ### Changed
 
 - Another **major code reduction and optimization**
-  - re-using previously processed results to significantly speed up functionality
+  - re-using previously processed results to speed up functionality
 - Decoding expands into combined strings
 
 ### Fixed
