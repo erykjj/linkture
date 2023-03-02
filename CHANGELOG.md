@@ -12,6 +12,8 @@
 
 ### Fixed
 
+- Fixed tags on pre-tagged scriptures were being removed if the scripture was not recognized (another language, etc.)
+
 ### Removed
 
 ____
