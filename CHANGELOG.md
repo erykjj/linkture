@@ -4,9 +4,18 @@
 
 ### Added
 
+- Re-added unidecode for latin-based languages only
+  - Now Chinese, Japanese, etc. work correctly
+
 ### Changed
 
+- Another **major code reduction and optimization**
+  - re-using previously processed results to imporove functionality
+- Decoding expands into combined strings
+
 ### Fixed
+
+- Fixed tags on pre-tagged scriptures were being removed if the scripture was not recognized (another language, etc.)
 
 ### Removed
 
