@@ -4,6 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [2.2.0] - 2023-03-04
+### Added
+
 - Re-added unidecode for latin-based languages only
   - Now Chinese, Japanese, etc. work correctly
 
@@ -17,9 +27,6 @@
 
 - Fixed tags on pre-tagged scriptures were being removed if the scripture was not recognized (another language, etc.)
 
-### Removed
-
-____
 ## [2.1.1] - 2023-02-27
 ### Fixed
 
@@ -161,6 +168,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.2.0]:https://github.com/erykjj/linkture/releases/tag/v2.2.0
 [2.1.1]:https://github.com/erykjj/linkture/releases/tag/v2.1.1
 [2.1.0]:https://github.com/erykjj/linkture/releases/tag/v2.1.0
 [2.0.2]:https://github.com/erykjj/linkture/releases/tag/v2.0.2
