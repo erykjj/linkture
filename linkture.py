@@ -34,9 +34,11 @@ import pandas as pd
 
 from ast import literal_eval
 from pathlib import Path
+from unidecode import unidecode
 
 
 available_languages = ('Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish')
+non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian')
 
 
 class Scriptures():
@@ -50,6 +52,10 @@ class Scriptures():
                 raise ValueError("Indicated translation language is not an option!")
         else:
             translate = language
+        if language in non_latin:
+            self._nl = True
+        else:
+            self._nl = False
         self._rewrite = bool((language != translate) or form)
         self._upper = upper
         if form == "full":
@@ -74,8 +80,10 @@ class Scriptures():
             self._tr_book_names.insert(rec[2], tr)
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
             for i in range(3,6):
-                # TODO: processing accented chars without unidecode?
-                normalized = regex.sub(r'\p{P}|\p{Z}', '', rec[i].upper())
+                item = rec[i]
+                if not self._nl:
+                    item = unidecode(item)
+                normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                 self._src_book_names[normalized] = rec[2]
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
@@ -83,6 +91,8 @@ class Scriptures():
             for row in b[language]:
                 names = row[1].split(', ')
                 for item in names:
+                    if not self._nl:
+                        item = unidecode(item)
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
@@ -137,7 +147,7 @@ class Scriptures():
                 [\p{Pd}\.]?[\p{L}\p{Pd}\.\p{Z}]{2,})(.*)
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
-        self._tagged = regex.compile(r'({{.*?}})') # CHECK: necessary to include braces?
+        self._tagged = regex.compile(r'({{.*?}})')
 
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
@@ -160,6 +170,8 @@ class Scriptures():
     def _scripture_parts(self, scripture):
 
         def check_book(bk_name):
+            if not self._nl:
+                bk_name = unidecode(bk_name) # NOTE: this converts Génesis to Genesis and English recognizes it !! Feature :-)
             bk_name = regex.sub(r'\p{P}|\p{Z}', '', bk_name.upper())
             if bk_name not in self._src_book_names:
                 return None, 0
