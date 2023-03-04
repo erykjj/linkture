@@ -268,6 +268,11 @@ class Scriptures():
                 start = result.group(1)
                 if int(end) - int(start) == 2:
                     txt = regex.sub(result.group(), f"{start}-{end}", txt)
+            for result in self._dd.finditer(txt, overlapped=True):
+                    end = result.group(2)
+                    start = result.group(1)
+                    if int(end) - int(start) == 1:
+                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
             return txt
 
         def validate(b, ch, vs):
