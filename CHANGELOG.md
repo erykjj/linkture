@@ -4,6 +4,9 @@
 
 ### Added
 
+- Re-added unidecode for latin-based languages only
+  - Now Chinese, Japanese, etc. work correctly
+
 ### Changed
 
 - Another **major code reduction and optimization**
