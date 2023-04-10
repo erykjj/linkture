@@ -7,8 +7,7 @@
 ### Changed
 
 - Standardized HTML tag for commandline and function
-  - If no prefix or suffix is provided, *both* return a skeleton `<a>` tag: `<a href=40:6:33>Matthew 6:33</a>` (note the lack of quotes, etc.)
-  - To get a proper tag, add a prefix and suffix as required: `-l '"https://my.website.com/' '/index.html" class="test"'` --> `<a href="https://my.website.com/40:6:33/index.html" class="test">Matthew 6:33</a>`
+  - If no prefix or suffix is provided, *both* return a skeleton `<a>` tag; to get a proper tag, add a prefix and suffix as required:
 
 ### Fixed
 
