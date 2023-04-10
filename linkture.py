@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.2.0'
+VERSION = '2.3.0'
 
 
 import argparse, json, regex, sqlite3
@@ -526,7 +526,7 @@ class Scriptures():
         return scriptures
 
 
-    def link_scriptures(self, text, prefix='<a href="https://', suffix='>'):
+    def link_scriptures(self, text, prefix='<a href=', suffix='>'):
 
         def convert_range(bcv_range):
             if not bcv_range:
@@ -576,8 +576,8 @@ def _main(args):
             if len(args['l']) > 1:
                 suffix = args['l'][1]
             if len(args['l']) > 0:
-                prefix = args['l'][0] #or 'https://my.website.com/'
-            return s.link_scriptures(text, '<a href="'+prefix, suffix+'>')
+                prefix = args['l'][0]
+            return s.link_scriptures(text, '<a href='+prefix, suffix+'>')
         elif args['c']:
             return s.code_scriptures(text)
         elif args['d']:
