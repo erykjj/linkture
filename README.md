@@ -87,7 +87,7 @@ $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -c
 $ ./linkture.py -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
 ['Johannes 17:17', '2. Timotheus 3:16, 17']
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -l 'https://my.website.com/' '/index.html" class="test"'
+$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -l '"https://my.website.com/' '/index.html" class="test"'
 <a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
 
 $ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
