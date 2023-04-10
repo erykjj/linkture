@@ -6,14 +6,17 @@
 
 ### Changed
 
-- Standardized HTML tag for commandline and function
-  - If no prefix or suffix is provided, *both* return a skeleton `<a>` tag; to get a proper tag, add a prefix and suffix as required:
-
 ### Fixed
 
 ### Removed
 
 ____
+## [2.3.0] - 2023-04-10
+### Changed
+
+- Standardized `<a>` tag prefix/suffix for commandline and function
+  - If no prefix or suffix is provided, *both* return a skeleton `<a>` tag; to get a proper tag, add a prefix and suffix as required
+
 ## [2.2.0] - 2023-03-04
 ### Added
 
@@ -171,6 +174,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.3.0]:https://github.com/erykjj/linkture/releases/tag/v2.3.0
 [2.2.0]:https://github.com/erykjj/linkture/releases/tag/v2.2.0
 [2.1.1]:https://github.com/erykjj/linkture/releases/tag/v2.1.1
 [2.1.0]:https://github.com/erykjj/linkture/releases/tag/v2.1.0
