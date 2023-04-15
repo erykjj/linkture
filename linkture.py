@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.3.0'
+VERSION = '2.3.1'
 
 
 import argparse, json, regex, sqlite3
@@ -115,7 +115,8 @@ class Scriptures():
                    [IV]{1,3} (?:\p{Z}    |
                                 \.\p{Z}? |
                                 \p{Pd})             )?
-                \p{L}[\p{L}\p{Pd}\.]+\p{Z}?
+                (?!.*[\p{Pd}\.]{2})\p{L}[\p{L}\p{Pd}\.]+\p{Z}?
+                # (?!.*[\p{Pd}\.]{2})\p{L}(?:\p{L}+|[\p{Pd}\.]{1})+\p{Z}?
                 (?:\d+\p{Z}?[:,\.\p{Pd};]\p{Z}?)*
                 (?<=[\p{L},:\p{Pd}]\p{Z} |
                     [\p{L},:\p{Pd}]      |
@@ -131,7 +132,7 @@ class Scriptures():
                    [IV]{1,3} (?:\p{Z}    |
                                 \.\p{Z}? |
                                 \p{Pd})             )
-                \p{L}[\p{L}\p{Pd}\.]*\p{L}
+                (?!.*[\p{Pd}\.]{2})\p{L}[\p{L}\p{Pd}\.]*\p{L}
             )""", flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._second_pass = regex.compile(r"""(
