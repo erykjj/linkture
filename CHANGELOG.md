@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Improved scripture detection
+
 ### Removed
 
 ____
