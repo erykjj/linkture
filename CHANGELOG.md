@@ -9,6 +9,7 @@
 ### Fixed
 
 - Improved scripture detection
+- Improved selecting correct chapter separator (',' or ';')
 
 ### Removed
 
