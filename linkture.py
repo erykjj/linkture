@@ -418,7 +418,7 @@ class Scriptures():
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
                 if not tup:
-                    self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE') # TODO: carry on with the rest
+                    self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE')
                     return None
                 lst.append(tup)
         return lst
