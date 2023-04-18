@@ -8,12 +8,15 @@
 
 ### Fixed
 
-- Improved scripture detection
-- Improved selecting correct chapter separator (',' or ';')
-
 ### Removed
 
 ____
+## [2.3.1] - 2023-04-18
+### Fixed
+
+- Improved scripture detection
+- Improved selecting correct chapter separator (',' or ';')
+
 ## [2.3.0] - 2023-04-10
 ### Changed
 
@@ -177,6 +180,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.3.1]:https://github.com/erykjj/linkture/releases/tag/v2.3.1
 [2.3.0]:https://github.com/erykjj/linkture/releases/tag/v2.3.0
 [2.2.0]:https://github.com/erykjj/linkture/releases/tag/v2.2.0
 [2.1.1]:https://github.com/erykjj/linkture/releases/tag/v2.1.1
