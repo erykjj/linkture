@@ -116,7 +116,6 @@ class Scriptures():
                                 \.\p{Z}? |
                                 \p{Pd})             )?
                 (?!.*[\p{Pd}\.]{2})\p{L}[\p{L}\p{Pd}\.]+\p{Z}?
-                # (?!.*[\p{Pd}\.]{2})\p{L}(?:\p{L}+|[\p{Pd}\.]{1})+\p{Z}?
                 (?:\d+\p{Z}?[:,\.\p{Pd};]\p{Z}?)*
                 (?<=[\p{L},:\p{Pd}]\p{Z} |
                     [\p{L},:\p{Pd}]      |
@@ -419,7 +418,7 @@ class Scriptures():
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
                 if not tup:
-                    self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE')
+                    self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE') # TODO: carry on with the rest
                     return None
                 lst.append(tup)
         return lst
@@ -434,7 +433,7 @@ class Scriptures():
         return lst
 
 
-    def _decode_scripture(self, bcv_range, book='', chap=0):
+    def _decode_scripture(self, bcv_range, book='', chap=0, sep=';'):
         if not bcv_range:
             return None, '', 0, False
         start, end = bcv_range
@@ -456,14 +455,12 @@ class Scriptures():
         le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
         if not ((0 < sv <= se) & (0 < ev <= le)): # verse(s) out of range
             return None, '', 0, False
-
         bk_name = self._tr_book_names[sb]
         if book == bk_name:
             cont = True
         else:
             cont = False
             book = bk_name
-
         c = ec - sc + 1
         v = ev - sv + 1
         if lc == 1:
@@ -477,13 +474,12 @@ class Scriptures():
                 scripture = f"{bk_name} {sv}, {ev}"
             else:
                 scripture = f"{bk_name} {sv}-{ev}"
+            sep = ';'
         else:
             ch = f"{sc}:"
-            if cont:
-                bk_name = ','
             if v == le:
                 if cont:
-                    bk_name = ','
+                    bk_name = sep
                 if c == lc:
                     scripture = f"{bk_name.strip(',')}"
                 elif c == 1:
@@ -492,6 +488,7 @@ class Scriptures():
                     scripture = f"{bk_name} {sc}, {ec}"
                 else:
                     scripture = f"{bk_name} {sc}-{ec}"
+                sep = ','
             elif c == 1:
                 if cont:
                     if sc == chap:
@@ -505,20 +502,23 @@ class Scriptures():
                     scripture = f"{bk_name} {ch}{sv}, {ev}"
                 else:
                     scripture = f"{bk_name} {ch}{sv}-{ev}"
+                sep = ';'
             else:
                 if cont and (sc == chap):
                     bk_name = ''
                     ch = ', '
                 scripture = f"{bk_name} {ch}{sv}-{ec}:{ev}"
+                sep = ';'
         chap = ec
-        return scripture.strip(), book, chap, cont
+        return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
         scriptures = []
         bk = ''
         ch = 0
+        sep = ';'
         for bcv_range in bcv_ranges:
-            scripture, bk, ch, cont = self._decode_scripture(bcv_range, bk, ch)
+            scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, sep)
             if scripture:
                 if cont:
                     scriptures[-1] = scriptures[-1] + scripture
@@ -555,10 +555,11 @@ class Scriptures():
             output = ''
             bk = ''
             ch = 0
+            sep = ';'
             if self._upper:
                 scripture = scripture.upper()
             for bcv_range in self._encoded[scripture]:
-                scrip, bk, ch, _ = self._decode_scripture(bcv_range, bk, ch)
+                scrip, bk, ch, _, sep = self._decode_scripture(bcv_range, bk, ch, sep)
                 lnk = convert_range(bcv_range)
                 output += regex.sub(self._chunk, r2, scrip)
             self._linked[scripture] = output.strip(' ;,')
@@ -649,5 +650,4 @@ if __name__ == "__main__":
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
     args = parser.parse_args()
-
     _main(vars(args))
