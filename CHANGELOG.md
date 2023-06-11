@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- STABLE
+
 ### Added
 
 ### Changed
