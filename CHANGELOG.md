@@ -6,6 +6,10 @@
 
 ### Changed
 
+- Corrected last verse:
+  - Mark 16:8
+  - John 7:52
+
 ### Fixed
 
 ### Removed
