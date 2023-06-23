@@ -13,6 +13,8 @@ These found references can be **extracted** as a list of references, or a list o
 
 The parser tries to deal "intelligently" with different notations, but there are simply too many "edge-cases". If something isn't being parsed properly, try to rewrite the original reference(s) in a standard way or use {{ }} to force the detection.
 
+A couple of auxiliary functions provide a verse number lookup (either by BCV reference or integer). These can be useful to calculate the number of verses between two references, etc.
+
 ____
 ## Installation
 
@@ -22,26 +24,28 @@ ____
 ## Command-line usage
 
 ```
-python3 linkture.py [-h] [-v] [-q] (-f in-file | -r reference) [-o out-file]
-                    [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                    [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                    [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t | -x]
+> python3 linkture.py -h
+usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
+                   [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                   [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
+                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t |
+                   -x] [-b BCV | -n verse]
 
-parse and process (tag, translate, link, encode/decode) Bible scripture references;
-see README for more information
+PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
+See README for more information
 
 options:
   -h, --help            show this help message and exit
   -v                    show version and exit
   -q                    don't show errors
   -o out-file           output file (terminal output if not provided)
-  --language  {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
+  --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate source language for book names (English if unspecified)
   --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
                         indicate output language for book names (same as source if unspecified)
   -u                    capitalize (upper-case) book names
 
-data source (one required):
+data source (one required - except for auxiliary functions, which only take command-line arguments):
   choose between terminal or file input:
 
   -f in-file            get input from file (UTF-8)
@@ -63,6 +67,10 @@ type of conversion:
                         create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)
   -t                    tag scriptures with {{ }}
   -x                    extract list of scripture references
+
+auxiliary functions:
+  -b BCV                return the number of verse with code "BCV" ("bbcccvvv")
+  -n verse              return the BCV code for verse number "verse" (integer value)
 ```
 
 Or, make it executable first and run directly:
@@ -98,15 +106,20 @@ Johannes 17:17; 2 Timotheüs 3:16, 17
 
 $ ./linkture.py -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
 Juan 17:17; 2 Tim. 3:16, 17
+
+$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
+['Matthew 17:17']
+
+$ ./linkture.py -n 31078
+66022021
+
+$ ./linkture.py -b '01001001'
+1
 ```
 
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
 
-Unless you use `-q`, you will see in the terminal any out-of-range errors encountered while parsing. Of course, these entries will not be processed, but they will not affect the rest of the operation:
-```
-$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
-['Matthew 17:17']
-```
+Unless you use `-q`, you will see in the terminal any out-of-range errors encountered while parsing. Of course, these entries will not be processed, but they will not affect the rest of the operation.
 
 ## Script/import usage
 
@@ -130,6 +143,12 @@ tagged = s.tag_scriptures(txt)
 
 txt = s.rewrite_scriptures(txt)
 # the references will simply be rewritten in the desired language and format
+
+i = s.verse_number(txt)
+# returns the number of the verse identified by the provided BCV-format string
+
+txt = s.number_verse(i)
+# returns a BCV-format string for the verse indicated by the provided integer (1-31078)
 ```
 
 Parameters:
