@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = '2.3.1'
+VERSION = 'v2.4.0'
 
 
 import argparse, json, regex, sqlite3
@@ -96,6 +96,7 @@ class Scriptures():
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
+        self._verses = pd.read_sql_query("SELECT * FROM Verses;", con)
         cur.close()
         con.close()
         self._reported = []
@@ -569,9 +570,23 @@ class Scriptures():
         return regex.sub(self._tagged, r1, text).replace('»»|', '{{').replace('|««', '}}')
 
 
+    def verse_number(self, bcv):
+        return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+
+    def number_verse(self, verse):
+        bcv = ''
+        for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
+            bcv += str(i).zfill(3)
+        return bcv[1:]
+
+
 def _main(args):
 
     def switchboard(text):
+        if args['n']:
+            return s.number_verse(args['n'])
+        elif args['b']:
+            return s.verse_number(args['b'])
         if args['l'] is not None:
             prefix = '<a href='
             suffix = '>'
@@ -648,6 +663,11 @@ if __name__ == "__main__":
     tpe.add_argument('-l', nargs='*', metavar=('prefix', 'suffix'), help='create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)')
     tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
+
+    aux_group = parser.add_argument_group('auxiliary functions')
+    aux = aux_group.add_mutually_exclusive_group(required=False)
+    aux.add_argument('-b', metavar=('BCV'), help='return the number of verse with code "BCV" ("bbcccvvv")')
+    aux.add_argument('-n', metavar=('verse'), help='return the BCV code for verse number "verse" (integer value)')
 
     args = parser.parse_args()
     _main(vars(args))
