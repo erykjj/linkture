@@ -4,6 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [2.4.0] - 2023-06-23
+### Added
+
 - Added verse number lookup functions and data
   - Excludes spurious John 7:53-8:11
 
@@ -13,11 +23,6 @@
   - Mark 16:8
   - John 7:52
 
-### Fixed
-
-### Removed
-
-____
 ## [2.3.1] - 2023-04-18
 ### Fixed
 
@@ -187,6 +192,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.4.0]:https://github.com/erykjj/linkture/releases/tag/v2.4.0
 [2.3.1]:https://github.com/erykjj/linkture/releases/tag/v2.3.1
 [2.3.0]:https://github.com/erykjj/linkture/releases/tag/v2.3.0
 [2.2.0]:https://github.com/erykjj/linkture/releases/tag/v2.2.0
