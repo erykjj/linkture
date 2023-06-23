@@ -4,6 +4,9 @@
 
 ### Added
 
+- Added verse number lookup functions and data
+  - Excludes spurious John 7:53-8:11
+
 ### Changed
 
 - Corrected last verse:
