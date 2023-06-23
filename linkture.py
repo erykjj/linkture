@@ -571,13 +571,21 @@ class Scriptures():
 
 
     def verse_number(self, bcv):
-        return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+        try:
+            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+        except:
+            self._error_report(bcv, 'OUT OF RANGE')
+            return None
 
     def number_verse(self, verse):
         bcv = ''
-        for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
-            bcv += str(i).zfill(3)
-        return bcv[1:]
+        try:
+            for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
+                bcv += str(i).zfill(3)
+            return bcv[1:]
+        except:
+            self._error_report(verse, 'OUT OF RANGE')
+            return None
 
 
 def _main(args):
