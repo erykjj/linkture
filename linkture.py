@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.4.0'
+VERSION = 'v2.4.1'
 
 
 import argparse, json, regex, sqlite3
@@ -570,14 +570,31 @@ class Scriptures():
         return regex.sub(self._tagged, r1, text).replace('»»|', '{{').replace('|««', '}}')
 
 
-    def verse_number(self, bcv):
+    def serial_chapter_number(self, bcv): # FIX
         try:
             return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
         except:
             self._error_report(bcv, 'OUT OF RANGE')
             return None
 
-    def number_verse(self, verse):
+    def serial_verse_number(self, bcv):
+        try:
+            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+        except:
+            self._error_report(bcv, 'OUT OF RANGE')
+            return None
+
+    def code_chapter(self, chapter): # FIX
+        bcv = ''
+        try:
+            for i in self._verses[self._verses['VerseId'] == int(chapter)].values[0][1:]:
+                bcv += str(i).zfill(3)
+            return bcv[1:]
+        except:
+            self._error_report(chapter, 'OUT OF RANGE')
+            return None
+
+    def code_verse(self, verse):
         bcv = ''
         try:
             for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
@@ -592,9 +609,9 @@ def _main(args):
 
     def switchboard(text):
         if args['n']:
-            return s.number_verse(args['n'])
+            return s.code_verse(args['n'])
         elif args['b']:
-            return s.verse_number(args['b'])
+            return s.serial_verse_number(args['b'])
         if args['l'] is not None:
             prefix = '<a href='
             suffix = '>'
@@ -673,7 +690,7 @@ if __name__ == "__main__":
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
     aux_group = parser.add_argument_group('auxiliary functions')
-    aux = aux_group.add_mutually_exclusive_group(required=False)
+    aux = aux_group.add_mutually_exclusive_group(required=False) # FIX
     aux.add_argument('-b', metavar=('BCV'), help='return the number of verse with code "BCV" ("bbcccvvv")')
     aux.add_argument('-n', metavar=('verse'), help='return the BCV code for verse number "verse" (integer value)')
 
