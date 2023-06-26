@@ -4,7 +4,11 @@
 
 ### Added
 
+- Added two more auxiliary look-up functions
+
 ### Changed
+
+- Renamed auxiliary functions
 
 ### Fixed
 
