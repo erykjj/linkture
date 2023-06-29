@@ -28,8 +28,9 @@ ____
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
                    [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t |
-                   -x] [-b BCV | -n verse]
+                   [-u] [--full | --official | --standard]
+                   [-c | -d | -l [prefix [suffix ...]] | -t | -x]
+                   [-sc BCV | -sv BCV | -cc chapter | -cv verse]
 
 PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
 See README for more information
@@ -69,8 +70,10 @@ type of conversion:
   -x                    extract list of scripture references
 
 auxiliary functions:
-  -b BCV                return the number of verse with code "BCV" ("bbcccvvv")
-  -n verse              return the BCV code for verse number "verse" (integer value)
+  -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
+  -sv BCV               return the serial number (1-31078) of the verse with code "BCV" ("bbcccvvv")
+  -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
+  -cv verse             return the BCV code for serial verse number "verse" (integer value)
 ```
 
 Or, make it executable first and run directly:
@@ -110,11 +113,17 @@ Juan 17:17; 2 Tim. 3:16, 17
 $ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
 ['Matthew 17:17']
 
-$ ./linkture.py -n 31078
-66022021
+$ ./linkture.py -cc 2
+('01002001', '01002025')
 
-$ ./linkture.py -b '01001001'
+$ ./linkture.py -cv 31078
+('66022021', '66022021')
+
+$ ./linkture.py -sv '01001001'
 1
+
+./linkture.py -sc '66022001'
+1189
 ```
 
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
@@ -144,11 +153,17 @@ tagged = s.tag_scriptures(txt)
 txt = s.rewrite_scriptures(txt)
 # the references will simply be rewritten in the desired language and format
 
-i = s.verse_number(txt)
-# returns the number of the verse identified by the provided BCV-format string
+i = s.serial_chapter_number(txt)
+# returns the serial number (1-1189) of the chapter identified by the provided BCV-format string; verse digits irrelevant
 
-txt = s.number_verse(i)
-# returns a BCV-format string for the verse indicated by the provided integer (1-31078)
+i = s.serial_verse_number(txt)
+# returns the serial number (1-31078) of the verse identified by the provided BCV-format string
+
+txt = s.code_chapter(i)
+# returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
+
+txt = s.code_verse(i)
+# returns a BCV-format range string for the verse indicated by the provided integer (1-31078)
 ```
 
 Parameters:
