@@ -97,6 +97,7 @@ class Scriptures():
                     self._src_book_names[normalized] = row[0]
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         self._verses = pd.read_sql_query("SELECT * FROM Verses;", con)
+        self._chapters = pd.read_sql_query("SELECT * FROM Chapters;", con)
         cur.close()
         con.close()
         self._reported = []
@@ -570,9 +571,9 @@ class Scriptures():
         return regex.sub(self._tagged, r1, text).replace('»»|', '{{').replace('|««', '}}')
 
 
-    def serial_chapter_number(self, bcv): # FIX
+    def serial_chapter_number(self, bcv):
         try:
-            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+            return int(self._chapters.loc[(self._chapters['Book'] == int(bcv[0:2])) & (self._chapters['Chapter'] == int(bcv[2:5]))].values[0][0])
         except:
             self._error_report(bcv, 'OUT OF RANGE')
             return None
@@ -584,12 +585,12 @@ class Scriptures():
             self._error_report(bcv, 'OUT OF RANGE')
             return None
 
-    def code_chapter(self, chapter): # FIX
-        bcv = ''
+    def code_chapter(self, chapter):
         try:
-            for i in self._verses[self._verses['VerseId'] == int(chapter)].values[0][1:]:
-                bcv += str(i).zfill(3)
-            return bcv[1:]
+            book, chapter = self._chapters[self._chapters['ChapterId'] == int(chapter)].values[0][1:]
+            last = self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == chapter), ['Last']].values[0][0]
+            bcv = str(book).zfill(2) + str(chapter).zfill(3)
+            return f"('{bcv}001', '{bcv}{str(last).zfill(3)}')"
         except:
             self._error_report(chapter, 'OUT OF RANGE')
             return None
@@ -599,7 +600,7 @@ class Scriptures():
         try:
             for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
                 bcv += str(i).zfill(3)
-            return bcv[1:]
+            return f"('{bcv[1:]}', '{bcv[1:]}')"
         except:
             self._error_report(verse, 'OUT OF RANGE')
             return None
@@ -608,10 +609,14 @@ class Scriptures():
 def _main(args):
 
     def switchboard(text):
-        if args['n']:
-            return s.code_verse(args['n'])
-        elif args['b']:
-            return s.serial_verse_number(args['b'])
+        if args['cc']:
+            return s.code_chapter(args['cc'])
+        elif args['cv']:
+            return s.code_verse(args['cv'])
+        elif args['sc']:
+            return s.serial_chapter_number(args['sc'])
+        elif args['sv']:
+            return s.serial_verse_number(args['sv'])
         if args['l'] is not None:
             prefix = '<a href='
             suffix = '>'
@@ -690,9 +695,11 @@ if __name__ == "__main__":
     tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
     aux_group = parser.add_argument_group('auxiliary functions')
-    aux = aux_group.add_mutually_exclusive_group(required=False) # FIX
-    aux.add_argument('-b', metavar=('BCV'), help='return the number of verse with code "BCV" ("bbcccvvv")')
-    aux.add_argument('-n', metavar=('verse'), help='return the BCV code for verse number "verse" (integer value)')
+    aux = aux_group.add_mutually_exclusive_group(required=False)
+    aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")')
+    aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31078) of the verse with code "BCV" ("bbcccvvv")')
+    aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
+    aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
 
     args = parser.parse_args()
     _main(vars(args))
