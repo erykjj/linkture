@@ -4,17 +4,24 @@
 
 ### Added
 
-- Added two more auxiliary look-up functions
-
 ### Changed
-
-- Renamed auxiliary functions
 
 ### Fixed
 
 ### Removed
 
 ____
+## [2.4.1] - 2023-06-28
+### Added
+
+- Added two more auxiliary look-up functions
+
+### Changed
+
+- Renamed auxiliary functions
+  - Adjusted command-line options
+- Adjusted output format for verse code lookup
+
 ## [2.4.0] - 2023-06-23
 ### Added
 
@@ -196,6 +203,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.4.1]:https://github.com/erykjj/linkture/releases/tag/v2.4.1
 [2.4.0]:https://github.com/erykjj/linkture/releases/tag/v2.4.0
 [2.3.1]:https://github.com/erykjj/linkture/releases/tag/v2.3.1
 [2.3.0]:https://github.com/erykjj/linkture/releases/tag/v2.3.0
