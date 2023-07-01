@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.4.2] - 2023-06-30
+### Added
+
+- Added Cebuano and Tagalog to list of available languages
+
 ## [2.4.1] - 2023-06-28
 ### Added
 
@@ -203,6 +208,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.4.2]:https://github.com/erykjj/linkture/releases/tag/v2.4.2
 [2.4.1]:https://github.com/erykjj/linkture/releases/tag/v2.4.1
 [2.4.0]:https://github.com/erykjj/linkture/releases/tag/v2.4.0
 [2.3.1]:https://github.com/erykjj/linkture/releases/tag/v2.3.1
