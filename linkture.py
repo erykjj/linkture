@@ -558,13 +558,13 @@ class Scriptures():
             bk = ''
             ch = 0
             sep = ';'
-            if self._upper:
-                scripture = scripture.upper()
             for bcv_range in self._encoded[scripture]:
                 scrip, bk, ch, _, sep = self._decode_scripture(bcv_range, bk, ch, sep)
                 lnk = convert_range(bcv_range)
                 output += regex.sub(self._chunk, r2, scrip)
             self._linked[scripture] = output.strip(' ;,')
+            if self._upper:
+                output = output.upper()
             return output.strip(' ;,')
 
         text = self._locate_scriptures(text)
