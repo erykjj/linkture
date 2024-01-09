@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.4.2'
+VERSION = 'v2.4.3'
 
 
 import argparse, json, regex, sqlite3
@@ -37,8 +37,8 @@ from pathlib import Path
 from unidecode import unidecode
 
 
-available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Tagalog')
-non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian')
+available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Tagalog', 'Ukrainian')
+non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 
 
 class Scriptures():
