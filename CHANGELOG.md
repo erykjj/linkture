@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Fixed upper-case links
+
 ### Removed
 
 ____
