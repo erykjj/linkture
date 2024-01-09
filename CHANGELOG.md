@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added Ukrainian to list of available languages
+
 ### Changed
 
 ### Fixed
