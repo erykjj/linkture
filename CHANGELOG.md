@@ -4,17 +4,22 @@
 
 ### Added
 
-- Added Ukrainian to list of available languages
-
 ### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [2.4.3] - 2024-01-09
+### Added
+
+- Added Ukrainian to list of available languages
 
 ### Fixed
 
 - Fixed upper-case links
 
-### Removed
-
-____
 ## [2.4.2] - 2023-06-30
 ### Added
 
@@ -212,6 +217,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.4.3]:https://github.com/erykjj/linkture/releases/tag/v2.4.3
 [2.4.2]:https://github.com/erykjj/linkture/releases/tag/v2.4.2
 [2.4.1]:https://github.com/erykjj/linkture/releases/tag/v2.4.1
 [2.4.0]:https://github.com/erykjj/linkture/releases/tag/v2.4.0
