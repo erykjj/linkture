@@ -5,7 +5,7 @@
 
 This module contains functions to parse and process Bible scripture references.
 
-The parser can work in **Cebuano, Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish and Tagalog**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
+The parser can work in **Cebuano, Chinese, Danish, Dutch, English, French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish, Tagalog and Ukrainian**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
 
 It *does not* work with whole books (like "James") unless they are preceded by a number (like "1 John"); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}") - *one book* per brace pair. These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
 
@@ -26,11 +26,10 @@ ____
 ```
 > python3 linkture.py -h
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
-                   [--language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                   [--translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}]
-                   [-u] [--full | --official | --standard]
-                   [-c | -d | -l [prefix [suffix ...]] | -t | -x]
-                   [-sc BCV | -sv BCV | -cc chapter | -cv verse]
+                   [--language {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
+                   [--translate {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
+                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t |
+                   -x] [-sc BCV | -sv BCV | -cc chapter | -cv verse]
 
 PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
 See README for more information
@@ -40,9 +39,9 @@ options:
   -v                    show version and exit
   -q                    don't show errors
   -o out-file           output file (terminal output if not provided)
-  --language {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
+  --language {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}
                         indicate source language for book names (English if unspecified)
-  --translate {Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish}
+  --translate {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}
                         indicate output language for book names (same as source if unspecified)
   -u                    capitalize (upper-case) book names
 
@@ -55,7 +54,7 @@ data source (one required - except for auxiliary functions, which only take comm
 output format (optional):
   if provided, book names will be rewritten accordingly:
 
-  --full                output as full name  -  default (eg., "Genesis")
+  --full                output as full name - default (eg., "Genesis")
   --official            output as official abbreviation (eg., "Ge")
   --standard            output as standard abbreviation (eg., "Gen.")
 
