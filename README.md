@@ -125,6 +125,8 @@ $ ./linkture.py -sv '01001001'
 1189
 ```
 
+**Note**: The serial verse options (`-sv` and `-cv`) *do not* count Psalm headings as separate verses.
+
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
 
 Unless you use `-q`, you will see in the terminal any out-of-range errors encountered while parsing. Of course, these entries will not be processed, but they will not affect the rest of the operation.
