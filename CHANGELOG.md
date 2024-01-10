@@ -6,13 +6,16 @@
 
 ### Changed
 
-- Adjusted verse numbering
-
 ### Fixed
 
 ### Removed
 
 ____
+## [2.4.4] - 2024-01-10
+### Changed
+
+- Adjusted verse numbering
+
 ## [2.4.3] - 2024-01-09
 ### Added
 
@@ -219,6 +222,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.4.4]:https://github.com/erykjj/linkture/releases/tag/v2.4.4
 [2.4.3]:https://github.com/erykjj/linkture/releases/tag/v2.4.3
 [2.4.2]:https://github.com/erykjj/linkture/releases/tag/v2.4.2
 [2.4.1]:https://github.com/erykjj/linkture/releases/tag/v2.4.1
