@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Adjusted verse numbering
+
 ### Fixed
 
 ### Removed
