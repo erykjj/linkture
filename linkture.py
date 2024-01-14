@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.4.4'
+VERSION = 'v2.4.5'
 
 
 import argparse, json, regex, sqlite3
@@ -525,6 +525,8 @@ class Scriptures():
                 if cont:
                     scriptures[-1] = scriptures[-1] + scripture
                 else:
+                    scripture = regex.sub(r'\s(\D)', r' \1', scripture)
+                    scripture = regex.sub(r',\s(\d)', r', \1', scripture)
                     scriptures.append(scripture)
         return scriptures
 
