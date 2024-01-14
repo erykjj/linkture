@@ -6,6 +6,10 @@
 
 ### Changed
 
+- Added non-breaking spaces to output
+  - in book names (1&nbsp;Sam)
+  - after commas (Mat 5:3,&nbsp;5)
+
 ### Fixed
 
 ### Removed
