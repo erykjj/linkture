@@ -524,6 +524,7 @@ class Scriptures():
             if scripture:
                 scripture = regex.sub(r'\s(\D)', r' \1', scripture)
                 scripture = regex.sub(r',\s(\d)', r', \1', scripture)
+                scripture = regex.sub(r'\s(\d+)$', r' \1', scripture)
                 if cont:
                     scriptures[-1] = scriptures[-1] + scripture
                 else:
