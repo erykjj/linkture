@@ -512,6 +512,9 @@ class Scriptures():
                 scripture = f"{bk_name} {ch}{sv}-{ec}:{ev}"
                 sep = ';'
         chap = ec
+        scripture = regex.sub(r'\s(\D)', r' \1', scripture)
+        scripture = regex.sub(r',\s(\d)', r', \1', scripture)
+        scripture = regex.sub(r'\s(\d+)$', r' \1', scripture)
         return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
@@ -522,9 +525,6 @@ class Scriptures():
         for bcv_range in bcv_ranges:
             scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, sep)
             if scripture:
-                scripture = regex.sub(r'\s(\D)', r' \1', scripture)
-                scripture = regex.sub(r',\s(\d)', r', \1', scripture)
-                scripture = regex.sub(r'\s(\d+)$', r' \1', scripture)
                 if cont:
                     scriptures[-1] = scriptures[-1] + scripture
                 else:
