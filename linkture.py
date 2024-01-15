@@ -700,7 +700,7 @@ if __name__ == "__main__":
     aux_group = parser.add_argument_group('auxiliary functions')
     aux = aux_group.add_mutually_exclusive_group(required=False)
     aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")')
-    aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31078) of the verse with code "BCV" ("bbcccvvv")')
+    aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")')
     aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
     aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
 
