@@ -6,16 +6,16 @@
 
 ### Changed
 
-- Added non-breaking spaces to output
-  - in book names (1&nbsp;Sam)
-  - after commas (Mat 5:3,&nbsp;5)
-  - between name and chpater when no chapter or verse (Jude&nbsp;14)
-
 ### Fixed
 
 ### Removed
 
 ____
+## [2.5.0] - 2024-01-15
+### Added
+
+- Added segment separator option (space by default)
+
 ## [2.4.4] - 2024-01-10
 ### Changed
 
@@ -227,6 +227,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.0]:https://github.com/erykjj/linkture/releases/tag/v2.5.0
 [2.4.4]:https://github.com/erykjj/linkture/releases/tag/v2.4.4
 [2.4.3]:https://github.com/erykjj/linkture/releases/tag/v2.4.3
 [2.4.2]:https://github.com/erykjj/linkture/releases/tag/v2.4.2
