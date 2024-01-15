@@ -513,7 +513,8 @@ class Scriptures():
                 scripture = f"{bk_name} {ch}{sv}-{ec}:{ev}"
                 sep = ';'
         chap = ec
-        scripture = regex.sub(r'([^;])\s', r'\1'+self._separator, scripture)
+        if self._separator != ' ':
+            scripture = regex.sub(r'([^;])\s', r'\1'+self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
