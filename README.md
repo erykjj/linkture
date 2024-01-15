@@ -182,6 +182,7 @@ Parameters:
   * **"standard"** for standard abbreviation format (eg., "Gen.")
   * **"official"** for official abbreviation format (eg., "Ge")
   * *None* or not supplied - no re-write will be performed, *unless* translation is performed or *linking* (in which case, "full" is the default)
+* *separator* - character(s) to use instead of space (default) to separate the various segments of the scripture
 * *upper* - if **True**, outputs book names in UPPER CASE (**False** by default)
 * *verbose* - if **True**, show (in terminal) any out-of-range errors encountered while parsing (**False** by default)
 
