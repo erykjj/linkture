@@ -682,7 +682,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
     parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
-    parser.add_argument('-s', metavar='separator', help='segment separator (space by default)')
+    parser.add_argument('-s', metavar='separator', default=' ', help='segment separator (space by default)')
     parser.add_argument('-u', action='store_true', help='capitalize (upper-case) book names')
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     formats = format_group.add_mutually_exclusive_group()
