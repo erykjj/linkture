@@ -174,9 +174,7 @@ txt = s.code_verse(i)
 
 Parameters:
 * *language* - source language for Scripture parsing
-  * Chinese, Danish, Dutch, English (default), French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish
 * *translate* - language for Bible book name translation
-  * Chinese, Danish, Dutch, English (default), French, German, Greek, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish
 * *form* - output format of Bible book names
   * **"full"** for full name format (eg., "Genesis")
   * **"standard"** for standard abbreviation format (eg., "Gen.")
