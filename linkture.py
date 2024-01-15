@@ -43,8 +43,9 @@ non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 
 class Scriptures():
 
-    def __init__(self, language='English', translate=None, form=None, upper=False, verbose=False):
+    def __init__(self, language='English', translate=None, form=None, separator=' ', upper=False, verbose=False):
         self._verbose = verbose
+        self._separator = separator
         if language not in available_languages:
             raise ValueError("Indicated source language is not an option!")
         if translate:
@@ -512,9 +513,7 @@ class Scriptures():
                 scripture = f"{bk_name} {ch}{sv}-{ec}:{ev}"
                 sep = ';'
         chap = ec
-        scripture = regex.sub(r'\s(\D)', r' \1', scripture)
-        scripture = regex.sub(r',\s(\d)', r', \1', scripture)
-        scripture = regex.sub(r'\s(\d+)$', r' \1', scripture)
+        scripture = regex.sub(r'([^;])\s', r'\1'+self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
@@ -647,7 +646,7 @@ def _main(args):
     elif args['full']:
         form = 'full'
 
-    s = Scriptures(args['language'], args['translate'], form, args['u'], not args['q'])
+    s = Scriptures(language=args['language'], translate=args['translate'], form=form, separator=args['s'], upper=args['u'], verbose=(not args['q']))
 
     if args['f']:
         if args['o'] and (args['o'] == args['f']):
@@ -682,6 +681,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
     parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
+    parser.add_argument('-s', metavar='separator', help='segment separator (space by default)')
     parser.add_argument('-u', action='store_true', help='capitalize (upper-case) book names')
     format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')
     formats = format_group.add_mutually_exclusive_group()
