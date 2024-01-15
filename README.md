@@ -28,8 +28,9 @@ ____
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [--language {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
                    [--translate {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
-                   [-u] [--full | --official | --standard] [-c | -d | -l [prefix [suffix ...]] | -t |
-                   -x] [-sc BCV | -sv BCV | -cc chapter | -cv verse]
+                   [-s separator] [-u] [--full | --official | --standard]
+                   [-c | -d | -l [prefix [suffix ...]] | -t | -x]
+                   [-sc BCV | -sv BCV | -cc chapter | -cv verse]
 
 PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
 See README for more information
@@ -43,6 +44,7 @@ options:
                         indicate source language for book names (English if unspecified)
   --translate {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}
                         indicate output language for book names (same as source if unspecified)
+  -s separator          segment separator (space by default)
   -u                    capitalize (upper-case) book names
 
 data source (one required - except for auxiliary functions, which only take command-line arguments):
@@ -70,7 +72,7 @@ type of conversion:
 
 auxiliary functions:
   -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
-  -sv BCV               return the serial number (1-31078) of the verse with code "BCV" ("bbcccvvv")
+  -sv BCV               return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")
   -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
   -cv verse             return the BCV code for serial verse number "verse" (integer value)
 ```
@@ -115,7 +117,7 @@ $ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
 $ ./linkture.py -cc 2
 ('01002001', '01002025')
 
-$ ./linkture.py -cv 31078
+$ ./linkture.py -cv 31091
 ('66022021', '66022021')
 
 $ ./linkture.py -sv '01001001'
@@ -123,6 +125,9 @@ $ ./linkture.py -sv '01001001'
 
 ./linkture.py -sc '66022001'
 1189
+
+./linkture.py -r '2Ti 3:16, 17' --full -s '_'
+2_Timothy_3:16,_17
 ```
 
 **Note**: The serial verse options (`-sv` and `-cv`) *do not* count Psalm headings as separate verses.
@@ -158,13 +163,13 @@ i = s.serial_chapter_number(txt)
 # returns the serial number (1-1189) of the chapter identified by the provided BCV-format string; verse digits irrelevant
 
 i = s.serial_verse_number(txt)
-# returns the serial number (1-31078) of the verse identified by the provided BCV-format string
+# returns the serial number (1-31091) of the verse identified by the provided BCV-format string
 
 txt = s.code_chapter(i)
 # returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
 
 txt = s.code_verse(i)
-# returns a BCV-format range string for the verse indicated by the provided integer (1-31078)
+# returns a BCV-format range string for the verse indicated by the provided integer (1-31091)
 ```
 
 Parameters:
