@@ -164,6 +164,7 @@ class Scriptures():
         self._d = regex.compile(r'(\d+)')
 
         self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
+        self._sep = regex.compile(r'(?<!;)\s')
 
     def _error_report(self, scripture, message):
         if self._verbose and (scripture not in self._reported):
@@ -514,7 +515,7 @@ class Scriptures():
                 sep = ';'
         chap = ec
         if self._separator != ' ':
-            scripture = regex.sub(r'([^;])\s', r'\1'+self._separator, scripture)
+            scripture = regex.sub(self._sep, self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
