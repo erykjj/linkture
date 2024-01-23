@@ -6,13 +6,16 @@
 
 ### Changed
 
-- Replaced hyphen with non-breaking hyphen
-
 ### Fixed
 
 ### Removed
 
 ____
+## [2.5.1] - 2024-01-23
+### Changed
+
+- Replaced hyphen with non-breaking hyphen
+
 ## [2.5.0] - 2024-01-15
 ### Added
 
@@ -229,6 +232,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.1]:https://github.com/erykjj/linkture/releases/tag/v2.5.1
 [2.5.0]:https://github.com/erykjj/linkture/releases/tag/v2.5.0
 [2.4.4]:https://github.com/erykjj/linkture/releases/tag/v2.4.4
 [2.4.3]:https://github.com/erykjj/linkture/releases/tag/v2.4.3
