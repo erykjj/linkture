@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Replaced hyphen with non-breaking hyphen
+
 ### Fixed
 
 ### Removed
