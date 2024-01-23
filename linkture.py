@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.5.0'
+VERSION = 'v2.5.1'
 
 
 import argparse, json, regex, sqlite3
@@ -477,7 +477,7 @@ class Scriptures():
             elif v == 2:
                 scripture = f"{bk_name} {sv}, {ev}"
             else:
-                scripture = f"{bk_name} {sv}-{ev}"
+                scripture = f"{bk_name} {sv}‑{ev}"
             sep = ';'
         else:
             ch = f"{sc}:"
@@ -491,7 +491,7 @@ class Scriptures():
                 elif c == 2:
                     scripture = f"{bk_name} {sc}, {ec}"
                 else:
-                    scripture = f"{bk_name} {sc}-{ec}"
+                    scripture = f"{bk_name} {sc}‑{ec}"
                 sep = ','
             elif c == 1:
                 if cont:
@@ -505,13 +505,13 @@ class Scriptures():
                 elif v == 2:
                     scripture = f"{bk_name} {ch}{sv}, {ev}"
                 else:
-                    scripture = f"{bk_name} {ch}{sv}-{ev}"
+                    scripture = f"{bk_name} {ch}{sv}‑{ev}"
                 sep = ';'
             else:
                 if cont and (sc == chap):
                     bk_name = ''
                     ch = ', '
-                scripture = f"{bk_name} {ch}{sv}-{ec}:{ev}"
+                scripture = f"{bk_name} {ch}{sv}‑{ec}:{ev}"
                 sep = ';'
         chap = ec
         if self._separator != ' ':
