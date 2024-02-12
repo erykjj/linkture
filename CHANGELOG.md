@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.5.2] - 2024-02-12
+### Added
+
+- Added Hungarian (Magyar, hu)
+
 ## [2.5.1] - 2024-01-23
 ### Changed
 
@@ -232,6 +237,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.2]:https://github.com/erykjj/linkture/releases/tag/v2.5.2
 [2.5.1]:https://github.com/erykjj/linkture/releases/tag/v2.5.1
 [2.5.0]:https://github.com/erykjj/linkture/releases/tag/v2.5.0
 [2.4.4]:https://github.com/erykjj/linkture/releases/tag/v2.4.4
