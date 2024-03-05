@@ -1,6 +1,8 @@
 {
   "English": [
     [2, "Exo, Exod"],
+    [3, "Levit"],
+    [4, "Numb"],
     [5, "Deu"],
     [7, "Jdg"],
     [8, "Rth"],
@@ -10,14 +12,15 @@
     [12, "2Kgs, 2nd Kings, II Kings"],
     [13, "1 Chr, 1st Chronicles, I Chronicles"],
     [14, "2 Chr, 2nd Chronicles, II Chronicles"],
+    [16, "Nehem"],
     [17, "Est, Esth"],
-    [19, "Psalm, Pss, Psa"],
+    [19, "Psalm, Psal, Pss, Psa"],
     [20, "Pro"],
     [21, "Ecc, Eccles, Qoh"],
     [22, "Cant, Son, Sng"],
     [30, "Amo"],
     [31, "Oba"],
-    [40, "Mat"],
+    [40, "Mat, Matth"],
     [41, "Mar"],
     [42, "Luk"],
     [43, "Jn, Jhn"],
@@ -40,7 +43,7 @@
     [63, "2nd John, II John"],
     [64, "3rd John, III John"],
     [65, "Jud, Jde"],
-    [66, "Revel"]
+    [66, "Revel, Apoc"]
   ],
   "Spanish": [
     [9, "1ro Samuel, I Samuel"],
