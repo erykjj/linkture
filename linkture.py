@@ -533,7 +533,7 @@ class Scriptures():
         return scriptures
 
 
-    def link_scriptures(self, text, prefix='<a href=', suffix='>'):
+    def link_scriptures(self, text, prefix='<a href=', suffix='>'): # NOTE: this always rewrites (full by default) - what if one wants to leave as is??
 
         def convert_range(bcv_range):
             if not bcv_range:
