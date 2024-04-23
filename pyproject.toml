@@ -1,6 +1,6 @@
 [project]
 name = "linkture"
-version = "2.5.2"
+version = "2.5.3"
 description = "PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode"
 authors = [
     {name = "Eryk J."},
