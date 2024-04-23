@@ -11,7 +11,7 @@ dependencies = [
     "regex>=2023.8.8",
     "unidecode>=1.3.8",
     "argparse",
-    "pandas",
+    "pandas==2.2.*",
     "pathlib",
     "regex",
     "unidecode",
