@@ -11,6 +11,17 @@
 ### Removed
 
 ____
+## [2.5.3] - 2024-04-23
+### Added
+
+- Added fall-back for no arguments
+- Added requirements.txt and pyproject.toml
+
+### Changed
+
+- Increased min Python version to 3.9 in order for Pandas to work
+- Keep Pandas at v2.2.*
+
 ## [2.5.2] - 2024-02-12
 ### Added
 
@@ -237,6 +248,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.3]:https://github.com/erykjj/linkture/releases/tag/v2.5.3
 [2.5.2]:https://github.com/erykjj/linkture/releases/tag/v2.5.2
 [2.5.1]:https://github.com/erykjj/linkture/releases/tag/v2.5.1
 [2.5.0]:https://github.com/erykjj/linkture/releases/tag/v2.5.0
