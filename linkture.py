@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.5.2'
+VERSION = 'v2.5.3'
 
 
 import argparse, json, regex, sqlite3
@@ -659,7 +659,11 @@ def _main(args):
     else:
         txt = args['r']
 
-    txt = switchboard(txt)
+    if txt:
+        txt = switchboard(txt)
+    else:
+        print(parser.format_help())
+        exit()
 
     if args['o']:
         with open(args['o'], 'w', encoding='UTF-8') as f:
@@ -705,6 +709,5 @@ if __name__ == "__main__":
     aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")')
     aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
     aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
-
     args = parser.parse_args()
     _main(vars(args))
