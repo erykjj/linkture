@@ -11,6 +11,15 @@
 ### Removed
 
 ____
+## [2.6.1] - 2024-04-24
+### Changed
+
+- Adjusted default link prefix and suffix
+
+### Fixed
+
+- Fixed relative location of resources
+
 ## [2.6.0] - 2024-04-24
 ### Fixed
 
@@ -273,6 +282,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.6.1]:https://github.com/erykjj/linkture/releases/tag/v2.6.1
 [2.6.0]:https://github.com/erykjj/linkture/releases/tag/v2.6.0
 [2.5.6]:https://github.com/erykjj/linkture/releases/tag/v2.5.6
 [2.5.5]:https://github.com/erykjj/linkture/releases/tag/v2.5.5
