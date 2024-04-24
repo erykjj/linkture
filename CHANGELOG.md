@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Dynamic pdm package versioning
+
 ### Fixed
 
 ### Removed
