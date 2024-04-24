@@ -29,7 +29,6 @@
 import argparse
 from . import linkture
 from ast import literal_eval
-from pathlib import Path
 
 
 available_languages = linkture.available_languages
