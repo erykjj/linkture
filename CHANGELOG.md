@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.6.0] - 2024-04-24
+### Fixed
+
+- Fixed invocation via import (and commandline) 
+
 ## [2.5.6] - 2024-04-24
 ### Changed
 
@@ -268,6 +273,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.6.0]:https://github.com/erykjj/linkture/releases/tag/v2.6.0
 [2.5.6]:https://github.com/erykjj/linkture/releases/tag/v2.5.6
 [2.5.5]:https://github.com/erykjj/linkture/releases/tag/v2.5.5
 [2.5.4]:https://github.com/erykjj/linkture/releases/tag/v2.5.4
