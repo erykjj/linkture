@@ -43,4 +43,4 @@ distribution = true
 
 [tool.pdm.version]
 source = "file"
-path = "__main__.py"
+path = "src/__main__.py"
