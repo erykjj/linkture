@@ -1,6 +1,3 @@
-# linkture
-
-
 ## Purpose
 
 This module contains functions to parse and process Bible scripture references.
@@ -88,14 +85,17 @@ John 17:17; 2 Tim. 3:16, 17
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
+
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -c
 [('43017017', '43017017'), ('55003016', '55003017')]
 
 $ python3 -m linkture -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
 ['Johannes 17:17', '2. Timotheus 3:16, 17']
 
+
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
 <a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
+
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
@@ -109,6 +109,7 @@ Juan 17:17; 2 Tim. 3:16, 17
 $ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
 ['Matthew 17:17']
 
+
 $ python3 -m linkture -cc 2
 ('01002001', '01002025')
 
@@ -120,6 +121,7 @@ $ python3 -m linkture -sv '01001001'
 
 python3 -m linkture -sc '66022001'
 1189
+
 
 python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
@@ -134,11 +136,13 @@ Unless you use `-q`, you will see in the terminal any out-of-range errors encoun
 ____
 ## Script/import usage
 
-Assume the text (short string or long document) you want to process is in the variable `txt`. It's in English, but you would like the scriptures to be in Spanish, with the full book name:
+Assume the text (short string or long document) you want to process is in the variable `txt`.
+
 ```
 from linkture import Scriptures
 
 s = Scriptures(language="English", translate="Spanish", form="full")
+
 
 lst = s.list_scriptures(txt)
 # returns a list of (valid) extracted scriptures in the desired language and format
@@ -152,19 +156,20 @@ html = s.link_scriptures(txt, prefix='<a href="http://mywebsite.com/', suffix='"
 tagged = s.tag_scriptures(txt)
 # tagged will contain your document with the translated references enclosed within double braces
 
-txt = s.rewrite_scriptures(txt)
+new_txt = s.rewrite_scriptures(txt)
 # the references will simply be rewritten in the desired language and format
 
-i = s.serial_chapter_number(txt)
+
+i = s.serial_chapter_number(ch_bcv)
 # returns the serial number (1-1189) of the chapter identified by the provided BCV-format string; verse digits irrelevant
 
-i = s.serial_verse_number(txt)
+i = s.serial_verse_number(vs_bcv)
 # returns the serial number (1-31091) of the verse identified by the provided BCV-format string
 
-txt = s.code_chapter(i)
+ch_bcv = s.code_chapter(i)
 # returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
 
-txt = s.code_verse(i)
+vs_bcv = s.code_verse(i)
 # returns a BCV-format range string for the verse indicated by the provided integer (1-31091)
 ```
 
