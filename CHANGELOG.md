@@ -6,16 +6,21 @@
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+____
+## [2.5.5] - 2024-04-24
+### Changed
+
 - Restructured project layout
 - Renamed main script to __main__.py for packaging
-
-### Fixed
 
 ### Removed
 
 - Removed setup.py and requirements.txt - superceded by pyproject.toml
 
-____
 ## [2.5.4] - 2024-04-24
 ### Changed
 
@@ -258,6 +263,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.5]:https://github.com/erykjj/linkture/releases/tag/v2.5.5
 [2.5.4]:https://github.com/erykjj/linkture/releases/tag/v2.5.4
 [2.5.3]:https://github.com/erykjj/linkture/releases/tag/v2.5.3
 [2.5.2]:https://github.com/erykjj/linkture/releases/tag/v2.5.2
