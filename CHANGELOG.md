@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Restructured project layout
+
 ### Fixed
 
 ### Removed
