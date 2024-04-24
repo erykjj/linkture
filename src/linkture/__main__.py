@@ -43,11 +43,11 @@ def main(args):
         elif args['sv']:
             return s.serial_verse_number(args['sv'])
         if args['l'] is not None:
-            prefix = '<a href='
-            suffix = '>'
-            if len(args['l']) > 1:
+            prefix = '<a href="'
+            suffix = '">'
+            if len(args['l']) > 1 and args['l'][1] != '':
                 suffix = args['l'][1]
-            if len(args['l']) > 0:
+            if len(args['l']) > 0 and args['l'][0] != '':
                 prefix = args['l'][0]
             return s.link_scriptures(text, prefix, suffix)
         elif args['c']:
