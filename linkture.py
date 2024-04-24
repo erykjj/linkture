@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.5.3'
+VERSION = 'v2.5.4'
 
 
 import argparse, json, regex, sqlite3
