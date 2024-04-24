@@ -7,6 +7,7 @@
 ### Changed
 
 - Restructured project layout
+- Renamed main script to __main__.py for packaging
 
 ### Fixed
 
