@@ -27,7 +27,7 @@
 """
 
 import argparse
-from .linkture import available_languages, __app__, __version__, Scriptures
+from .linkture import _available_languages, __app__, __version__, Scriptures
 from ast import literal_eval
 
 
@@ -104,8 +104,8 @@ mode.add_argument('-f', metavar='in-file', help='get input from file (UTF-8)')
 mode.add_argument('-r', metavar='reference', help='process "reference; reference; etc."')
 parser.add_argument('-o', metavar='out-file', help='output file (terminal output if not provided)')
 
-parser.add_argument('--language', default='English', choices=available_languages, help='indicate source language for book names (English if unspecified)')
-parser.add_argument('--translate', choices=available_languages, help='indicate output language for book names (same as source if unspecified)')
+parser.add_argument('--language', default='English', choices=_available_languages, help='indicate source language for book names (English if unspecified)')
+parser.add_argument('--translate', choices=_available_languages, help='indicate output language for book names (same as source if unspecified)')
 parser.add_argument('-s', metavar='separator', default=' ', help='segment separator (space by default)')
 parser.add_argument('-u', action='store_true', help='capitalize (upper-case) book names')
 format_group = parser.add_argument_group('output format (optional)', 'if provided, book names will be rewritten accordingly:')

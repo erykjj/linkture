@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v2.6.0'
+__version__ = 'v2.6.1'
 
 
 import json, regex, sqlite3
@@ -35,8 +35,8 @@ import pandas as pd
 from unidecode import unidecode
 
 
-available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Hungarian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Tagalog', 'Ukrainian')
-non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
+_available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Hungarian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Tagalog', 'Ukrainian')
+_non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 
 
 class Scriptures():
@@ -44,14 +44,14 @@ class Scriptures():
     def __init__(self, language='English', translate=None, form=None, separator=' ', upper=False, verbose=False):
         self._verbose = verbose
         self._separator = separator
-        if language not in available_languages:
+        if language not in _available_languages:
             raise ValueError("Indicated source language is not an option!")
         if translate:
-            if translate not in available_languages:
+            if translate not in _available_languages:
                 raise ValueError("Indicated translation language is not an option!")
         else:
             translate = language
-        if language in non_latin:
+        if language in _non_latin:
             self._nl = True
         else:
             self._nl = False
