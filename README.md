@@ -24,7 +24,7 @@ ____
 ## Command-line usage
 
 ```
-> python3 linkture.py -h
+> python3 -m linkture -h
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [--language {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
                    [--translate {Cebuano,Chinese,Danish,Dutch,English,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
@@ -77,56 +77,51 @@ auxiliary functions:
   -cv verse             return the BCV code for serial verse number "verse" (integer value)
 ```
 
-Or, make it executable first and run directly:
-```
-$ chmod +x linkture.py
-```
-
 Some examples:
 ```
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --full -u
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --full -u
 JOHN 17:17; 2 TIMOTHY 3:16, 17
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --standard
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --standard
 John 17:17; 2 Tim. 3:16, 17
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --official
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -c
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -c
 [('43017017', '43017017'), ('55003016', '55003017')]
 
-$ ./linkture.py -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
+$ python3 -m linkture -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
 ['Johannes 17:17', '2. Timotheus 3:16, 17']
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
 <a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
 
-$ ./linkture.py -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
 
-$ ./linkture.py -r "约翰福音 17:17; 提摩太后书 3:16, 17" --language Chinese --translate Dutch
+$ python3 -m linkture -r "约翰福音 17:17; 提摩太后书 3:16, 17" --language Chinese --translate Dutch
 Johannes 17:17; 2 Timotheüs 3:16, 17
 
-$ ./linkture.py -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
+$ python3 -m linkture -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
 Juan 17:17; 2 Tim. 3:16, 17
 
-$ ./linkture.py -r "Mat 17:17; Paul 3:16, 17" --full -x
+$ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
 ['Matthew 17:17']
 
-$ ./linkture.py -cc 2
+$ python3 -m linkture -cc 2
 ('01002001', '01002025')
 
-$ ./linkture.py -cv 31091
+$ python3 -m linkture -cv 31091
 ('66022021', '66022021')
 
-$ ./linkture.py -sv '01001001'
+$ python3 -m linkture -sv '01001001'
 1
 
-./linkture.py -sc '66022001'
+python3 -m linkture -sc '66022001'
 1189
 
-./linkture.py -r '2Ti 3:16, 17' --full -s '_'
+python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
 ```
 
@@ -136,6 +131,7 @@ Of course, you can pass a whole text file to parse and process using the `-f in_
 
 Unless you use `-q`, you will see in the terminal any out-of-range errors encountered while parsing. Of course, these entries will not be processed, but they will not affect the rest of the operation.
 
+____
 ## Script/import usage
 
 Assume the text (short string or long document) you want to process is in the variable `txt`. It's in English, but you would like the scriptures to be in Spanish, with the full book name:
