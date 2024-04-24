@@ -43,4 +43,4 @@ distribution = true
 
 [tool.pdm.version]
 source = "file"
-path = "linkture/__main__.py"
+path = "__main__.py"
