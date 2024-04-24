@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.5.3] - 2024-04-24
+### Changed
+
+- Corrections for PyPi package distribution
+
 ## [2.5.3] - 2024-04-23
 ### Added
 
@@ -248,6 +253,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.5.4]:https://github.com/erykjj/linkture/releases/tag/v2.5.4
 [2.5.3]:https://github.com/erykjj/linkture/releases/tag/v2.5.3
 [2.5.2]:https://github.com/erykjj/linkture/releases/tag/v2.5.2
 [2.5.1]:https://github.com/erykjj/linkture/releases/tag/v2.5.1
