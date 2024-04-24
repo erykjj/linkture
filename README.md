@@ -18,7 +18,7 @@ A couple of auxiliary functions provide a verse number lookup (either by BCV ref
 ____
 ## Installation
 
-Download [latest source](https://github.com/erykjj/linkture/releases/latest) and `python3 -m pip install linkture-*.tar.gz`.
+`python3 -m pip install linkture`
 
 ____
 ## Command-line usage
