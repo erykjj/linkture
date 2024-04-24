@@ -27,15 +27,11 @@
 """
 
 import argparse
-from . import linkture
+from .linkture import available_languages, __app__, __version__, Scriptures
 from ast import literal_eval
 
 
-available_languages = linkture.available_languages
-non_latin = linkture.non_latin
-
-
-def _main(args):
+def main(args):
 
     def switchboard(text):
         if args['cc']:
@@ -73,7 +69,7 @@ def _main(args):
     elif args['full']:
         form = 'full'
 
-    s = linkture.Scriptures(language=args['language'], translate=args['translate'], form=form, separator=args['s'], upper=args['u'], verbose=(not args['q']))
+    s = Scriptures(language=args['language'], translate=args['translate'], form=form, separator=args['s'], upper=args['u'], verbose=(not args['q']))
 
     if args['f']:
         if args['o'] and (args['o'] == args['f']):
@@ -99,7 +95,7 @@ def _main(args):
 
 parser = argparse.ArgumentParser(description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information")
 
-parser.add_argument('-v', action='version', version=f"{linkture.__app__} {linkture.__version__}", help='show version and exit')
+parser.add_argument('-v', action='version', version=f"{__app__} {__version__}", help='show version and exit')
 parser.add_argument('-q', action='store_true', help="don't show errors")
 
 function_group = parser.add_argument_group('data source (one required - except for auxiliary functions, which only take command-line arguments)', 'choose between terminal or file input:')
@@ -132,5 +128,6 @@ aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189)
 aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")')
 aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
 aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
+
 args = parser.parse_args()
-_main(vars(args))
+main(vars(args))

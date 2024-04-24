@@ -27,12 +27,11 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v2.5.7'
+__version__ = 'v2.6.0'
 
 
 import json, regex, sqlite3
 import pandas as pd
-from pathlib import Path
 from unidecode import unidecode
 
 
@@ -67,10 +66,9 @@ class Scriptures():
         else:
             form = 3
         self._src_book_names = {}
-        path = Path(__file__).resolve().parent
 
         self._tr_book_names = ['Bible']
-        con = sqlite3.connect(path / 'res/resources.db')
+        con = sqlite3.connect('res/resources.db')
         cur = con.cursor()
         for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{translate}';").fetchall():
             if self._upper:
@@ -85,7 +83,7 @@ class Scriptures():
                     item = unidecode(item)
                 normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                 self._src_book_names[normalized] = rec[2]
-        with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
+        with open('res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
         if language in b.keys():
             for row in b[language]:
