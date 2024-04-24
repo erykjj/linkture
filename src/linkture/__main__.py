@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-VERSION = 'v2.5.5'
+__version__ = 'v2.5.6'
 
 
 import argparse, json, regex, sqlite3
@@ -676,7 +676,7 @@ if __name__ == "__main__":
     APP = 'linkture' # Path(__file__).stem
     parser = argparse.ArgumentParser(description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information")
 
-    parser.add_argument('-v', action='version', version=f"{APP} {VERSION}", help='show version and exit')
+    parser.add_argument('-v', action='version', version=f"{APP} {__version__}", help='show version and exit')
     parser.add_argument('-q', action='store_true', help="don't show errors")
 
     function_group = parser.add_argument_group('data source (one required - except for auxiliary functions, which only take command-line arguments)', 'choose between terminal or file input:')

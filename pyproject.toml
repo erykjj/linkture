@@ -1,6 +1,6 @@
 [project]
 name = "linkture"
-version = "2.5.5"
+dynamic = ["version"]
 description = "PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode"
 authors = [
     {name = "Eryk J.", email = "infiniti@inventati.org"}
@@ -40,3 +40,7 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.version]
+source = "file"
+path = "linkture/__init__.py"
