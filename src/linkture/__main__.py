@@ -673,7 +673,7 @@ def _main(args):
 
 if __name__ == "__main__":
     PROJECT_PATH = Path(__file__).resolve().parent
-    APP = Path(__file__).stem
+    APP = 'linkture' # Path(__file__).stem
     parser = argparse.ArgumentParser(description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information")
 
     parser.add_argument('-v', action='version', version=f"{APP} {VERSION}", help='show version and exit')
