@@ -33,6 +33,7 @@ keywords = ["bible", "scriptures", "scripture-references", "scripture-translatio
 
 [project.urls]
 Homepage = "https://github.com/erykjj/linkture"
+Issues = "https://github.com/erykjj/linkture/issues"
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
