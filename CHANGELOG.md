@@ -10,8 +10,10 @@
 
 ### Removed
 
+- Removed setup.py and requirements.txt - superceded by pyproject.toml
+
 ____
-## [2.5.3] - 2024-04-24
+## [2.5.4] - 2024-04-24
 ### Changed
 
 - Corrections for PyPi package distribution
