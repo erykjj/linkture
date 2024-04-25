@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [2.6.2] - 2024-04-25
+### Changed
+
+- Readded filepath dependency for resource resolution
+
 ## [2.6.1] - 2024-04-24
 ### Changed
 
@@ -282,6 +287,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.6.2]:https://github.com/erykjj/linkture/releases/tag/v2.6.2
 [2.6.1]:https://github.com/erykjj/linkture/releases/tag/v2.6.1
 [2.6.0]:https://github.com/erykjj/linkture/releases/tag/v2.6.0
 [2.5.6]:https://github.com/erykjj/linkture/releases/tag/v2.5.6
