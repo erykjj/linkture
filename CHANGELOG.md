@@ -14,7 +14,7 @@ ____
 ## [2.6.2] - 2024-04-25
 ### Changed
 
-- Readded filepath dependency for resource resolution
+- Readded pathlib dependency for resource resolution
 
 ## [2.6.1] - 2024-04-24
 ### Changed
