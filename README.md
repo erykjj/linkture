@@ -1,4 +1,4 @@
-[![Static Badge](https://img.shields.io/badge/PyPI-white?style=plastic&logo=PyPI&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)](https://pypi.org/project/linkture/)
+[![Static Badge](https://img.shields.io/badge/Mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black&link=https%3A%2F%2Fgitlab.com%2Ferykj%2Flinkture)](https://gitlab.com/erykj/linkture) [![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)](https://pypi.org/project/linkture/)
 
 ## Purpose
 
@@ -192,4 +192,4 @@ ____
 
 Feel free to [get in touch and post any issues and suggestions](https://github.com/erykjj/linkture/issues).
 
-[![RSS of releases](src/linkture/res/rss-36.png)](https://github.com/erykjj/linkture/releases.atom)
+[![Static Badge](https://img.shields.io/badge/Releases-orange?style=plastic&logo=rss&logoColor=orange&color=black&link=https%3A%2F%2Fgithub.com%2Ferykjj%2Flinkture%2Freleases.atom)](https://github.com/erykjj/linkture/releases.atom)
