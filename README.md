@@ -1,4 +1,4 @@
-[![Static Badge](https://img.shields.io/badge/mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black)](https://gitlab.com/erykj/linkture) [![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black)](https://pypi.org/project/linkture/)
+[![Static Badge](https://img.shields.io/badge/mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black)](https://gitlab.com/erykj/linkture) [![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black)](https://pypi.org/project/linkture/) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/erykjj/jwpublib/total?style=plastic)
 
 ## Purpose
 
