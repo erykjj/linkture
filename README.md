@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black&link=https%3A%2F%2Fgitlab.com%2Ferykj%2Flinkture) ![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)
+<object>![Static Badge](https://img.shields.io/badge/Mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black&link=https%3A%2F%2Fgitlab.com%2Ferykj%2Flinkture)</object> <object>![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)</object>
 
 ## Purpose
 
