@@ -192,4 +192,4 @@ ____
 
 Feel free to [get in touch and post any issues and suggestions](https://github.com/erykjj/linkture/issues).
 
-[![Static Badge](https://img.shields.io/badge/Releases-orange?style=plastic&logo=rss&logoColor=orange&color=black)](https://github.com/erykjj/linkture/releases.atom)
+[![Static Badge](https://img.shields.io/badge/releases-orange?style=plastic&logo=rss&logoColor=orange&color=black)](https://github.com/erykjj/linkture/releases.atom)
