@@ -1,5 +1,3 @@
-<object>![Static Badge](https://img.shields.io/badge/Mirror-orange?style=plastic&logo=gitlab&logoColor=orange&color=black&link=https%3A%2F%2Fgitlab.com%2Ferykj%2Flinkture)</object> <object>![Static Badge](https://img.shields.io/badge/PyPI-orange?style=plastic&logo=PyPI&color=black&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)</object>
-
 ## Purpose
 
 This module contains functions to parse and process Bible scripture references.
@@ -192,4 +190,4 @@ ____
 
 Feel free to [get in touch and post any issues and suggestions](https://github.com/erykjj/linkture/issues).
 
-![Static Badge](https://img.shields.io/badge/Releases-orange?style=plastic&logo=rss&logoColor=orange&color=black&link=https%3A%2F%2Fgithub.com%2Ferykjj%2Flinkture%2Freleases.atom)
+[![RSS of releases](src/linkture/res/rss-36.png)](https://github.com/erykjj/linkture/releases.atom)
