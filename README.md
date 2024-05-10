@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/PyPI-white?style=plastic&logo=PyPI&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)
+![PyPI](https://img.shields.io/badge/PyPI-white?style=plastic&logo=PyPI&link=https%3A%2F%2Fpypi.org%2Fproject%2Flinkture%2F)
 
 ## Purpose
 
