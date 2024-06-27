@@ -48,6 +48,7 @@
     [66, "Revel, Apoc"]
   ],
   "Spanish": [
+    [5, "Deu"],
     [9, "1ro Samuel, I Samuel"],
     [10, "2do Samuel, II Samuel"],
     [11, "1ro Reyes, I Reyes"],
@@ -55,6 +56,11 @@
     [13, "1ro Crónicas, I Crónicas"],
     [14, "2do Crónicas, II Crónicas"],
     [22, "Cantar de los Cantares, Cantar"],
+    [23, "Isa"],
+    [26, "Ez"],
+    [48, "Gá"],
+    [49, "Efe"],
+    [50, "Fil"],
     [52, "1ra Tesalonicenses, I Tesalonicenses"],
     [53, "2da Tesalonicenses, II Tesalonicenses"],
     [54, "1ra Timoteo, I Timoteo"],
