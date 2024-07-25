@@ -58,7 +58,7 @@
     [22, "Cantar de los Cantares, Cantar"],
     [23, "Isa"],
     [26, "Ez"],
-    [48, "Gá"],
+    [48, "Gá, Ga"],
     [49, "Efe"],
     [50, "Fil"],
     [52, "1ra Tesalonicenses, I Tesalonicenses"],
@@ -71,5 +71,8 @@
     [63, "2da Juan, II Juan"],
     [64, "3ra Juan, III Juan"],
     [66, "Revelación, Rev, Re"]
+  ],
+  "Portuguese": [
+    [18, "Jo"]
   ]
 }
