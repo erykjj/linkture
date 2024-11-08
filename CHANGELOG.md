@@ -11,6 +11,10 @@
 ### Removed
 
 ____
+## [2.6.4] - 2024-11-08
+
+- Added Ewe book names
+
 ## [2.6.3] - 2024-09-19
 
 - Added Swedish book names
@@ -291,6 +295,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[2.6.4]:https://github.com/erykjj/linkture/releases/tag/v2.6.4
 [2.6.3]:https://github.com/erykjj/linkture/releases/tag/v2.6.3
 [2.6.2]:https://github.com/erykjj/linkture/releases/tag/v2.6.2
 [2.6.1]:https://github.com/erykjj/linkture/releases/tag/v2.6.1
