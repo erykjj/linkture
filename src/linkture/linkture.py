@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v2.6.3'
+__version__ = 'v2.6.4'
 
 
 import json, regex, sqlite3
@@ -36,7 +36,7 @@ from pathlib import Path
 from unidecode import unidecode
 
 
-_available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'French', 'German', 'Greek', 'Hungarian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Swedish', 'Tagalog', 'Ukrainian')
+_available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'Ewe', 'French', 'German', 'Greek', 'Hungarian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Russian', 'Spanish', 'Swedish', 'Tagalog', 'Ukrainian')
 _non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 
 
