@@ -71,7 +71,7 @@ type of conversion:
 
 auxiliary functions:
   -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
-  -sv BCV               return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")
+  -sv BCV               return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")
   -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
   -cv verse             return the BCV code for serial verse number "verse" (integer value)
 ```
@@ -115,7 +115,7 @@ $ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
 $ python3 -m linkture -cc 2
 ('01002001', '01002025')
 
-$ python3 -m linkture -cv 31091
+$ python3 -m linkture -cv 31194
 ('66022021', '66022021')
 
 $ python3 -m linkture -sv '01001001'
@@ -128,8 +128,6 @@ python3 -m linkture -sc '66022001'
 python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
 ```
-
-**Note**: ~~~The serial verse options (`-sv` and `-cv`) *do not* count Psalm headings as separate verses~~~.
 
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
 
@@ -166,7 +164,7 @@ i = s.serial_chapter_number(ch_bcv)
 # returns the serial number (1-1189) of the chapter identified by the provided BCV-format string; verse digits irrelevant
 
 i = s.serial_verse_number(vs_bcv)
-# returns the serial number (1-31091) of the verse identified by the provided BCV-format string
+# returns the serial number (1-31194) of the verse identified by the provided BCV-format string
 
 ch_bcv = s.code_chapter(i)
 # returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
