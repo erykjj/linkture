@@ -6,6 +6,8 @@
 
 ### Changed
 
+- MAJOR: Psalm headings ("verse 0") included
+
 ### Fixed
 
 ### Removed
