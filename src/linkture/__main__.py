@@ -34,14 +34,6 @@ from ast import literal_eval
 def main(args):
 
     def switchboard(text):
-        if args['cc']:
-            return s.code_chapter(args['cc'])
-        elif args['cv']:
-            return s.code_verse(args['cv'])
-        elif args['sc']:
-            return s.serial_chapter_number(args['sc'])
-        elif args['sv']:
-            return s.serial_verse_number(args['sv'])
         if args['l'] is not None:
             prefix = '<a href="'
             suffix = '">'
@@ -80,7 +72,15 @@ def main(args):
     else:
         txt = args['r']
 
-    if txt:
+    if args['cc']:
+        txt = s.code_chapter(args['cc'])
+    elif args['cv']:
+        txt = s.code_verse(args['cv'])
+    elif args['sc']:
+        txt = s.serial_chapter_number(args['sc'])
+    elif args['sv']:
+        txt = s.serial_verse_number(args['sv'])
+    elif txt:
         txt = switchboard(txt)
     else:
         print(parser.format_help())
@@ -125,7 +125,7 @@ tpe.add_argument('-x', action='store_true', help='extract list of scripture refe
 aux_group = parser.add_argument_group('auxiliary functions')
 aux = aux_group.add_mutually_exclusive_group(required=False)
 aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")')
-aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31091) of the verse with code "BCV" ("bbcccvvv")')
+aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")')
 aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
 aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
 
