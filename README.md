@@ -121,11 +121,11 @@ $ python3 -m linkture -cv 31194
 $ python3 -m linkture -sv '01001001'
 1
 
-python3 -m linkture -sc '66022001'
+$ python3 -m linkture -sc '66022001'
 1189
 
 
-python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
+$ python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
 ```
 
