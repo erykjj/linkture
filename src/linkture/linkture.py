@@ -532,7 +532,7 @@ class Scriptures():
         return scriptures
 
 
-    def link_scriptures(self, text, prefix='<a href=', suffix='>'): # NOTE: this always rewrites (full by default) - what if one wants to leave as is??
+    def link_scriptures(self, text, prefix='<a href=', suffix='>'): # NOTE: this always rewrites (full by default); if one wants to leave as is, get code the scripture and build your own link??
 
         def convert_range(bcv_range):
             if not bcv_range:
@@ -583,7 +583,7 @@ class Scriptures():
 
     def serial_verse_number(self, bcv):
         try:
-            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0])
+            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0]) + 1
         except:
             self._error_report(bcv, 'OUT OF RANGE')
             return None
@@ -601,7 +601,7 @@ class Scriptures():
     def code_verse(self, verse):
         bcv = ''
         try:
-            for i in self._verses[self._verses['VerseId'] == int(verse)].values[0][1:]:
+            for i in self._verses[self._verses['VerseId'] == int(verse)-1].values[0][1:]:
                 bcv += str(i).zfill(3)
             return f"('{bcv[1:]}', '{bcv[1:]}')"
         except:
