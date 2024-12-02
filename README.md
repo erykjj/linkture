@@ -129,7 +129,7 @@ python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
 ```
 
-**Note**: The serial verse options (`-sv` and `-cv`) *do not* count Psalm headings as separate verses.
+**Note**: ~~~The serial verse options (`-sv` and `-cv`) *do not* count Psalm headings as separate verses~~~.
 
 Of course, you can pass a whole text file to parse and process using the `-f in_file` flag, instead of `-r "references"`. And you can output to another text file (instead of the terminal) using `-o out_file`.
 
