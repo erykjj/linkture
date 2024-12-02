@@ -98,6 +98,7 @@ class Scriptures():
         self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
         self._verses = pd.read_sql_query("SELECT * FROM Verses;", con)
         self._chapters = pd.read_sql_query("SELECT * FROM Chapters;", con)
+        self._headings = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 98, 100, 101, 102, 103, 108, 109, 110, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 138, 139, 140, 141, 142, 143, 144, 145)
         cur.close()
         con.close()
         self._reported = []
@@ -359,7 +360,10 @@ class Scriptures():
                     if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
-                    v1 = '001'
+                    if book == 19 and int(c) in self._headings: # some chapters start at verse 0
+                        v1 = '000'
+                    else:
+                        v1 = '001'
 
                     c = result.group(2)
                     if not validate(book, c, v):
@@ -390,7 +394,10 @@ class Scriptures():
                     if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
-                    v1 = '001'
+                    if book == 19 and int(c) in self._headings: # some chapters start at verse 0
+                        v1 = '000'
+                    else:
+                        v1 = '001'
                     v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch1)), ['Last']].values[0][0]).zfill(3)
                     return (b+ch1+v1, b+ch1+v2), None
                 else:
@@ -456,7 +463,13 @@ class Scriptures():
             return None, '', 0, False
         se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
         le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
-        if not ((0 < sv <= se) & (0 < ev <= le)): # verse(s) out of range
+        minsv = minev = 1
+        if sb == 19:
+            if sc in self._headings: # some chapters start at verse 0
+                minsv = 0
+            if ec in self._headings:
+                minev = 0
+        if not ((minsv <= sv <= se) & (minev <= ev <= le)): # verse(s) out of range
             return None, '', 0, False
         bk_name = self._tr_book_names[sb]
         if book == bk_name:
@@ -592,8 +605,12 @@ class Scriptures():
         try:
             book, chapter = self._chapters[self._chapters['ChapterId'] == int(chapter)].values[0][1:]
             last = self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == chapter), ['Last']].values[0][0]
-            bcv = str(book).zfill(2) + str(chapter).zfill(3)
-            return f"('{bcv}001', '{bcv}{str(last).zfill(3)}')"
+            bc = str(book).zfill(2) + str(chapter).zfill(3)
+            if book == 19 and chapter in self._headings: # some chapters start at verse 0
+                v = '000'
+            else:
+                v = '001'
+            return f"('{bc}{v}', '{bc}{str(last).zfill(3)}')"
         except:
             self._error_report(chapter, 'OUT OF RANGE')
             return None
