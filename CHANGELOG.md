@@ -6,19 +6,27 @@
 
 ### Changed
 
-- MAJOR: Psalm headings ("verse 0") included
-
 ### Fixed
 
 ### Removed
 
 ____
-## [2.6.4] - 2024-11-08
+## [3.0.0] - 2024-12-02
+### Changed
 
+- MAJOR: Psalm headings ("verse 0") included
+  - serial verse numbers adjusted
+
+### Fixed
+
+- Fixed some argument parsing
+
+## [2.6.4] - 2024-11-08
+### Added
 - Added Ewe book names
 
 ## [2.6.3] - 2024-09-19
-
+### Added
 - Added Swedish book names
 
 ## [2.6.2] - 2024-04-25
@@ -297,6 +305,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.0.0]:https://github.com/erykjj/linkture/releases/tag/v3.0.0
 [2.6.4]:https://github.com/erykjj/linkture/releases/tag/v2.6.4
 [2.6.3]:https://github.com/erykjj/linkture/releases/tag/v2.6.3
 [2.6.2]:https://github.com/erykjj/linkture/releases/tag/v2.6.2
