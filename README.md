@@ -170,7 +170,7 @@ ch_bcv = s.code_chapter(i)
 # returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
 
 vs_bcv = s.code_verse(i)
-# returns a BCV-format range string for the verse indicated by the provided integer (1-31091)
+# returns a BCV-format range string for the verse indicated by the provided integer (1-31194)
 ```
 
 Parameters:
