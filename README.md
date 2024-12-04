@@ -29,7 +29,7 @@ usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
                    [-s separator] [-u] [--full | --official | --standard]
                    [-c | -d | -l [prefix [suffix ...]] | -t | -x]
-                   [-sc BCV | -sv BCV | -cc chapter | -cv verse]
+                   [-sc BCV | -sv BCV | -cv verse | -cc chapter | -bn book]
 
 PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
 See README for more information
@@ -72,8 +72,9 @@ type of conversion:
 auxiliary functions:
   -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
   -sv BCV               return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")
-  -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
-  -cv verse             return the BCV code for serial verse number "verse" (integer value)
+  -cv verse             return the BCV code for serial verse number "verse" (integer)
+  -cc chapter           return the BCV range for serial chapter number "chapter" (integer)
+  -bn book              return the name of book number "book" (integer)
 ```
 
 Some examples:
@@ -124,6 +125,11 @@ $ python3 -m linkture -sv '01001001'
 $ python3 -m linkture -sc '66022001'
 1189
 
+$ python3 -m linkture -bn 3 --official
+Le
+
+$ python3 -m linkture -bn 3 --translate German
+3. Mose
 
 $ python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
@@ -165,6 +171,9 @@ i = s.serial_chapter_number(ch_bcv)
 
 i = s.serial_verse_number(vs_bcv)
 # returns the serial number (1-31194) of the verse identified by the provided BCV-format string
+
+book = s.book_name(i)
+# returns the book name indicated by the provided integer (1-66)
 
 ch_bcv = s.code_chapter(i)
 # returns a BCV-format range string for the whole chapter indicated by the provided integer (1-1189)
