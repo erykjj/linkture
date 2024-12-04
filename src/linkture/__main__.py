@@ -76,10 +76,12 @@ def main(args):
         txt = s.code_chapter(args['cc'])
     elif args['cv']:
         txt = s.code_verse(args['cv'])
-    elif args['sc']:
-        txt = s.serial_chapter_number(args['sc'])
     elif args['sv']:
         txt = s.serial_verse_number(args['sv'])
+    elif args['sc']:
+        txt = s.serial_chapter_number(args['sc'])
+    elif args['bn']:
+        txt = s.book_name(args['bn'])
     elif txt:
         txt = switchboard(txt)
     else:
@@ -126,8 +128,9 @@ aux_group = parser.add_argument_group('auxiliary functions')
 aux = aux_group.add_mutually_exclusive_group(required=False)
 aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")')
 aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")')
-aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
 aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
+aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
+aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (integer value)')
 
 args = parser.parse_args()
 main(vars(args))
