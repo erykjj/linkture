@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [3.1.0] - 2024-12-04
+### Added
+
+- Auxiliary function to get book name by number
+
 ## [3.0.0] - 2024-12-02
 ### Changed
 
@@ -305,6 +310,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.1.0]:https://github.com/erykjj/linkture/releases/tag/v3.1.0
 [3.0.0]:https://github.com/erykjj/linkture/releases/tag/v3.0.0
 [2.6.4]:https://github.com/erykjj/linkture/releases/tag/v2.6.4
 [2.6.3]:https://github.com/erykjj/linkture/releases/tag/v2.6.3
