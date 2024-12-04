@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v3.0.0'
+__version__ = 'v3.1.0'
 
 
 import json, regex, sqlite3
@@ -587,6 +587,13 @@ class Scriptures():
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r1, text).replace('»»|', '{{').replace('|««', '}}')
 
+
+    def book_name(self, num):
+        try:
+            return self._tr_book_names[int(num)]
+        except:
+            self._error_report(num, 'OUT OF RANGE')
+            return None
 
     def serial_chapter_number(self, bcv):
         try:
