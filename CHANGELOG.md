@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Use non-breaking space in book names
+
 ### Fixed
 
 ### Removed
