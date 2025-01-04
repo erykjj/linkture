@@ -11,7 +11,8 @@
 ### Removed
 
 ____
-## [3.1.0] - 2025-01-04
+## [3.2.0] - 2025-01-04
+### Changed
 
 - Use non-breaking space in book names
 
