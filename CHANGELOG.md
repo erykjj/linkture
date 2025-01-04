@@ -6,13 +6,15 @@
 
 ### Changed
 
-- Use non-breaking space in book names
-
 ### Fixed
 
 ### Removed
 
 ____
+## [3.1.0] - 2025-01-04
+
+- Use non-breaking space in book names
+
 ## [3.1.0] - 2024-12-04
 ### Added
 
@@ -312,6 +314,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.2.0]:https://github.com/erykjj/linkture/releases/tag/v3.2.0
 [3.1.0]:https://github.com/erykjj/linkture/releases/tag/v3.1.0
 [3.0.0]:https://github.com/erykjj/linkture/releases/tag/v3.0.0
 [2.6.4]:https://github.com/erykjj/linkture/releases/tag/v2.6.4
