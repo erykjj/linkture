@@ -11,6 +11,10 @@
 ### Removed
 
 ____
+## [3.2.2] - 2025-03-09
+
+- Fixed Romanian
+
 ## [3.2.1] - 2025-03-08
 
 - Added Romanian
@@ -319,6 +323,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.2.2]:https://github.com/erykjj/linkture/releases/tag/v3.2.2
 [3.2.1]:https://github.com/erykjj/linkture/releases/tag/v3.2.1
 [3.2.0]:https://github.com/erykjj/linkture/releases/tag/v3.2.0
 [3.1.0]:https://github.com/erykjj/linkture/releases/tag/v3.1.0
