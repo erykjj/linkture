@@ -4,7 +4,7 @@
 
 This module contains functions to parse and process Bible scripture references.
 
-The parser can work in **Cebuano, Chinese, Danish, Dutch, English, Ewe, French, German, Greek, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish, Swedish, Tagalog and Ukrainian**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
+The parser can work in **Cebuano, Chinese, Danish, Dutch, English, Ewe, French, German, Greek, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Romanian, Russian, Spanish, Swedish, Tagalog and Ukrainian**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
 
 It *does not* work with whole books (like "James") unless they are preceded by a number (like "1 John"); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}") - *one book* per brace pair. These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
 
@@ -25,23 +25,23 @@ ____
 ```
 > python3 -m linkture -h
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
-                   [--language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
-                   [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}]
+                   [--language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
+                   [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
                    [-s separator] [-u] [--full | --official | --standard]
                    [-c | -d | -l [prefix [suffix ...]] | -t | -x]
                    [-sc BCV | -sv BCV | -cv verse | -cc chapter | -bn book]
 
-PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode.
-See README for more information
+PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and
+decode. See README for more information
 
 options:
   -h, --help            show this help message and exit
   -v                    show version and exit
   -q                    don't show errors
   -o out-file           output file (terminal output if not provided)
-  --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}
+  --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate source language for book names (English if unspecified)
-  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Russian,Spanish,Tagalog,Ukrainian}
+  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate output language for book names (same as source if unspecified)
   -s separator          segment separator (space by default)
   -u                    capitalize (upper-case) book names
@@ -72,9 +72,9 @@ type of conversion:
 auxiliary functions:
   -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
   -sv BCV               return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")
-  -cv verse             return the BCV code for serial verse number "verse" (integer)
-  -cc chapter           return the BCV range for serial chapter number "chapter" (integer)
-  -bn book              return the name of book number "book" (integer)
+  -cv verse             return the BCV code for serial verse number "verse" (integer value)
+  -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
+  -bn book              return the name of book number "book" (integer value)
 ```
 
 Some examples:
