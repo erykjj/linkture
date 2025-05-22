@@ -11,6 +11,10 @@
 ### Removed
 
 ____
+## [3.2.4] - 2025-05-22
+
+- Return None on decode error
+
 ## [3.2.3] - 2025-04-14
 
 - Fixed Ukrainian referencing
@@ -327,6 +331,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.2.4]:https://github.com/erykjj/linkture/releases/tag/v3.2.4
 [3.2.3]:https://github.com/erykjj/linkture/releases/tag/v3.2.3
 [3.2.2]:https://github.com/erykjj/linkture/releases/tag/v3.2.2
 [3.2.1]:https://github.com/erykjj/linkture/releases/tag/v3.2.1
