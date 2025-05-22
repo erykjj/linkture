@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v3.2.3'
+__version__ = 'v3.2.4'
 
 
 import json, regex, sqlite3
@@ -531,18 +531,21 @@ class Scriptures():
         return scripture.strip(), book, chap, cont, sep
 
     def decode_scriptures(self, bcv_ranges=[]):
-        scriptures = []
-        bk = ''
-        ch = 0
-        sep = ';'
-        for bcv_range in bcv_ranges:
-            scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, sep)
-            if scripture:
-                if cont:
-                    scriptures[-1] = scriptures[-1] + scripture
-                else:
-                    scriptures.append(scripture)
-        return scriptures
+        try:
+            scriptures = []
+            bk = ''
+            ch = 0
+            sep = ';'
+            for bcv_range in bcv_ranges:
+                scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, sep)
+                if scripture:
+                    if cont:
+                        scriptures[-1] = scriptures[-1] + scripture
+                    else:
+                        scriptures.append(scripture)
+            return scriptures
+        except:
+            return None
 
 
     def link_scriptures(self, text, prefix='<a href=', suffix='>'):
