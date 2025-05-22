@@ -18,6 +18,7 @@
     [20, "Pro"],
     [21, "Ecc, Eccles, Qoh"],
     [22, "Cant, Son, Sng"],
+    [26, "Ezek"],
     [30, "Amo"],
     [31, "Oba"],
     [35, "Habaccuc"],
@@ -48,6 +49,7 @@
     [66, "Revel, Apoc"]
   ],
   "Spanish": [
+    [2, "Éxo"],
     [5, "Deu"],
     [9, "1ro Samuel, I Samuel"],
     [10, "2do Samuel, II Samuel"],
@@ -55,9 +57,11 @@
     [12, "2do Reyes, II Reyes"],
     [13, "1ro Crónicas, I Crónicas"],
     [14, "2do Crónicas, II Crónicas"],
-    [22, "Cantar de los Cantares, Cantar"],
+    [20, "Pro"],
+    [22, "Cantar de los Cantares, Cantar, Cnt"],
     [23, "Isa"],
     [26, "Ez"],
+    [28, "Ose"],
     [48, "Gá, Ga"],
     [49, "Efe"],
     [50, "Fil"],
