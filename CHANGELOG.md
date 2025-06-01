@@ -11,6 +11,10 @@
 ### Removed
 
 ____
+## [3.2.5] - 2025-06-01
+
+- Added Indonesian
+
 ## [3.2.4] - 2025-05-22
 
 - Return None on decode error
