@@ -39,9 +39,9 @@ options:
   -v                    show version and exit
   -q                    don't show errors
   -o out-file           output file (terminal output if not provided)
-  --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
+  --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate source language for book names (English if unspecified)
-  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
+  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate output language for book names (same as source if unspecified)
   -s separator          segment separator (space by default)
   -u                    capitalize (upper-case) book names
