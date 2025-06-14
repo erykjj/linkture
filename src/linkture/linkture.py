@@ -227,7 +227,8 @@ class Scriptures():
         for scripture in regex.findall(self._tagged, text):
             script = scripture.strip('}{')
             if self._rewrite:
-                script = self.decode_scriptures(self._encoded[script])[0]
+                temp = self.decode_scriptures(self._encoded[script])
+                script = temp[0] if temp else script
             if self._upper:
                 script = script.upper()
             lst.append(script)
@@ -241,7 +242,8 @@ class Scriptures():
         def r(match):
             script = match.group(1).strip('}{')
             if self._rewrite:
-                script = self.decode_scriptures(self._encoded[script])[0]
+                temp = self.decode_scriptures(self._encoded[script])
+                script = temp[0] if temp else script
             if self._upper:
                 script = script.upper()
             if tag:
