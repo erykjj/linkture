@@ -452,7 +452,7 @@ class Scriptures():
 
     def _decode_scripture(self, bcv_range, book='', chap=0, sep=';'):
         if not bcv_range:
-            return None, '', 0, False
+            return None, '', 0, False, ''
         start, end = bcv_range
         sb = int(start[:2])
         sc = int(start[2:5])
@@ -462,23 +462,21 @@ class Scriptures():
         ev = int(end[5:])
 
         if not (sb == eb):
-            return None, '', 0, False
+            return None, '', 0, False, ''
         if not ((0 < sb <= 66) & (sb == eb)): # book out of range
-            return None, '', 0, False
+            return None, '', 0, False, ''
         lc = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0][0]
         if not (0 < sc <= ec <= lc): # chapter(s) out of range
-            return None, '', 0, False
+            return None, '', 0, False, ''
         se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
         le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
         minev = 1
-        if sb == 19 and sc in self._headings:
+        if sb == 19 and (sc in self._headings):
             minsv = 0
-            heading = True
         else:
             minsv = 1
-            heading = False
         if not ((minsv <= sv <= se) & (minev <= ev <= le)): # verse(s) out of range
-            return None, '', 0, False
+            return None, '', 0, False, ''
         bk_name = self._tr_book_names[sb]
         if book == bk_name:
             cont = True
@@ -534,7 +532,6 @@ class Scriptures():
                 scripture = f"{bk_name} {ch}{sv}‑{ec}:{ev}"
                 sep = ';'
         chap = ec
-        if heading:
         if self._separator != ' ':
             scripture = regex.sub(self._sep, self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
