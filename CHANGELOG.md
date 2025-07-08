@@ -11,6 +11,10 @@
 ### Removed
 
 ____
+## [3.3.1] - 2025-07-08
+
+- Fixed verse 0 handling
+
 ## [3.3.0] - 2025-07-08
 
 - Fixed verse 0 handling
@@ -339,6 +343,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[3.3.1]:https://github.com/erykjj/linkture/releases/tag/v3.3.1
 [3.3.0]:https://github.com/erykjj/linkture/releases/tag/v3.3.0
 [3.2.4]:https://github.com/erykjj/linkture/releases/tag/v3.2.4
 [3.2.3]:https://github.com/erykjj/linkture/releases/tag/v3.2.3
