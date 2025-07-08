@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v3.3.0'
+__version__ = 'v3.3.1'
 
 
 import json, regex, sqlite3
@@ -470,12 +470,13 @@ class Scriptures():
             return None, '', 0, False
         se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
         le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
-        minsv = minev = 1
-        if sb == 19:
-            if sc in self._headings: # some chapters start at verse 0
-                minsv = 0
-            if ec in self._headings:
-                minev = 0
+        minev = 1
+        if sb == 19 and sc in self._headings:
+            minsv = 0
+            heading = True
+        else:
+            minsv = 1
+            heading = False
         if not ((minsv <= sv <= se) & (minev <= ev <= le)): # verse(s) out of range
             return None, '', 0, False
         bk_name = self._tr_book_names[sb]
@@ -485,7 +486,7 @@ class Scriptures():
             cont = False
             book = bk_name
         c = ec - sc + 1
-        v = ev - sv + 1
+        v = ev - sv + minsv
         if lc == 1:
             if cont:
                 bk_name = ','
@@ -533,6 +534,7 @@ class Scriptures():
                 scripture = f"{bk_name} {ch}{sv}‑{ec}:{ev}"
                 sep = ';'
         chap = ec
+        if heading:
         if self._separator != ' ':
             scripture = regex.sub(self._sep, self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
