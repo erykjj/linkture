@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Fixed verse 0 handling
+
 ### Removed
 
 ____
