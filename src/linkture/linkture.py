@@ -218,7 +218,8 @@ class Scriptures():
 
         self._reported = []
         text = regex.sub(self._first_pass, r, text)
-        return regex.sub(self._second_pass, r, text)
+        text = regex.sub(self._second_pass, r, text)
+        return text
 
 
     def list_scriptures(self, text):
@@ -288,7 +289,11 @@ class Scriptures():
                 return None
             if not (0 < c <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter.isnull()), ['Last']].values[0]): # chapter out of range
                 return None
-            if not (0 < v <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter == c), ['Last']].values[0]): # verse out of range
+            if b == 19 and c in self._headings:
+                first = 0
+            else:
+                first = 1
+            if not (first <= v <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter == c), ['Last']].values[0]): # verse out of range
                 return None
             return True
 
