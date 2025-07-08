@@ -471,10 +471,10 @@ class Scriptures():
         se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
         le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
         minev = 1
+        minsv = 1
         if sb == 19 and (sc in self._headings):
             minsv = 0
-        else:
-            minsv = 1
+            le += 1
         if not ((minsv <= sv <= se) & (minev <= ev <= le)): # verse(s) out of range
             return None, '', 0, False, ''
         bk_name = self._tr_book_names[sb]
@@ -484,7 +484,7 @@ class Scriptures():
             cont = False
             book = bk_name
         c = ec - sc + 1
-        v = ev - sv + minsv
+        v = ev - sv + 1
         if lc == 1:
             if cont:
                 bk_name = ','
