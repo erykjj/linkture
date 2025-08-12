@@ -27,11 +27,10 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v3.3.1'
+__version__ = 'v4.0.0'
 
 
 import json, regex, sqlite3
-import pandas as pd
 from pathlib import Path
 from unidecode import unidecode
 
@@ -66,25 +65,27 @@ class Scriptures():
             form = 5
         else:
             form = 3
-        self._src_book_names = {}
-        path = Path(__file__).resolve().parent
 
-        self._tr_book_names = ['Bible']
+        path = Path(__file__).resolve().parent
         con = sqlite3.connect(path / 'res/resources.db')
         cur = con.cursor()
-        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{translate}';").fetchall():
+
+        self._src_book_names = {}
+        self._tr_book_names = ['Bible']
+        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = ?;", (translate,)).fetchall():
             if self._upper:
                 tr = rec[form].upper()
             else:
                 tr = rec[form]
             self._tr_book_names.insert(rec[2], tr)
-        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = '{language}';").fetchall():
+        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = ?;", (language,)).fetchall():
             for i in range(3,6):
                 item = rec[i]
                 if not self._nl:
                     item = unidecode(item)
                 normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                 self._src_book_names[normalized] = rec[2]
+
         with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
             b = json.load(json_file)
         if language in b.keys():
@@ -95,12 +96,30 @@ class Scriptures():
                         item = unidecode(item)
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
-        self._ranges = pd.read_sql_query("SELECT * FROM Ranges;", con)
-        self._verses = pd.read_sql_query("SELECT * FROM Verses;", con)
-        self._chapters = pd.read_sql_query("SELECT * FROM Chapters;", con)
-        self._headings = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 98, 100, 101, 102, 103, 108, 109, 110, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 138, 139, 140, 141, 142, 143, 144, 145)
+
+        # Ranges: {(book, chapter): last}  (chapter 0 -> num of chapters in book)
+        self._ranges = {}
+        for book, chapter, last in cur.execute("SELECT Book, Chapter, Last FROM Ranges;"):
+            self._ranges[(book, chapter)] = last
+
+        # Chapters: two-way mappings
+        self._chapters = {}
+        self._chapters_id = {}
+        for chapter_id, book, chapter in cur.execute("SELECT ChapterId, Book, Chapter FROM Chapters;"):
+            self._chapters[(book, chapter)] = chapter_id
+            self._chapters_id[chapter_id] = (book, chapter)
+
+        # Verses: two-way mappings
+        self._verses = {}
+        self._verses_id = {}
+        for verse_id, book, chapter, verse in cur.execute("SELECT VerseId, Book, Chapter, Verse FROM Verses;"):
+            self._verses[(book, chapter, verse)] = verse_id
+            self._verses_id[verse_id] = (book, chapter, verse)
+
         cur.close()
         con.close()
+
+        self._headings = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 98, 100, 101, 102, 103, 108, 109, 110, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 138, 139, 140, 141, 142, 143, 144, 145)
         self._reported = []
         self._encoded = {}
         self._linked = {}
@@ -151,7 +170,6 @@ class Scriptures():
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._tagged = regex.compile(r'({{.*?}})')
-
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
@@ -162,7 +180,6 @@ class Scriptures():
         self._d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
         self._dd = regex.compile(r'(\d+),(\d+)')
         self._d = regex.compile(r'(\d+)')
-
         self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
         self._sep = regex.compile(r'(?<!;)\s')
 
@@ -181,7 +198,7 @@ class Scriptures():
                 return None, 0
             else:
                 bk_num = self._src_book_names[bk_name]
-            return self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter.isnull()), ['Book', 'Last']].values[0]
+            return bk_num, self._ranges.get((bk_num, 0))
 
         reduced = regex.sub(r'\p{Z}', '', scripture)
         reduced = regex.sub(r'\p{Pd}', '-', reduced)
@@ -258,7 +275,7 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
-        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3)
+        def reform_series(txt): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
             for result in self._d_dd.finditer(txt, overlapped=True):
                     end = result.group(3)
                     mid = result.group(2)
@@ -287,13 +304,13 @@ class Scriptures():
             v = int(vs)
             if not (0 < b <= 66): # book out of range
                 return None
-            if not (0 < c <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter.isnull()), ['Last']].values[0]): # chapter out of range
+            if not (0 < c <= self._ranges.get((b, 0), 0)): # chapter out of range
                 return None
             if b == 19 and c in self._headings:
                 first = 0
             else:
                 first = 1
-            if not (first <= v <= self._ranges.loc[(self._ranges.Book == b) & (self._ranges.Chapter == c), ['Last']].values[0]): # verse out of range
+            if not (first <= v <= self._ranges.get((b, c), 0)): # verse out of range
                 return None
             return True
 
@@ -376,7 +393,7 @@ class Scriptures():
                     if not validate(book, c, v):
                         return None, 0
                     ch2 = c.zfill(3)
-                    v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch2)), ['Last']].values[0][0]).zfill(3)
+                    v2 = str(self._ranges.get((book, int(ch2)))).zfill(3)
                     return (b+ch1+v1, b+ch2+v2), None
                 else:
                     c = 1
@@ -405,7 +422,7 @@ class Scriptures():
                         v1 = '000'
                     else:
                         v1 = '001'
-                    v2 = str(self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == int(ch1)), ['Last']].values[0][0]).zfill(3)
+                    v2 = str(self._ranges.get((book, int(ch1)))).zfill(3)
                     return (b+ch1+v1, b+ch1+v2), None
                 else:
                     c = 1
@@ -420,7 +437,7 @@ class Scriptures():
 
         lst = []
         if rest == '': # whole book
-            v = self._ranges.loc[(self._ranges.Book == bk_num) & (self._ranges.Chapter == last), ['Last']].values[0][0]
+            v = self._ranges.get((bk_num, last))
             if last == 1:
                 rest = f'1-{v}'
             else:
@@ -465,11 +482,11 @@ class Scriptures():
             return None, '', 0, False, ''
         if not ((0 < sb <= 66) & (sb == eb)): # book out of range
             return None, '', 0, False, ''
-        lc = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter.isnull()), ['Last']].values[0][0]
+        lc = self._ranges.get((sb, 0), 0)
         if not (0 < sc <= ec <= lc): # chapter(s) out of range
             return None, '', 0, False, ''
-        se = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == sc), ['Last']].values[0][0]
-        le = self._ranges.loc[(self._ranges.Book == sb) & (self._ranges.Chapter == ec), ['Last']].values[0][0]
+        se = self._ranges.get((sb, sc), 0)
+        le = self._ranges.get((sb, ec), 0)
         minev = 1
         minsv = 1
         if sb == 19 and (sc in self._headings):
@@ -607,22 +624,22 @@ class Scriptures():
 
     def serial_chapter_number(self, bcv):
         try:
-            return int(self._chapters.loc[(self._chapters['Book'] == int(bcv[0:2])) & (self._chapters['Chapter'] == int(bcv[2:5]))].values[0][0])
+            return self._chapters[(int(bcv[0:2]), int(bcv[2:5]))]
         except:
             self._error_report(bcv, 'OUT OF RANGE')
             return None
 
     def serial_verse_number(self, bcv):
         try:
-            return int(self._verses.loc[(self._verses['Book'] == int(bcv[0:2])) & (self._verses['Chapter'] == int(bcv[2:5])) & (self._verses['Verse'] == int(bcv[5:]))].values[0][0]) + 1
+            return self._verses[(int(bcv[0:2]), int(bcv[2:5]), int(bcv[5:]))] + 1
         except:
             self._error_report(bcv, 'OUT OF RANGE')
             return None
 
     def code_chapter(self, chapter):
         try:
-            book, chapter = self._chapters[self._chapters['ChapterId'] == int(chapter)].values[0][1:]
-            last = self._ranges.loc[(self._ranges.Book == book) & (self._ranges.Chapter == chapter), ['Last']].values[0][0]
+            book, chapter = self._chapters_id[int(chapter)]
+            last = self._ranges.get((book, chapter))
             bc = str(book).zfill(2) + str(chapter).zfill(3)
             if book == 19 and chapter in self._headings: # some chapters start at verse 0
                 v = '000'
@@ -636,9 +653,9 @@ class Scriptures():
     def code_verse(self, verse):
         bcv = ''
         try:
-            for i in self._verses[self._verses['VerseId'] == int(verse)-1].values[0][1:]:
-                bcv += str(i).zfill(3)
-            return f"('{bcv[1:]}', '{bcv[1:]}')"
+            bk, ch, vs = self._verses_id[int(verse)-1]
+            bcv = f"{bk:02d}{ch:03d}{vs:03d}"
+            return f"('{bcv}', '{bcv}')"
         except:
             self._error_report(verse, 'OUT OF RANGE')
             return None
