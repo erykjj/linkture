@@ -6,6 +6,9 @@
 
 ### Changed
 
+- Replaced Pandas with dictionaries
+  - fewer dependecies and faster
+
 ### Fixed
 
 ### Removed
