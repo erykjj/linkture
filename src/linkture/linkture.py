@@ -97,7 +97,7 @@ class Scriptures():
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
 
-        # Ranges: {(book, chapter): last}  (chapter can be None for the "book-level" row)
+        # Ranges: {(book, chapter): last}  (chapter 0 -> num of chapters in book)
         self._ranges = {}
         for book, chapter, last in cur.execute("SELECT Book, Chapter, Last FROM Ranges;"):
             self._ranges[(book, chapter)] = last
@@ -275,7 +275,7 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
-        def reform_series(txt): # rewrite comma-separated consecutive sequences as (1, 2, 3) as ranges (1-3)
+        def reform_series(txt): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
             for result in self._d_dd.finditer(txt, overlapped=True):
                     end = result.group(3)
                     mid = result.group(2)
