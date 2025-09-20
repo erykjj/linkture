@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [4.1.0] - 2025-09-20
+### Changed
+
+- Improved exception handling
+
 ## [4.0.0] - 2025-08-12
 ### Changed
 
@@ -349,6 +354,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.1.0]:https://github.com/erykjj/linkture/releases/tag/v4.1.0
 [4.0.0]:https://github.com/erykjj/linkture/releases/tag/v4.0.0
 [3.3.1]:https://github.com/erykjj/linkture/releases/tag/v3.3.1
 [3.3.0]:https://github.com/erykjj/linkture/releases/tag/v3.3.0
