@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-import argparse
+import argparse, sys, traceback
 from .linkture import _available_languages, __app__, __version__, Scriptures
 from ast import literal_eval
 
@@ -34,24 +34,31 @@ from ast import literal_eval
 def main(args):
 
     def switchboard(text):
-        if args['l'] is not None:
-            prefix = '<a href="'
-            suffix = '">'
-            if len(args['l']) > 1 and args['l'][1] != '':
-                suffix = args['l'][1]
-            if len(args['l']) > 0 and args['l'][0] != '':
-                prefix = args['l'][0]
-            return s.link_scriptures(text, prefix, suffix)
-        elif args['c']:
-            return s.code_scriptures(text)
-        elif args['d']:
-            return s.decode_scriptures(literal_eval(text))
-        elif args['x']:
-            return s.list_scriptures(text)
-        elif args['t']:
-            return s.tag_scriptures(text)
-        else:
-            return s.rewrite_scriptures(text)
+        try:
+            if args['l'] is not None:
+                prefix = '<a href="'
+                suffix = '">'
+                if len(args['l']) > 1 and args['l'][1] != '':
+                    suffix = args['l'][1]
+                if len(args['l']) > 0 and args['l'][0] != '':
+                    prefix = args['l'][0]
+                return s.link_scriptures(text, prefix, suffix)
+            elif args['c']:
+                return s.code_scriptures(text)
+            elif args['d']:
+                return s.decode_scriptures(literal_eval(text))
+            elif args['x']:
+                return s.list_scriptures(text)
+            elif args['t']:
+                return s.tag_scriptures(text)
+            else:
+                return s.rewrite_scriptures(text)
+        except Exception as e:
+            print("\n--- CRASH DETECTED ---", file=sys.stderr)
+            print("Input causing failure:", repr(text), file=sys.stderr)
+            print("Error:", str(e), file=sys.stderr)
+            traceback.print_exc()
+            raise
 
     form = None
     if args['standard']:
