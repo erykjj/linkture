@@ -6,13 +6,16 @@
 
 ### Changed
 
-- Fixed extended sequences
-
 ### Fixed
 
 ### Removed
 
 ____
+## [4.2.0] - 2025-10-10
+### Changed
+
+- Fixed extended sequences
+
 ## [4.1.0] - 2025-09-20
 ### Changed
 
@@ -356,6 +359,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.2.0]:https://github.com/erykjj/linkture/releases/tag/v4.2.0
 [4.1.0]:https://github.com/erykjj/linkture/releases/tag/v4.1.0
 [4.0.0]:https://github.com/erykjj/linkture/releases/tag/v4.0.0
 [3.3.1]:https://github.com/erykjj/linkture/releases/tag/v3.3.1
