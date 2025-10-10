@@ -437,6 +437,26 @@ class Scriptures():
 
             return None, None
 
+        def merge_ranges(ranges):
+            if not ranges:
+                return []
+            merged = []
+            current_start, current_end = ranges[0]
+            for start, end in ranges[1:]:
+                end_bk = int(current_end[:2])
+                end_ch = int(current_end[2:5])
+                end_vs = int(current_end[5:])
+                next_bk = int(start[:2])
+                next_ch = int(start[2:5])
+                next_vs = int(start[5:])
+                if (end_bk == next_bk and ((end_ch == next_ch and end_vs + 1 == next_vs) or (end_ch + 1 == next_ch and end_vs == self._ranges.get((end_bk, end_ch), 0) and next_vs == 1))):
+                    current_end = end
+                else:
+                    merged.append((current_start, current_end))
+                    current_start, current_end = start, end
+            merged.append((current_start, current_end))
+            return merged
+
         lst = []
         if rest == '': # whole book
             v = self._ranges.get((bk_num, last))
@@ -446,6 +466,7 @@ class Scriptures():
                 rest = f'1:1-{last}:{v}'
         else:
             rest = reform_series(rest)
+        all_ranges = []
         for chunk in rest.split(';'):
             ch = None
             for bit in chunk.split(','):
@@ -456,7 +477,8 @@ class Scriptures():
                 if not tup:
                     self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE')
                     return None
-                lst.append(tup)
+                all_ranges.append(tup)
+        lst = merge_ranges(all_ranges)
         return lst
 
     def code_scriptures(self, text):
