@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Fixed extended sequences
+
 ### Fixed
 
 ### Removed
