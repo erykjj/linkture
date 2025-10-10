@@ -97,19 +97,16 @@ class Scriptures():
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = row[0]
 
-        # Ranges: {(book, chapter): last}  (chapter 0 -> num of chapters in book)
         self._ranges = {}
         for book, chapter, last in cur.execute("SELECT Book, Chapter, Last FROM Ranges;"):
             self._ranges[(book, chapter)] = last
 
-        # Chapters: two-way mappings
         self._chapters = {}
         self._chapters_id = {}
         for chapter_id, book, chapter in cur.execute("SELECT ChapterId, Book, Chapter FROM Chapters;"):
             self._chapters[(book, chapter)] = chapter_id
             self._chapters_id[chapter_id] = (book, chapter)
 
-        # Verses: two-way mappings
         self._verses = {}
         self._verses_id = {}
         for verse_id, book, chapter, verse in cur.execute("SELECT VerseId, Book, Chapter, Verse FROM Verses;"):
