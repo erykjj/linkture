@@ -276,27 +276,29 @@ class Scriptures():
     def _code_scripture(self, scripture, bk_num, rest, last):
 
         def reform_series(txt): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
-            for result in self._d_dd.finditer(txt, overlapped=True):
-                    end = result.group(3)
-                    mid = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(mid) == 1:
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
-            for result in self._ddd.finditer(txt, overlapped=True):
-                end = result.group(3)
-                start = result.group(1)
-                if int(end) - int(start) == 2:
-                    txt = regex.sub(result.group(), f"{start}-{end}", txt)
-            for result in self._ddd.finditer(txt, overlapped=True):
-                end = result.group(3)
-                start = result.group(1)
-                if int(end) - int(start) == 2:
-                    txt = regex.sub(result.group(), f"{start}-{end}", txt)
-            for result in self._dd.finditer(txt, overlapped=True):
-                    end = result.group(2)
-                    start = result.group(1)
-                    if int(end) - int(start) == 1:
-                        txt = regex.sub(result.group(), f"{start}-{end}", txt)
+            numbers = []
+            for match in regex.finditer(r'\d+', txt):
+                numbers.append((int(match.group()), match.start(), match.end()))
+            if not numbers:
+                return txt
+            sequences = []
+            current_seq = [numbers[0]]
+            for i in range(1, len(numbers)):
+                current_num = numbers[i][0]
+                prev_num = current_seq[-1][0]
+                if current_num == prev_num + 1:
+                    current_seq.append(numbers[i])
+                else:
+                    if len(current_seq) >= 3:
+                        sequences.append(current_seq)
+                    current_seq = [numbers[i]]
+            if len(current_seq) >= 3:
+                sequences.append(current_seq)
+            for seq in sorted(sequences, key=lambda x: x[0][1], reverse=True):
+                start_pos = seq[0][1]
+                end_pos = seq[-1][2]
+                replacement = f"{seq[0][0]}-{seq[-1][0]}"
+                txt = txt[:start_pos] + replacement + txt[end_pos:]
             return txt
 
         def validate(b, ch, vs):
