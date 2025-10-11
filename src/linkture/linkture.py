@@ -222,7 +222,7 @@ class Scriptures():
                 return '{{' + scripture +'}}'
             _, rest, bk_num, last = self._scripture_parts(scripture)
             if bk_num:
-                code = self._code_scripture(scripture, bk_num, rest, last) # validation performed
+                code = self._code_scripture(scripture, bk_num, rest, last)
                 if code:
                     self._encoded[scripture] = code
                     return '{{' + scripture +'}}'
