@@ -167,7 +167,7 @@ class Scriptures():
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._tagged = regex.compile(r'({{.*?}})')
-        self._series = regex.compile(r'\b(\d+(?:-\d+)?(?:\s*,\s*\d+(?:-\d+)?)+)\b')
+        self._series = regex.compile(r'(?<!\d[:\.])\b(\d+(?:-\d+)?(?:\s*,\s*\d+(?:-\d+)?)+)\b')
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
