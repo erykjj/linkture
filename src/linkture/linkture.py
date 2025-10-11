@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.2.0'
+__version__ = 'v4.2.1'
 
 
 import json, regex, sqlite3
@@ -167,6 +167,7 @@ class Scriptures():
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._tagged = regex.compile(r'({{.*?}})')
+        self._series = regex.compile(r'\b(\d+(?:-\d+)?(?:\s*,\s*\d+(?:-\d+)?)+)\b')
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
@@ -273,30 +274,47 @@ class Scriptures():
     def _code_scripture(self, scripture, bk_num, rest, last):
 
         def reform_series(txt): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
-            numbers = []
-            for match in regex.finditer(r'\d+', txt):
-                numbers.append((int(match.group()), match.start(), match.end()))
-            if not numbers:
-                return txt
-            sequences = []
-            current_seq = [numbers[0]]
-            for i in range(1, len(numbers)):
-                current_num = numbers[i][0]
-                prev_num = current_seq[-1][0]
-                if current_num == prev_num + 1:
-                    current_seq.append(numbers[i])
+
+            def expand_group(m):
+                group = m.group(1)
+                tokens = regex.findall(r'\d+(?:-\d+)?', group)
+                nums = []
+                for tok in tokens:
+                    if '-' in tok:
+                        a, b = tok.split('-', 1)
+                        a = int(a); b = int(b)
+                        if b < a:
+                            nums.append(a)
+                            nums.append(b)
+                        else:
+                            nums.extend(range(a, b+1))
+                    else:
+                        nums.append(int(tok))
+                if not nums:
+                    return group
+                segments = []
+                start = prev = nums[0]
+                run_len = 1
+                for n in nums[1:]:
+                    if n == prev + 1:
+                        prev = n
+                        run_len += 1
+                    else:
+                        if run_len >= 3:
+                            segments.append(f"{start}-{prev}")
+                        else:
+                            for x in range(start, prev+1):
+                                segments.append(str(x))
+                        start = prev = n
+                        run_len = 1
+                if run_len >= 3:
+                    segments.append(f"{start}-{prev}")
                 else:
-                    if len(current_seq) >= 3:
-                        sequences.append(current_seq)
-                    current_seq = [numbers[i]]
-            if len(current_seq) >= 3:
-                sequences.append(current_seq)
-            for seq in sorted(sequences, key=lambda x: x[0][1], reverse=True):
-                start_pos = seq[0][1]
-                end_pos = seq[-1][2]
-                replacement = f"{seq[0][0]}-{seq[-1][0]}"
-                txt = txt[:start_pos] + replacement + txt[end_pos:]
-            return txt
+                    for x in range(start, prev+1):
+                        segments.append(str(x))
+                return ', '.join(segments)
+
+            return regex.sub(self._series, expand_group, txt)
 
         def validate(b, ch, vs):
             c = int(ch)
