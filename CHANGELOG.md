@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Handle extended chapter sequences
+
 ### Fixed
 
 ### Removed
