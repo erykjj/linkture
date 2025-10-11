@@ -6,13 +6,16 @@
 
 ### Changed
 
-- Handle extended chapter sequences
-
 ### Fixed
 
 ### Removed
 
 ____
+## [4.2.1] - 2025-10-11
+### Changed
+
+- Handle extended chapter sequences
+
 ## [4.2.0] - 2025-10-10
 ### Changed
 
@@ -361,6 +364,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.2.1]:https://github.com/erykjj/linkture/releases/tag/v4.2.1
 [4.2.0]:https://github.com/erykjj/linkture/releases/tag/v4.2.0
 [4.1.0]:https://github.com/erykjj/linkture/releases/tag/v4.1.0
 [4.0.0]:https://github.com/erykjj/linkture/releases/tag/v4.0.0
