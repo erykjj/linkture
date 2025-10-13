@@ -273,66 +273,83 @@ class Scriptures():
     def _code_scripture(self, scripture, bk_num, rest, last):
 
         def reform_series(text): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
-            output = []
-            seq = []
-            num_buf = ''
-            in_range = False
 
-            def flush_seq():
-                nonlocal seq, output
-                if not seq:
-                    return
-                start = seq[0]
-                end = seq[-1]
-                length = end - start + 1
-                if length >= 3:
-                    if output and output[-1][-1].isdigit():
-                        output.append(',')
-                    output.append(f'{start}-{end}')
-                else:
-                    for n in seq:
-                        if output and output[-1][-1].isdigit():
-                            output.append(',')
-                        output.append(str(n))
-                seq.clear()
-
-            for ch in text:
-                if ch.isspace():
-                    continue
-                if ch.isdigit():
-                    num_buf += ch
-                else:
-                    if num_buf:
-                        n = int(num_buf)
-                        num_buf = ''
-                        if not seq:
-                            seq.append(n)
-                        elif in_range or n == seq[-1] + 1:
-                            seq.append(n)
+            def process_tokens(tok):
+                tok = tok.strip()
+                if not tok:
+                    return []
+                if ':' in tok:
+                    return None
+                if '-' in tok:
+                    parts = tok.split('-', 1)
+                    if parts[0].isdigit() and parts[1].isdigit():
+                        a, b = int(parts[0]), int(parts[1])
+                        if a <= b:
+                            return list(range(a, b + 1))
                         else:
-                            flush_seq()
-                            seq.append(n)
-                        in_range = False
-                    if ch == '-':
-                        in_range = True
-                    elif ch == ',':
-                        pass
+                            return None
                     else:
-                        flush_seq()
-                        output.append(ch)
-                        in_range = False
+                        return None
+                if tok.isdigit():
+                    return [int(tok)]
+                return None
 
-            if num_buf:
-                n = int(num_buf)
-                if not seq:
-                    seq.append(n)
-                elif in_range or n == seq[-1] + 1:
-                    seq.append(n)
+            def process_list(ints):
+                if not ints:
+                    return []
+                out = []
+                run = [ints[0]]
+                for n in ints[1:]:
+                    if n == run[-1] + 1:
+                        run.append(n)
+                    else:
+                        if len(run) >= 3:
+                            out.append(f'{run[0]}-{run[-1]}')
+                        else:
+                            out.extend(str(x) for x in run)
+                        run = [n]
+                if run:
+                    if len(run) >= 3:
+                        out.append(f'{run[0]}-{run[-1]}')
+                    else:
+                        out.extend(str(x) for x in run)
+                return out
+
+            def process_body(body):
+                raw_tokens = [t.strip() for t in body.split(',')]
+                result_parts = []
+                pending_ints = []
+                for tok in raw_tokens:
+                    if tok == '':
+                        continue
+                    ints = process_tokens(tok)
+                    if ints is None:
+                        if pending_ints:
+                            result_parts.extend(process_list(pending_ints))
+                            pending_ints = []
+                        result_parts.append(tok)
+                    else:
+                        pending_ints.extend(ints)
+                if pending_ints:
+                    result_parts.extend(process_list(pending_ints))
+                return ','.join(result_parts)
+
+            groups = [g.strip() for g in text.split(';')]
+            processed_groups = []
+            for g in groups:
+                if not g:
+                    continue
+                if ':' in g:
+                    prefix, rest = g.split(':', 1)
+                    prefix = prefix.strip()
+                    rest = rest.strip()
+                    compressed = process_body(rest)
+                    processed = f'{prefix}:{compressed}'
                 else:
-                    flush_seq()
-                    seq.append(n)
-            flush_seq()
-            return ''.join(output)
+                    compressed = process_body(g)
+                    processed = compressed
+                processed_groups.append(processed)
+            return '; '.join(processed_groups)
 
         def validate(b, ch, vs):
             c = int(ch)
