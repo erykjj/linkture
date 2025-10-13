@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.3.0'
+__version__ = 'v4.2.2'
 
 
 import json, regex, sqlite3
