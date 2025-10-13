@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Streamlined sequence processing
+
 ### Fixed
 
 ### Removed
