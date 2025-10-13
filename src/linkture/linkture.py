@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.2.1'
+__version__ = 'v4.3.0'
 
 
 import json, regex, sqlite3
@@ -45,10 +45,10 @@ class Scriptures():
         self._verbose = verbose
         self._separator = separator
         if language not in _available_languages:
-            raise ValueError("Indicated source language is not an option!")
+            raise ValueError('Indicated source language is not an option!')
         if translate:
             if translate not in _available_languages:
-                raise ValueError("Indicated translation language is not an option!")
+                raise ValueError('Indicated translation language is not an option!')
         else:
             translate = language
         if language in _non_latin:
@@ -57,11 +57,11 @@ class Scriptures():
             self._nl = False
         self._rewrite = bool((language != translate) or form)
         self._upper = upper
-        if form == "full":
+        if form == 'full':
             form = 3
-        elif form == "standard":
+        elif form == 'standard':
             form = 4
-        elif form == "official":
+        elif form == 'official':
             form = 5
         else:
             form = 3
@@ -72,13 +72,13 @@ class Scriptures():
 
         self._src_book_names = {}
         self._tr_book_names = ['Bible']
-        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = ?;", (translate,)).fetchall():
+        for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (translate,)).fetchall():
             if self._upper:
                 tr = rec[form].upper()
             else:
                 tr = rec[form]
             self._tr_book_names.insert(rec[2], tr)
-        for rec in cur.execute(f"SELECT * FROM Books WHERE Language = ?;", (language,)).fetchall():
+        for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (language,)).fetchall():
             for i in range(3,6):
                 item = rec[i]
                 if not self._nl:
@@ -98,18 +98,18 @@ class Scriptures():
                     self._src_book_names[normalized] = row[0]
 
         self._ranges = {}
-        for book, chapter, last in cur.execute("SELECT Book, Chapter, Last FROM Ranges;"):
+        for book, chapter, last in cur.execute('SELECT Book, Chapter, Last FROM Ranges;'):
             self._ranges[(book, chapter)] = last
 
         self._chapters = {}
         self._chapters_id = {}
-        for chapter_id, book, chapter in cur.execute("SELECT ChapterId, Book, Chapter FROM Chapters;"):
+        for chapter_id, book, chapter in cur.execute('SELECT ChapterId, Book, Chapter FROM Chapters;'):
             self._chapters[(book, chapter)] = chapter_id
             self._chapters_id[chapter_id] = (book, chapter)
 
         self._verses = {}
         self._verses_id = {}
-        for verse_id, book, chapter, verse in cur.execute("SELECT VerseId, Book, Chapter, Verse FROM Verses;"):
+        for verse_id, book, chapter, verse in cur.execute('SELECT VerseId, Book, Chapter, Verse FROM Verses;'):
             self._verses[(book, chapter, verse)] = verse_id
             self._verses_id[verse_id] = (book, chapter, verse)
 
@@ -167,7 +167,6 @@ class Scriptures():
             """, flags=regex.VERBOSE | regex.IGNORECASE)
 
         self._tagged = regex.compile(r'({{.*?}})')
-        self._series = regex.compile(r'(?<!\d[:\.])\b(\d+(?:-\d+)?(?:\s*,\s*\d+(?:-\d+)?)+)\b')
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
         self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
         self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
@@ -273,48 +272,67 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
-        def reform_series(txt): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
+        def reform_series(text): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
+            output = []
+            seq = []
+            num_buf = ''
+            in_range = False
 
-            def expand_group(m):
-                group = m.group(1)
-                tokens = regex.findall(r'\d+(?:-\d+)?', group)
-                nums = []
-                for tok in tokens:
-                    if '-' in tok:
-                        a, b = tok.split('-', 1)
-                        a = int(a); b = int(b)
-                        if b < a:
-                            nums.append(a)
-                            nums.append(b)
-                        else:
-                            nums.extend(range(a, b+1))
-                    else:
-                        nums.append(int(tok))
-                if not nums:
-                    return group
-                segments = []
-                start = prev = nums[0]
-                run_len = 1
-                for n in nums[1:]:
-                    if n == prev + 1:
-                        prev = n
-                        run_len += 1
-                    else:
-                        if run_len >= 3:
-                            segments.append(f"{start}-{prev}")
-                        else:
-                            for x in range(start, prev+1):
-                                segments.append(str(x))
-                        start = prev = n
-                        run_len = 1
-                if run_len >= 3:
-                    segments.append(f"{start}-{prev}")
+            def flush_seq():
+                nonlocal seq, output
+                if not seq:
+                    return
+                start = seq[0]
+                end = seq[-1]
+                length = end - start + 1
+                if length >= 3:
+                    if output and output[-1][-1].isdigit():
+                        output.append(',')
+                    output.append(f'{start}-{end}')
                 else:
-                    for x in range(start, prev+1):
-                        segments.append(str(x))
-                return ', '.join(segments)
+                    for n in seq:
+                        if output and output[-1][-1].isdigit():
+                            output.append(',')
+                        output.append(str(n))
+                seq.clear()
 
-            return regex.sub(self._series, expand_group, txt)
+            for ch in text:
+                if ch.isspace():
+                    continue
+                if ch.isdigit():
+                    num_buf += ch
+                else:
+                    if num_buf:
+                        n = int(num_buf)
+                        num_buf = ''
+                        if not seq:
+                            seq.append(n)
+                        elif in_range or n == seq[-1] + 1:
+                            seq.append(n)
+                        else:
+                            flush_seq()
+                            seq.append(n)
+                        in_range = False
+                    if ch == '-':
+                        in_range = True
+                    elif ch == ',':
+                        pass
+                    else:
+                        flush_seq()
+                        output.append(ch)
+                        in_range = False
+
+            if num_buf:
+                n = int(num_buf)
+                if not seq:
+                    seq.append(n)
+                elif in_range or n == seq[-1] + 1:
+                    seq.append(n)
+                else:
+                    flush_seq()
+                    seq.append(n)
+            flush_seq()
+            return ''.join(output)
 
         def validate(b, ch, vs):
             c = int(ch)
@@ -452,26 +470,6 @@ class Scriptures():
 
             return None, None
 
-        def merge_ranges(ranges):
-            if not ranges:
-                return []
-            merged = []
-            current_start, current_end = ranges[0]
-            for start, end in ranges[1:]:
-                end_bk = int(current_end[:2])
-                end_ch = int(current_end[2:5])
-                end_vs = int(current_end[5:])
-                next_bk = int(start[:2])
-                next_ch = int(start[2:5])
-                next_vs = int(start[5:])
-                if (end_bk == next_bk and ((end_ch == next_ch and end_vs + 1 == next_vs) or (end_ch + 1 == next_ch and end_vs == self._ranges.get((end_bk, end_ch), 0) and next_vs == 1))):
-                    current_end = end
-                else:
-                    merged.append((current_start, current_end))
-                    current_start, current_end = start, end
-            merged.append((current_start, current_end))
-            return merged
-
         lst = []
         if rest == '': # whole book
             v = self._ranges.get((bk_num, last))
@@ -481,19 +479,17 @@ class Scriptures():
                 rest = f'1:1-{last}:{v}'
         else:
             rest = reform_series(rest)
-        all_ranges = []
         for chunk in rest.split(';'):
             ch = None
             for bit in chunk.split(','):
                 if ch:
-                    tup, ch = code_verses(f"{ch}:{bit}", bk_num, last>1)
+                    tup, ch = code_verses(f'{ch}:{bit}', bk_num, last>1)
                 else:
                     tup, ch = code_verses(bit, bk_num, last>1)
                 if not tup:
                     self._error_report(scripture, f'"{bit.strip()}" OUT OF RANGE')
                     return None
-                all_ranges.append(tup)
-        lst = merge_ranges(all_ranges)
+                lst.append(tup)
         return lst
 
     def code_scriptures(self, text):
@@ -547,25 +543,25 @@ class Scriptures():
             if v == le:
                 scripture = f"{bk_name.strip(',')}"
             elif v == 1:
-                scripture = f"{bk_name} {sv}"
+                scripture = f'{bk_name} {sv}'
             elif v == 2:
-                scripture = f"{bk_name} {sv}, {ev}"
+                scripture = f'{bk_name} {sv}, {ev}'
             else:
-                scripture = f"{bk_name} {sv}‑{ev}"
+                scripture = f'{bk_name} {sv}‑{ev}'
             sep = ';'
         else:
-            ch = f"{sc}:"
+            ch = f'{sc}:'
             if v == le:
                 if cont:
                     bk_name = sep
                 if c == lc:
-                    scripture = f"{bk_name.strip(',')}"
+                    scripture = f'{bk_name.strip(',')}'
                 elif c == 1:
-                    scripture = f"{bk_name} {sc}"
+                    scripture = f'{bk_name} {sc}'
                 elif c == 2:
-                    scripture = f"{bk_name} {sc}, {ec}"
+                    scripture = f'{bk_name} {sc}, {ec}'
                 else:
-                    scripture = f"{bk_name} {sc}‑{ec}"
+                    scripture = f'{bk_name} {sc}‑{ec}'
                 sep = ','
             elif c == 1:
                 if cont:
@@ -575,17 +571,17 @@ class Scriptures():
                     else:
                         bk_name = ';'
                 if v == 1:
-                    scripture = f"{bk_name} {ch}{sv}"
+                    scripture = f'{bk_name} {ch}{sv}'
                 elif v == 2:
-                    scripture = f"{bk_name} {ch}{sv}, {ev}"
+                    scripture = f'{bk_name} {ch}{sv}, {ev}'
                 else:
-                    scripture = f"{bk_name} {ch}{sv}‑{ev}"
+                    scripture = f'{bk_name} {ch}{sv}‑{ev}'
                 sep = ';'
             else:
                 if cont and (sc == chap):
                     bk_name = ''
                     ch = ', '
-                scripture = f"{bk_name} {ch}{sv}‑{ec}:{ev}"
+                scripture = f'{bk_name} {ch}{sv}‑{ec}:{ev}'
                 sep = ';'
         chap = ec
         if self._separator != ' ':
@@ -624,9 +620,9 @@ class Scriptures():
             ec = int(end[2:5])
             ev = int(end[5:])
             if start == end:
-                return f"{sb}:{sc}:{sv}"
+                return f'{sb}:{sc}:{sv}'
             else:
-                return f"{sb}:{sc}:{sv}-{eb}:{ec}:{ev}"
+                return f'{sb}:{sc}:{sv}-{eb}:{ec}:{ev}'
 
         def r1(match):
 
@@ -693,7 +689,7 @@ class Scriptures():
         bcv = ''
         try:
             bk, ch, vs = self._verses_id[int(verse)-1]
-            bcv = f"{bk:02d}{ch:03d}{vs:03d}"
+            bcv = f'{bk:02d}{ch:03d}{vs:03d}'
             return f"('{bcv}', '{bcv}')"
         except:
             self._error_report(verse, 'OUT OF RANGE')
