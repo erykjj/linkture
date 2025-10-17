@@ -122,7 +122,7 @@ class Scriptures():
         self._linked = {}
 
         # Scripture reference parser:
-        # NOTE: this will NOT include the "10" in "Pr 1,2,3; 5,6-8; 10" - needs to be "forced" like this "{{Pr 1,2,3; 5,6-8; 10}}"
+        # NOTE: this will NOT include the "3" in "Pr 1; 2:1-5; 3" - needs to be "forced" like this "{{Pr 1; 2:1-5; 3}}"
         self._first_pass = regex.compile(r"""(
                 {{.*?}}                              |
 
