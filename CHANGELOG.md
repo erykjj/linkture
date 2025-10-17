@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Fixed bug introduced in last version
+
 ### Removed
 
 ____
