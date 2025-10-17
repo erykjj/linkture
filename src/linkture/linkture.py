@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.2.2'
+__version__ = 'v4.3.0'
 
 
 import json, regex, sqlite3
@@ -272,7 +272,7 @@ class Scriptures():
 
     def _code_scripture(self, scripture, bk_num, rest, last):
 
-        def reform_series(text): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
+        def reform_series(text):  # rewrite comma-separated consecutive sequences as ranges
 
             def expand_token(tok):
                 tok = tok.strip()
@@ -297,13 +297,13 @@ class Scriptures():
                     if n == run[-1] + 1:
                         run.append(n)
                     else:
-                        if len(run) >= 3:
+                        if len(run) >= 2:
                             out.append(f'{run[0]}-{run[-1]}')
                         else:
                             out.extend(str(x) for x in run)
                         run = [n]
                 if run:
-                    if len(run) >= 3:
+                    if len(run) >= 2:
                         out.append(f'{run[0]}-{run[-1]}')
                     else:
                         out.extend(str(x) for x in run)
@@ -333,6 +333,7 @@ class Scriptures():
                             ints.extend(expanded)
                     if ints:
                         result_parts.extend(compress_list(ints))
+                        ints = []
                     processed_subgroups.append(','.join(result_parts))
                 processed_groups.append(':'.join(processed_subgroups))
             return '; '.join(processed_groups)
