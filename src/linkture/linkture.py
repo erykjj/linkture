@@ -274,29 +274,23 @@ class Scriptures():
 
         def reform_series(text): # rewrite comma-separated consecutive sequences (1, 2, 3) as ranges (1-3)
 
-            def process_tokens(tok):
+            def expand_token(tok):
                 tok = tok.strip()
                 if not tok:
                     return []
-                if ':' in tok:
-                    return None
                 if '-' in tok:
                     parts = tok.split('-', 1)
                     if parts[0].isdigit() and parts[1].isdigit():
-                        a, b = int(parts[0]), int(parts[1])
-                        if a <= b:
-                            return list(range(a, b + 1))
-                        else:
-                            return None
-                    else:
-                        return None
+                        return list(range(int(parts[0]), int(parts[1]) + 1))
+                    return []
                 if tok.isdigit():
                     return [int(tok)]
                 return None
 
-            def process_list(ints):
+            def compress_list(ints):
                 if not ints:
                     return []
+                ints = sorted(set(ints))
                 out = []
                 run = [ints[0]]
                 for n in ints[1:]:
@@ -315,40 +309,32 @@ class Scriptures():
                         out.extend(str(x) for x in run)
                 return out
 
-            def process_body(body):
-                raw_tokens = [t.strip() for t in body.split(',')]
-                result_parts = []
-                pending_ints = []
-                for tok in raw_tokens:
-                    if tok == '':
-                        continue
-                    ints = process_tokens(tok)
-                    if ints is None:
-                        if pending_ints:
-                            result_parts.extend(process_list(pending_ints))
-                            pending_ints = []
-                        result_parts.append(tok)
-                    else:
-                        pending_ints.extend(ints)
-                if pending_ints:
-                    result_parts.extend(process_list(pending_ints))
-                return ','.join(result_parts)
-
             groups = [g.strip() for g in text.split(';')]
             processed_groups = []
-            for g in groups:
-                if not g:
+            for group in groups:
+                if not group:
                     continue
-                if ':' in g:
-                    prefix, rest = g.split(':', 1)
-                    prefix = prefix.strip()
-                    rest = rest.strip()
-                    compressed = process_body(rest)
-                    processed = f'{prefix}:{compressed}'
-                else:
-                    compressed = process_body(g)
-                    processed = compressed
-                processed_groups.append(processed)
+                subgroups = [s.strip() for s in group.split(':')]
+                processed_subgroups = []
+                for subgroup in subgroups:
+                    if not subgroup:
+                        continue
+                    tokens = [t.strip() for t in subgroup.split(',') if t.strip()]
+                    ints = []
+                    result_parts = []
+                    for tok in tokens:
+                        expanded = expand_token(tok)
+                        if expanded is None:
+                            if ints:
+                                result_parts.extend(compress_list(ints))
+                                ints = []
+                            result_parts.append(tok)
+                        else:
+                            ints.extend(expanded)
+                    if ints:
+                        result_parts.extend(compress_list(ints))
+                    processed_subgroups.append(','.join(result_parts))
+                processed_groups.append(':'.join(processed_subgroups))
             return '; '.join(processed_groups)
 
         def validate(b, ch, vs):
