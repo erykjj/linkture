@@ -10,7 +10,7 @@ It *does not* work with whole books (like "James") unless they are preceded by a
 
 These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML \<a> **links** (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages.
 
-The parser tries to deal "intelligently" with different notations, but there are simply too many "edge-cases". If something isn't being parsed properly, try to rewrite the original reference(s) in a standard way or use {{ }} to force the detection.
+The parser tries to deal "intelligently" with different notations, but there are simply too many "edge-cases". If something isn't being parsed properly, try to rewrite the original reference(s) in a standard way or use {{ }} to force the detection. For example, it will *not* include chapter 3 in this text `Pr 1; 2:1-5; 3`; you will need to "force" detection like this `{{Pr 1; 2:1-5; 3}}`.
 
 A couple of auxiliary functions provide a verse number lookup (either by BCV reference or integer). These can be useful to calculate the number of verses between two references, etc.
 
@@ -89,16 +89,22 @@ $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
 
-$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -c
-[('43017017', '43017017'), ('55003016', '55003017')]
+$ python3 -m linkture -r "Pr 1; 2:1-5; 3" -c
+[('20001001', '20001033'), ('20002001', '20002005')]
 
-$ python3 -m linkture -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
-['Johannes 17:17', '2. Timotheus 3:16, 17']
+$ python3 -m linkture -r "{{Pr 1; 2:1-5; 3}}" -c
+[('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20003035')]
 
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
 <a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
 
+$ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
+['Matthew 17:17']
+
+
+$ python3 -m linkture -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
+['Johannes 17:17', '2. Timotheus 3:16, 17']
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
@@ -108,9 +114,6 @@ Johannes 17:17; 2 Timotheüs 3:16, 17
 
 $ python3 -m linkture -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
 Juan 17:17; 2 Tim. 3:16, 17
-
-$ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
-['Matthew 17:17']
 
 
 $ python3 -m linkture -cc 2
