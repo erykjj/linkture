@@ -287,8 +287,7 @@ class Scriptures():
                             return None
                         return list(range(start, end + 1))
                     return None
-                if tok.i        # lst = self._merge_consecutive_chapters(lst)
-sdigit():
+                if tok.isdigit():
                     return [int(tok)]
                 return None
 
