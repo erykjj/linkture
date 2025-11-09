@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.4.0'
+__version__ = 'v4.4.1'
 
 
 import json, regex, sqlite3
@@ -278,7 +278,7 @@ class Scriptures():
             def expand_token(tok):
                 tok = tok.strip()
                 if not tok:
-                    return []
+                    return None
                 if '-' in tok:
                     parts = tok.split('-', 1)
                     if parts[0].isdigit() and parts[1].isdigit():
