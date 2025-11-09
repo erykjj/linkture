@@ -278,12 +278,13 @@ class Scriptures():
             def expand_token(tok):
                 tok = tok.strip()
                 if not tok:
-                    return []
-                if '-' in tok:
                     parts = tok.split('-', 1)
                     if parts[0].isdigit() and parts[1].isdigit():
-                        return list(range(int(parts[0]), int(parts[1]) + 1))
-                    return []
+                        start, end = int(parts[0]), int(parts[1])
+                        if start > end:
+                            return None
+                        return list(range(start, end + 1))
+                    return None
                 if tok.isdigit():
                     return [int(tok)]
                 return None
