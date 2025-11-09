@@ -8,11 +8,19 @@
 
 ### Fixed
 
-- Fixed bug introduced in last version
-
 ### Removed
 
 ____
+## [4.4.0] - 2025-11-09
+### Fixed
+
+- Fixed range expansion
+
+## [4.3.0] - 2025-10-17
+### Fixed
+
+- Fixed bug introduced in last version
+
 ## [4.2.2] - 2025-10-13
 ### Changed
 
@@ -371,6 +379,8 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.4.0]:https://github.com/erykjj/linkture/releases/tag/v4.4.0
+[4.3.0]:https://github.com/erykjj/linkture/releases/tag/v4.3.0
 [4.2.2]:https://github.com/erykjj/linkture/releases/tag/v4.2.2
 [4.2.1]:https://github.com/erykjj/linkture/releases/tag/v4.2.1
 [4.2.0]:https://github.com/erykjj/linkture/releases/tag/v4.2.0
