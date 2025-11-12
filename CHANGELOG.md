@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [4.4.2] - 2025-11-12
+### Fixed
+
+- Fixed edge case expansion
+
 ## [4.4.1] - 2025-11-09
 ### Fixed
 
@@ -384,6 +389,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.4.2]:https://github.com/erykjj/linkture/releases/tag/v4.4.2
 [4.4.1]:https://github.com/erykjj/linkture/releases/tag/v4.4.1
 [4.4.0]:https://github.com/erykjj/linkture/releases/tag/v4.4.0
 [4.3.0]:https://github.com/erykjj/linkture/releases/tag/v4.3.0
