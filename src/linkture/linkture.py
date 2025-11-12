@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.4.1'
+__version__ = 'v4.4.2'
 
 
 import json, regex, sqlite3
@@ -283,7 +283,7 @@ class Scriptures():
                     parts = tok.split('-', 1)
                     if parts[0].isdigit() and parts[1].isdigit():
                         start, end = int(parts[0]), int(parts[1])
-                        if start > end:
+                        if start >= end:
                             return None
                         return list(range(start, end + 1))
                     return None
