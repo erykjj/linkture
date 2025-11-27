@@ -35,7 +35,7 @@ from pathlib import Path
 from unidecode import unidecode
 
 
-_available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'Ewe', 'French', 'German', 'Greek', 'Hungarian', 'Indonesian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Spanish', 'Swedish', 'Tagalog', 'Ukrainian')
+_available_languages = ('Cebuano', 'Chinese', 'Danish', 'Dutch', 'English', 'Ewe', 'French', 'German', 'Greek', 'Haitian Creole', 'Hungarian', 'Indonesian', 'Italian', 'Japanese', 'Korean', 'Norwegian', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Spanish', 'Swedish', 'Tagalog', 'Ukrainian')
 _non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 
 

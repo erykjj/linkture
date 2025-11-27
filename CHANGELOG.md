@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added Haitian Creole
+
 ### Changed
 
 ### Fixed
