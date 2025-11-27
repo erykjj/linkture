@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [4.4.3] - 2025-11-27
+### Added
+
+- Added Haitian Creole ('Haitian')
+
 ## [4.4.2] - 2025-11-12
 ### Fixed
 
@@ -389,6 +394,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.4.3]:https://github.com/erykjj/linkture/releases/tag/v4.4.3
 [4.4.2]:https://github.com/erykjj/linkture/releases/tag/v4.4.2
 [4.4.1]:https://github.com/erykjj/linkture/releases/tag/v4.4.1
 [4.4.0]:https://github.com/erykjj/linkture/releases/tag/v4.4.0
