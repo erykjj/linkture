@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Small improvements to regex
+
 ### Fixed
 
 ### Removed
