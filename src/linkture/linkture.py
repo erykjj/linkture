@@ -123,10 +123,10 @@ class Scriptures():
 
         # Scripture reference parser:
         # NOTE: this will NOT include the "3" in "Pr 1; 2:1-5; 3" - needs to be "forced" like this "{{Pr 1; 2:1-5; 3}}"
-        self._first_pass = regex.compile(r"""(?i)({{.*?}}|(?:[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?:\d+\p{Z}?[:,\.\p{Pd};]\p{Z}?)*(?<=[\p{L},:\p{Pd}]\p{Z}|[\p{L},:\p{Pd}]|\.)\d+(?![,\p{Pd}\p{L}])|(?:[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*)""")
+        self._first_pass = regex.compile(r"""(?i)({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?:\d+\p{Z}?[:,\.\p{Pd};]\p{Z}?)*(?<=[\p{L},:\p{Pd}]\p{Z}|[\p{L},:\p{Pd}]|\.)\d+(?![,\p{Pd}\p{L}])|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*)""")
         self._second_pass = regex.compile(r"""(?i)((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?:\d+\p{Z}?[:,\p{Pd};]\p{Z}?)*\d+(?![,\p{Pd}\p{L}]))""")
 
-        self._bk_ref = regex.compile(r"""(?i)((?:[1-5]\p{L}{0,2}|[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
+        self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
         self._tagged = regex.compile(r'({{.*?}})')
         self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
