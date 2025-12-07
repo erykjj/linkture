@@ -4,6 +4,9 @@
 
 ### Added
 
+- Handle verse parts (a, b, etc.)
+  - The parser can find such scriptures, but they are processed as whole
+
 ### Changed
 
 - Small fixes and improvements to regex
