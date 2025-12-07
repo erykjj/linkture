@@ -123,8 +123,8 @@ class Scriptures():
 
         # Scripture reference parser:
         # NOTE: this will NOT include the "3" in "Pr 1; 2:1-5; 3" - needs to be "forced" like this "{{Pr 1; 2:1-5; 3}}"
-        self._first_pass = regex.compile(r"""(?i)({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?<=[\p{L},:\p{Pd}]\p{Z}|[\p{L},:\p{Pd}]|\.)\d+(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+)*(?![\p{Pd}\p{L}])|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*)""")
-        self._second_pass = regex.compile(r"""(?i)((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+(?:\p{Z}?[:,\p{Pd};]\p{Z}?\d+)*(?![\p{Pd}\p{L}]))""")
+        self._first_pass = regex.compile(r"""(?i)({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?<=[\p{L},:\p{Pd}]\p{Z}|[\p{L},:\p{Pd}]|\.)\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}])|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*)""")
+        self._second_pass = regex.compile(r"""(?i)((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))""")
 
         self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
@@ -165,6 +165,7 @@ class Scriptures():
         if result:
             bk_name, rest = result.group(1).strip(), result.group(2).strip()
             bk_num, last = check_book(bk_name)
+            rest = regex.sub(r'(\d)\p{L}+', r'\1', rest) # strip off a, b, etc.
             if bk_num:
                 tr_name = self._tr_book_names[bk_num]
                 return tr_name, rest.replace('.', ':'), bk_num, last # for period notation cases (Gen 1.1)
