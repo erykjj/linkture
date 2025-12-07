@@ -6,7 +6,7 @@
 
 ### Changed
 
-- Small improvements to regex
+- Small fixes and improvements to regex
 
 ### Fixed
 
