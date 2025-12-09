@@ -9,7 +9,8 @@
 
 ### Changed
 
-- Small fixes and improvements to regex
+- Major improvements to regex (hopefully)
+  - Please report any edge-cases that are not detected ;-)
 
 ### Fixed
 
