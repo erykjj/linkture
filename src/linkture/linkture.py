@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.5.0'
+__version__ = 'v5.0.0'
 
 
 import json, regex, sqlite3
@@ -122,9 +122,13 @@ class Scriptures():
         self._linked = {}
 
         # Scripture reference parser:
-        # NOTE: this will NOT include the "3" in "Pr 1; 2:1-5; 3" - needs to be "forced" like this "{{Pr 1; 2:1-5; 3}}"
-        self._first_pass = regex.compile(r"""(?i)({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?(?<=[\p{L},:\p{Pd}]\p{Z}|[\p{L},:\p{Pd}]|\.)\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}])|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*)""")
-        self._second_pass = regex.compile(r"""(?i)((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))""")
+        # Pass 1: Prefixed books WITH verses
+        self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
+        # Pass 2: Non-prefixed books WITH verses
+        self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
+        # Pass 3: Prefixed books ONLY
+        self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?!\p{Z}?\d))', regex.IGNORECASE)
+
 
         self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
@@ -194,8 +198,9 @@ class Scriptures():
                 return scripture
 
         self._reported = []
-        text = regex.sub(self._first_pass, r, text)
-        text = regex.sub(self._second_pass, r, text)
+        text = regex.sub(self._pass1, r, text)
+        text = regex.sub(self._pass2, r, text)
+        text = regex.sub(self._pass3, r, text)
         return text
 
 
