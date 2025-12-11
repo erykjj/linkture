@@ -4,6 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [4.5.0] - 2025-12-11
+### Added
+
 - Handle verse parts (a, b, etc.)
   - The parser can find such scriptures, but they are processed as whole
 
@@ -12,11 +22,6 @@
 - Major improvements to regex (hopefully)
   - Please report any edge-cases that are not detected ;-)
 
-### Fixed
-
-### Removed
-
-____
 ## [4.4.3] - 2025-11-27
 ### Added
 
@@ -400,6 +405,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.5.0]:https://github.com/erykjj/linkture/releases/tag/v4.5.0
 [4.4.3]:https://github.com/erykjj/linkture/releases/tag/v4.4.3
 [4.4.2]:https://github.com/erykjj/linkture/releases/tag/v4.4.2
 [4.4.1]:https://github.com/erykjj/linkture/releases/tag/v4.4.1
