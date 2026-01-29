@@ -44,7 +44,7 @@ def main(args):
                     prefix = args['l'][0]
                 return s.link_scriptures(text, prefix, suffix)
             elif args['c']:
-                return s.code_scriptures(text, split_chapters=args['chapters'])
+                return s.code_scriptures(text, split=args['chapters'])
             elif args['d']:
                 return s.decode_scriptures(literal_eval(text))
             elif args['x']:
