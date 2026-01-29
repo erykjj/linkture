@@ -11,6 +11,21 @@
 ### Removed
 
 ____
+## [4.7.1] - 2026-01-29
+### Added
+
+- Added `--chapters` flag (for `-c` encode) to split BCVs by chapter
+  - `linkture -r "Matthew 5:5-7:12" -c` --> [('40005005', '40007012')]
+  - `linkture -r "Matthew 5:5-7:12" -c --chapters` --> [('40005005', '40005048'), ('40006001', '40006034'), ('40007001', '40007012')]
+- Handle reversed BCV pairs
+  - ('40005005', '40005003'), ('40007012', '40006033') --> ('40005003', '40005005'), ('40006033', '40007012')
+
+### Fixed
+
+- Fix decode output for different chapters
+- Fix embedded quotes
+- Fix typo in argparse flag
+
 ## [4.7.0] - 2026-01-29
 ### Added
 
@@ -430,6 +445,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.7.1]:https://github.com/erykjj/linkture/releases/tag/v4.7.1
 [4.7.0]:https://github.com/erykjj/linkture/releases/tag/v4.7.0
 [4.6.0]:https://github.com/erykjj/linkture/releases/tag/v4.6.0
 [4.5.0]:https://github.com/erykjj/linkture/releases/tag/v4.5.0
