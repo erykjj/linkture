@@ -44,7 +44,7 @@ def main(args):
                     prefix = args['l'][0]
                 return s.link_scriptures(text, prefix, suffix)
             elif args['c']:
-                return s.code_scriptures(text)
+                return s.code_scriptures(text, split_chapters=args['chapters'])
             elif args['d']:
                 return s.decode_scriptures(literal_eval(text))
             elif args['x']:
@@ -122,6 +122,8 @@ formats = format_group.add_mutually_exclusive_group()
 formats.add_argument('--full', action='store_true', help='output as full name - default (eg., "Genesis")')
 formats.add_argument('--official', action='store_true', help='output as official abbreviation (eg., "Ge")')
 formats.add_argument('--standard', action='store_true', help='output as standard abbreviation (eg., "Gen.")')
+parser.add_argument('--chapters', action='store_true', 
+                    help='encode multi-chapter ranges into separate chapters (only with -c)')
 
 type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
 tpe = type_group.add_mutually_exclusive_group(required=False)
