@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.5.0'
+__version__ = 'v4.6.0'
 
 
 import json, regex, sqlite3
@@ -492,6 +492,14 @@ class Scriptures():
             return None, '', 0, False, ''
         if not ((0 < sb <= 66) & (sb == eb)): # book out of range
             return None, '', 0, False, ''
+        if (sc > ec) or (sc == ec and sv > ev): # reversed: (40005005, 40005003) or (40007012, 40006033)
+            sb = int(end[:2])
+            sc = int(end[2:5])
+            sv = int(end[5:])
+            eb = int(start[:2])
+            ec = int(start[2:5])
+            ev = int(start[5:])
+
         lc = self._ranges.get((sb, 0), 0)
         if not (0 < sc <= ec <= lc): # chapter(s) out of range
             return None, '', 0, False, ''
