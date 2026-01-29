@@ -4,10 +4,6 @@
 
 ### Added
 
-- Added `--chapters` flag (for `-c` encode) to split BCVs by chapter
-  - `linkture -r "Matthew 5:5-7:12" -c` --> [('40005005', '40007012')]
-  - `linkture -r "Matthew 5:5-7:12" -c --chapters` --> [('40005005', '40005048'), ('40006001', '40006034'), ('40007001', '40007012')]
-
 ### Changed
 
 ### Fixed
@@ -15,6 +11,20 @@
 ### Removed
 
 ____
+## [4.7.0] - 2026-01-29
+### Added
+
+- Added `--chapters` flag (for `-c` encode) to split BCVs by chapter
+  - `linkture -r "Matthew 5:5-7:12" -c` --> [('40005005', '40007012')]
+  - `linkture -r "Matthew 5:5-7:12" -c --chapters` --> [('40005005', '40005048'), ('40006001', '40006034'), ('40007001', '40007012')]
+- Handle reversed BCV pairs
+  - ('40005005', '40005003'), ('40007012', '40006033') --> ('40005003', '40005005'), ('40006033', '40007012')
+
+### Fixed
+
+- Fix decode output for different chapters
+- Fix embedded quotes
+
 ## [4.6.0] - 2026-01-29
 ### Added
 
