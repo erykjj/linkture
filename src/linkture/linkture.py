@@ -538,7 +538,7 @@ class Scriptures():
                 if cont:
                     bk_name = sep
                 if c == lc:
-                    scripture = f'{bk_name.strip(',')}'
+                    scripture = f"{bk_name.strip(',')}"
                 elif c == 1:
                     scripture = f'{bk_name} {sc}'
                 elif c == 2:
@@ -561,9 +561,12 @@ class Scriptures():
                     scripture = f'{bk_name} {ch}{sv}‑{ev}'
                 sep = ';'
             else:
-                if cont and (sc == chap):
-                    bk_name = ''
-                    ch = ', '
+                if cont:
+                    if sc == chap:
+                        bk_name = ''
+                        ch = ', '
+                    else:
+                        bk_name = ';'
                 scripture = f'{bk_name} {ch}{sv}‑{ec}:{ev}'
                 sep = ';'
         chap = ec
