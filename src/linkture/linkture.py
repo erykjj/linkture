@@ -467,12 +467,12 @@ class Scriptures():
                 lst.append(tup)
         return lst
 
-    def code_scriptures(self, text, split_chapters=False):
+    def code_scriptures(self, text, split=False):
         text = self._locate_scriptures(text)
         lst = []
         for scripture in regex.findall(self._tagged, text):
             bcv_ranges = self._encoded[scripture.strip('}{')]
-            if split_chapters:
+            if split:
                 split_ranges = []
                 for start, end in bcv_ranges:
                     sb = int(start[:2])
