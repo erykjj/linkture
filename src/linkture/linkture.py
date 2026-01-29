@@ -317,10 +317,10 @@ class Scriptures():
             if not (0 < c <= self._ranges.get((b, 0), 0)): # chapter out of range
                 return None
             if b == 19 and c in self._headings:
-                first = 0
+                minsv = 0
             else:
-                first = 1
-            if not (first <= v <= self._ranges.get((b, c), 0)): # verse out of range
+                minsv = 1
+            if not (minsv <= v <= self._ranges.get((b, c), 0)): # verse out of range
                 return None
             return True
 
@@ -488,18 +488,18 @@ class Scriptures():
                                 chap_end = f"{sb:02d}{chap:03d}{le:03d}"
                             elif chap == ec:
                                 if sb == 19 and chap in self._headings:
-                                    first_v = 0
+                                    minsv = 0
                                 else:
-                                    first_v = 1
-                                chap_start = f"{sb:02d}{chap:03d}{first_v:03d}"
+                                    minsv = 1
+                                chap_start = f"{sb:02d}{chap:03d}{minsv:03d}"
                                 chap_end = end
                             else:
                                 if sb == 19 and chap in self._headings:
-                                    first_v = 0
+                                    minsv = 0
                                 else:
-                                    first_v = 1
+                                    minsv = 1
                                 le = self._ranges.get((sb, chap), 0)
-                                chap_start = f"{sb:02d}{chap:03d}{first_v:03d}"
+                                chap_start = f"{sb:02d}{chap:03d}{minsv:03d}"
                                 chap_end = f"{sb:02d}{chap:03d}{le:03d}"
                             split_ranges.append((chap_start, chap_end))
                     else:
