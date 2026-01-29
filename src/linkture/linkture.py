@@ -562,11 +562,7 @@ class Scriptures():
                 sep = ';'
             else:
                 if cont:
-                    if sc == chap:
-                        bk_name = ''
-                        ch = ', '
-                    else:
-                        bk_name = ';'
+                    bk_name = ';'
                 scripture = f'{bk_name} {ch}{sv}‑{ec}:{ev}'
                 sep = ';'
         chap = ec
