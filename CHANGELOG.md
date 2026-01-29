@@ -11,6 +11,9 @@
 
 ### Fixed
 
+- Fix decode output for different chapters
+- Fix embedded quotes
+
 ### Removed
 
 ____
