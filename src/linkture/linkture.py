@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.6.0'
+__version__ = 'v4.7.0'
 
 
 import json, regex, sqlite3
@@ -467,13 +467,46 @@ class Scriptures():
                 lst.append(tup)
         return lst
 
-    def code_scriptures(self, text):
+    def code_scriptures(self, text, split_chapters=False):
         text = self._locate_scriptures(text)
         lst = []
         for scripture in regex.findall(self._tagged, text):
             bcv_ranges = self._encoded[scripture.strip('}{')]
-            for bcv_range in bcv_ranges:
-                lst.append(bcv_range)
+            if split_chapters:
+                split_ranges = []
+                for start, end in bcv_ranges:
+                    sb = int(start[:2])
+                    sc = int(start[2:5])
+                    eb = int(end[:2])
+                    ec = int(end[2:5])
+
+                    if sb == eb and sc != ec:
+                        for chap in range(sc, ec + 1):
+                            if chap == sc:
+                                chap_start = start
+                                le = self._ranges.get((sb, chap), 0)
+                                chap_end = f"{sb:02d}{chap:03d}{le:03d}"
+                            elif chap == ec:
+                                if sb == 19 and chap in self._headings:
+                                    first_v = 0
+                                else:
+                                    first_v = 1
+                                chap_start = f"{sb:02d}{chap:03d}{first_v:03d}"
+                                chap_end = end
+                            else:
+                                if sb == 19 and chap in self._headings:
+                                    first_v = 0
+                                else:
+                                    first_v = 1
+                                le = self._ranges.get((sb, chap), 0)
+                                chap_start = f"{sb:02d}{chap:03d}{first_v:03d}"
+                                chap_end = f"{sb:02d}{chap:03d}{le:03d}"
+                            split_ranges.append((chap_start, chap_end))
+                    else:
+                        split_ranges.append((start, end))
+                lst.extend(split_ranges)
+            else:
+                lst.extend(bcv_ranges)
         return lst
 
 
