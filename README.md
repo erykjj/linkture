@@ -10,7 +10,7 @@ It *does not* work with whole books (like "James") unless they are preceded by a
 
 These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML \<a> **links** (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages.
 
-The parser tries to deal "intelligently" with different notations, but there are simply too many "edge-cases". If something isn't being parsed properly, try to rewrite the original reference(s) in a standard way or use {{ }} to force the detection. For example, it will *not* include chapter 3 in this text `Pr 1; 2:1-5; 3`; you will need to "force" detection like this `{{Pr 1; 2:1-5; 3}}`.
+The parser tries to deal "intelligently" with different notations, but there are simply too many "edge-cases". If something isn't being parsed properly, try to rewrite the original reference(s) in a standard way or use {{ }} to force the detection.
 
 A couple of auxiliary functions provide a verse number lookup (either by BCV reference or integer). These can be useful to calculate the number of verses between two references, etc.
 
@@ -27,7 +27,7 @@ ____
 usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [--language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
                    [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
-                   [-s separator] [-u] [--full | --official | --standard]
+                   [-s separator] [-u] [--full | --official | --standard] [--chapters]
                    [-c | -d | -l [prefix [suffix ...]] | -t | -x]
                    [-sc BCV | -sv BCV | -cv verse | -cc chapter | -bn book]
 
@@ -45,6 +45,7 @@ options:
                         indicate output language for book names (same as source if unspecified)
   -s separator          segment separator (space by default)
   -u                    capitalize (upper-case) book names
+  --chapters            encode multi-chapter ranges into separate chapters (only with -c)
 
 data source (one required - except for auxiliary functions, which only take command-line arguments):
   choose between terminal or file input:
@@ -89,11 +90,11 @@ $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
 
 
-$ python3 -m linkture -r "Pr 1; 2:1-5; 3" -c
-[('20001001', '20001033'), ('20002001', '20002005')]
+$ python3 -m linkture -r "Pr 1; 2:1-5; 3-5" -c
+[('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20005023')]
 
-$ python3 -m linkture -r "{{Pr 1; 2:1-5; 3}}" -c
-[('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20003035')]
+$ python3 -m linkture -r "Pr 1; 2:1-5; 3-5" -c --chapters
+[('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20003035'), ('20004001', '20004027'), ('20005001', '20005023')]
 
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
@@ -158,6 +159,9 @@ lst = s.list_scriptures(txt)
 
 lst = s.code_scriptures(txt)
 # returns a list of BCV-range tuples (start, end)
+
+lst = s.code_scriptures(txt, split=True)
+# returns a list of BCV-range tuples (start, end), splitting into chapters
 
 html = s.link_scriptures(txt, prefix='<a href="http://mywebsite.com/', suffix='" class="b"')
 # this will turn all references into HTML links
