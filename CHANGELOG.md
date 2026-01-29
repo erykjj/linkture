@@ -4,19 +4,24 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [4.6.0] - 2026-01-29
+### Added
+
 - Handle reversed BCV pairs
   - ('40005005', '40005003'), ('40007012', '40006033') --> ('40005003', '40005005'), ('40006033', '40007012')
-
-### Changed
 
 ### Fixed
 
 - Fix decode output for different chapters
 - Fix embedded quotes
 
-### Removed
-
-____
 ## [4.5.0] - 2025-12-11
 ### Added
 
@@ -411,6 +416,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.6.0]:https://github.com/erykjj/linkture/releases/tag/v4.6.0
 [4.5.0]:https://github.com/erykjj/linkture/releases/tag/v4.5.0
 [4.4.3]:https://github.com/erykjj/linkture/releases/tag/v4.4.3
 [4.4.2]:https://github.com/erykjj/linkture/releases/tag/v4.4.2
