@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added `--chapters` flag (for `-c` encode) to split BCVs by chapter
+  - `linkture -r "Matthew 5:5-7:12" -c` --> [('40005005', '40007012')]
+  - `linkture -r "Matthew 5:5-7:12" -c --chapters` --> [('40005005', '40005048'), ('40006001', '40006034'), ('40007001', '40007012')]
+
 ### Changed
 
 ### Fixed
