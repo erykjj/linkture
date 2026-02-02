@@ -11,6 +11,15 @@
 ### Removed
 
 ____
+## [4.8.0] - 2026-02-01
+### Added
+
+- Additional error-handling
+
+### Changed
+
+- Made available for Python 3.14
+
 ## [4.7.1] - 2026-01-29
 ### Added
 
@@ -445,6 +454,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.8.0]:https://github.com/erykjj/linkture/releases/tag/v4.8.0
 [4.7.1]:https://github.com/erykjj/linkture/releases/tag/v4.7.1
 [4.7.0]:https://github.com/erykjj/linkture/releases/tag/v4.7.0
 [4.6.0]:https://github.com/erykjj/linkture/releases/tag/v4.6.0
