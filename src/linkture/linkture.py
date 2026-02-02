@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.7.1'
+__version__ = 'v4.8.0'
 
 
 import json, regex, sqlite3
@@ -42,109 +42,113 @@ _non_latin = ('Chinese', 'Greek', 'Japanese', 'Korean', 'Russian', 'Ukrainian')
 class Scriptures():
 
     def __init__(self, language='English', translate=None, form=None, separator=' ', upper=False, verbose=False):
-        self._verbose = verbose
-        self._separator = separator
-        if language not in _available_languages:
-            raise ValueError('Indicated source language is not an option!')
-        if translate:
-            if translate not in _available_languages:
-                raise ValueError('Indicated translation language is not an option!')
-        else:
-            translate = language
-        if language in _non_latin:
-            self._nl = True
-        else:
-            self._nl = False
-        self._rewrite = bool((language != translate) or form)
-        self._upper = upper
-        if form == 'full':
-            form = 3
-        elif form == 'standard':
-            form = 4
-        elif form == 'official':
-            form = 5
-        else:
-            form = 3
-
-        path = Path(__file__).resolve().parent
-        con = sqlite3.connect(path / 'res/resources.db')
-        cur = con.cursor()
-
-        self._src_book_names = {}
-        self._tr_book_names = ['Bible']
-        for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (translate,)).fetchall():
-            if self._upper:
-                tr = rec[form].upper()
+        try:
+            self._verbose = verbose
+            self._separator = separator
+            if language not in _available_languages:
+                raise ValueError('Indicated source language is not an option!')
+            if translate:
+                if translate not in _available_languages:
+                    raise ValueError('Indicated translation language is not an option!')
             else:
-                tr = rec[form]
-            self._tr_book_names.insert(rec[2], tr)
-        for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (language,)).fetchall():
-            for i in range(3,6):
-                item = rec[i]
-                if not self._nl:
-                    item = unidecode(item)
-                normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
-                self._src_book_names[normalized] = rec[2]
+                translate = language
+            if language in _non_latin:
+                self._nl = True
+            else:
+                self._nl = False
+            self._rewrite = bool((language != translate) or form)
+            self._upper = upper
+            if form == 'full':
+                form = 3
+            elif form == 'standard':
+                form = 4
+            elif form == 'official':
+                form = 5
+            else:
+                form = 3
 
-        with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
-            b = json.load(json_file)
-        if language in b.keys():
-            for row in b[language]:
-                names = row[1].split(', ')
-                for item in names:
+            path = Path(__file__).resolve().parent
+            con = sqlite3.connect(path / 'res/resources.db')
+            cur = con.cursor()
+
+            self._src_book_names = {}
+            self._tr_book_names = ['Bible']
+            for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (translate,)).fetchall():
+                if self._upper:
+                    tr = rec[form].upper()
+                else:
+                    tr = rec[form]
+                self._tr_book_names.insert(rec[2], tr)
+            for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (language,)).fetchall():
+                for i in range(3,6):
+                    item = rec[i]
                     if not self._nl:
                         item = unidecode(item)
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
-                    self._src_book_names[normalized] = row[0]
+                    self._src_book_names[normalized] = rec[2]
 
-        self._ranges = {}
-        for book, chapter, last in cur.execute('SELECT Book, Chapter, Last FROM Ranges;'):
-            self._ranges[(book, chapter)] = last
+            with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
+                b = json.load(json_file)
+            if language in b.keys():
+                for row in b[language]:
+                    names = row[1].split(', ')
+                    for item in names:
+                        if not self._nl:
+                            item = unidecode(item)
+                        normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
+                        self._src_book_names[normalized] = row[0]
 
-        self._chapters = {}
-        self._chapters_id = {}
-        for chapter_id, book, chapter in cur.execute('SELECT ChapterId, Book, Chapter FROM Chapters;'):
-            self._chapters[(book, chapter)] = chapter_id
-            self._chapters_id[chapter_id] = (book, chapter)
+            self._ranges = {}
+            for book, chapter, last in cur.execute('SELECT Book, Chapter, Last FROM Ranges;'):
+                self._ranges[(book, chapter)] = last
 
-        self._verses = {}
-        self._verses_id = {}
-        for verse_id, book, chapter, verse in cur.execute('SELECT VerseId, Book, Chapter, Verse FROM Verses;'):
-            self._verses[(book, chapter, verse)] = verse_id
-            self._verses_id[verse_id] = (book, chapter, verse)
+            self._chapters = {}
+            self._chapters_id = {}
+            for chapter_id, book, chapter in cur.execute('SELECT ChapterId, Book, Chapter FROM Chapters;'):
+                self._chapters[(book, chapter)] = chapter_id
+                self._chapters_id[chapter_id] = (book, chapter)
 
-        cur.close()
-        con.close()
+            self._verses = {}
+            self._verses_id = {}
+            for verse_id, book, chapter, verse in cur.execute('SELECT VerseId, Book, Chapter, Verse FROM Verses;'):
+                self._verses[(book, chapter, verse)] = verse_id
+                self._verses_id[verse_id] = (book, chapter, verse)
 
-        self._headings = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 98, 100, 101, 102, 103, 108, 109, 110, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 138, 139, 140, 141, 142, 143, 144, 145)
-        self._reported = []
-        self._encoded = {}
-        self._linked = {}
+            cur.close()
+            con.close()
 
-        # Scripture reference parser:
-        # Pass 1: Prefixed books WITH verses
-        self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
-        # Pass 2: Non-prefixed books WITH verses
-        self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
-        # Pass 3: Prefixed books ONLY
-        self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?!\p{Z}?\d))', regex.IGNORECASE)
+            self._headings = (3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 98, 100, 101, 102, 103, 108, 109, 110, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 138, 139, 140, 141, 142, 143, 144, 145)
+            self._reported = []
+            self._encoded = {}
+            self._linked = {}
+
+            # Scripture reference parser:
+            # Pass 1: Prefixed books WITH verses
+            self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
+            # Pass 2: Non-prefixed books WITH verses
+            self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
+            # Pass 3: Prefixed books ONLY
+            self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?!\p{Z}?\d))', regex.IGNORECASE)
 
 
-        self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
+            self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}?\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
-        self._tagged = regex.compile(r'({{.*?}})')
-        self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
-        self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
-        self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
-        self._cv = regex.compile(r'(\d+):(\d+)')
-        self._ddd = regex.compile(r'(\d+),(\d+),(\d+)')
-        self._dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
-        self._d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
-        self._d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
-        self._dd = regex.compile(r'(\d+),(\d+)')
-        self._d = regex.compile(r'(\d+)')
-        self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
-        self._sep = regex.compile(r'(?<!;)\s')
+            self._tagged = regex.compile(r'({{.*?}})')
+            self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
+            self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
+            self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
+            self._cv = regex.compile(r'(\d+):(\d+)')
+            self._ddd = regex.compile(r'(\d+),(\d+),(\d+)')
+            self._dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
+            self._d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
+            self._d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
+            self._dd = regex.compile(r'(\d+),(\d+)')
+            self._d = regex.compile(r'(\d+)')
+            self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
+            self._sep = regex.compile(r'(?<!;)\s')
+
+        except Exception as e:
+            raise RuntimeError(f'Failed to initialize Scriptures: {str(e)}\n') from e
 
     def _error_report(self, scripture, message):
         if self._verbose and (scripture not in self._reported):
