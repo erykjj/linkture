@@ -31,8 +31,7 @@ usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
                    [-c | -d | -l [prefix [suffix ...]] | -t | -x]
                    [-sc BCV | -sv BCV | -cv verse | -cc chapter | -bn book]
 
-PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and
-decode. See README for more information
+PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information
 
 options:
   -h, --help            show this help message and exit
