@@ -26,7 +26,7 @@
   SOFTWARE.
 """
 
-import argparse, sys, traceback
+import argparse, sys
 from .linkture import _available_languages, __app__, __version__, Scriptures
 from ast import literal_eval
 
@@ -34,31 +34,24 @@ from ast import literal_eval
 def main(args):
 
     def switchboard(text):
-        try:
-            if args['l'] is not None:
-                prefix = '<a href="'
-                suffix = '">'
-                if len(args['l']) > 1 and args['l'][1] != '':
-                    suffix = args['l'][1]
-                if len(args['l']) > 0 and args['l'][0] != '':
-                    prefix = args['l'][0]
-                return s.link_scriptures(text, prefix, suffix)
-            elif args['c']:
-                return s.code_scriptures(text, split=args['chapters'])
-            elif args['d']:
-                return s.decode_scriptures(literal_eval(text))
-            elif args['x']:
-                return s.list_scriptures(text)
-            elif args['t']:
-                return s.tag_scriptures(text)
-            else:
-                return s.rewrite_scriptures(text)
-        except Exception as e:
-            print("\n--- CRASH DETECTED ---", file=sys.stderr)
-            print("Input causing failure:", repr(text), file=sys.stderr)
-            print("Error:", str(e), file=sys.stderr)
-            traceback.print_exc()
-            raise
+        if args['l'] is not None:
+            prefix = '<a href="'
+            suffix = '">'
+            if len(args['l']) > 1 and args['l'][1] != '':
+                suffix = args['l'][1]
+            if len(args['l']) > 0 and args['l'][0] != '':
+                prefix = args['l'][0]
+            return s.link_scriptures(text, prefix, suffix)
+        elif args['c']:
+            return s.code_scriptures(text, split=args['chapters'])
+        elif args['d']:
+            return s.decode_scriptures(literal_eval(text))
+        elif args['x']:
+            return s.list_scriptures(text)
+        elif args['t']:
+            return s.tag_scriptures(text)
+        else:
+            return s.rewrite_scriptures(text)
 
     form = None
     if args['standard']:
@@ -102,7 +95,7 @@ def main(args):
         print(txt)
 
 
-parser = argparse.ArgumentParser(description="PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information")
+parser = argparse.ArgumentParser(description='PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information', prog='linkture', epilog='')
 
 parser.add_argument('-v', action='version', version=f"{__app__} {__version__}", help='show version and exit')
 parser.add_argument('-q', action='store_true', help="don't show errors")
@@ -141,5 +134,12 @@ aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial 
 aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
 aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (integer value)')
 
-args = parser.parse_args()
-main(vars(args))
+try:
+    args = parser.parse_args()
+    main(vars(args))
+except Exception as e:
+    print('\n' + '='*36)
+    print('ERROR: An unexpected error occurred!')
+    print('='*36 + '\n')
+    parser.print_help()
+    sys.exit(1)
