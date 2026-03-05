@@ -6,7 +6,11 @@
 
 ### Changed
 
+- John 8:1-11 (spurious) is now evaluated as invalid
+
 ### Fixed
+
+- Fixed one edge-case with potential crash
 
 ### Removed
 
