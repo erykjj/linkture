@@ -468,6 +468,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.8.2]:https://github.com/erykjj/linkture/releases/tag/v4.8.2
 [4.8.1]:https://github.com/erykjj/linkture/releases/tag/v4.8.1
 [4.8.0]:https://github.com/erykjj/linkture/releases/tag/v4.8.0
 [4.7.1]:https://github.com/erykjj/linkture/releases/tag/v4.7.1
