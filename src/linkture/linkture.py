@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.8.1'
+__version__ = 'v4.9.0'
 
 
 import json, regex, sqlite3
@@ -122,7 +122,6 @@ class Scriptures():
             self._encoded = {}
             self._linked = {}
 
-            # Scripture reference parser:
             # Pass 1: Prefixed books WITH verses
             self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}?|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}?|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}?|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}?\d+\p{L}?(?:\p{Z}?[:,\.\p{Pd};]\p{Z}?\d+\p{L}?)*(?![\p{Pd}\p{L}]))', flags=regex.IGNORECASE)
             # Pass 2: Non-prefixed books WITH verses
@@ -321,7 +320,7 @@ class Scriptures():
             if b == 19 and c in self._headings:
                 minsv = 0
             elif b == 43 and c == 8:
-                minsv = 12  # John 8:1-11 (spurious -> invalid)
+                minsv = 12
             else:
                 minsv = 1
             if not (minsv <= v <= self._ranges.get((b, c), 0)): # verse out of range
@@ -371,6 +370,8 @@ class Scriptures():
                 else:
                     c = result.group(1).zfill(3)
                     v = '001'
+                    if book == 43 and int(c) == 8:
+                        v = '012'
                 if not validate(book, c, v):
                     return None, 0
                 ch1 = c
@@ -398,16 +399,24 @@ class Scriptures():
             if result:
                 if multi:
                     c = result.group(1)
-                    v = 1
+                    if book == 19 and int(c) in self._headings:
+                        v = '000'
+                    elif book == 43 and int(c) == 8:
+                        v = '012'
+                    else:
+                        v = '001'
                     if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
-                    if book == 19 and int(c) in self._headings: # some chapters start at verse 0
-                        v1 = '000'
-                    else:
-                        v1 = '001'
+                    v1 = v.zfill(3)
 
                     c = result.group(2)
+                    if book == 19 and int(c) in self._headings:
+                        v = '000'
+                    elif book == 43 and int(c) == 8:
+                        v = '012'
+                    else:
+                        v = '001'
                     if not validate(book, c, v):
                         return None, 0
                     ch2 = c.zfill(3)
@@ -432,14 +441,16 @@ class Scriptures():
             if result:
                 if multi:
                     c = result.group(1)
-                    v = 1
+                    if book == 19 and int(c) in self._headings:
+                        v = '000'
+                    elif book == 43 and int(c) == 8:
+                        v = '012'
+                    else:
+                        v = '001'
                     if not validate(book, c, v):
                         return None, 0
                     ch1 = c.zfill(3)
-                    if book == 19 and int(c) in self._headings: # some chapters start at verse 0
-                        v1 = '000'
-                    else:
-                        v1 = '001'
+                    v1 = v.zfill(3)
                     v2 = str(self._ranges.get((book, int(ch1)))).zfill(3)
                     return (b+ch1+v1, b+ch1+v2), None
                 else:
@@ -485,27 +496,28 @@ class Scriptures():
                 for start, end in bcv_ranges:
                     sb = int(start[:2])
                     sc = int(start[2:5])
+                    sv = int(start[5:])
                     eb = int(end[:2])
                     ec = int(end[2:5])
 
                     if sb == eb and sc != ec:
                         for chap in range(sc, ec + 1):
+                            if sb == 19 and chap in self._headings:
+                                minsv = 0
+                            elif sb == 43 and chap == 8:
+                                if sv < 12:
+                                    sv = 12
+                                minsv = 12
+                            else:
+                                minsv = 1
                             if chap == sc:
-                                chap_start = start
+                                chap_start = f"{sb:02d}{chap:03d}{sv:03d}"
                                 le = self._ranges.get((sb, chap), 0)
                                 chap_end = f"{sb:02d}{chap:03d}{le:03d}"
                             elif chap == ec:
-                                if sb == 19 and chap in self._headings:
-                                    minsv = 0
-                                else:
-                                    minsv = 1
                                 chap_start = f"{sb:02d}{chap:03d}{minsv:03d}"
                                 chap_end = end
                             else:
-                                if sb == 19 and chap in self._headings:
-                                    minsv = 0
-                                else:
-                                    minsv = 1
                                 le = self._ranges.get((sb, chap), 0)
                                 chap_start = f"{sb:02d}{chap:03d}{minsv:03d}"
                                 chap_end = f"{sb:02d}{chap:03d}{le:03d}"
@@ -701,6 +713,8 @@ class Scriptures():
             bc = str(book).zfill(2) + str(chapter).zfill(3)
             if book == 19 and chapter in self._headings: # some chapters start at verse 0
                 v = '000'
+            elif book == 43 and chapter == 8:
+                v = '012'
             else:
                 v = '001'
             return f"('{bc}{v}', '{bc}{str(last).zfill(3)}')"
