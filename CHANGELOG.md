@@ -6,15 +6,20 @@
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+____
+## [4.8.1] - 2026-03-05
+### Changed
+
 - John 8:1-11 (spurious) is now evaluated as invalid
 
 ### Fixed
 
 - Fixed one edge-case with potential crash
 
-### Removed
-
-____
 ## [4.8.0] - 2026-02-01
 ### Added
 
@@ -458,6 +463,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[4.8.1]:https://github.com/erykjj/linkture/releases/tag/v4.8.1
 [4.8.0]:https://github.com/erykjj/linkture/releases/tag/v4.8.0
 [4.7.1]:https://github.com/erykjj/linkture/releases/tag/v4.7.1
 [4.7.0]:https://github.com/erykjj/linkture/releases/tag/v4.7.0
