@@ -1,9 +1,9 @@
 [project]
 name = "linkture"
 dynamic = ["version"]
-description = "PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode"
+description = "PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and -decode"
 authors = [
-    {name = "Eryk J.", email = "infiniti@inventati.org"}
+    {name = "Eryk J."}
 ]
 dependencies = [
     "setuptools>=59.6.0",
