@@ -312,7 +312,6 @@ class Scriptures():
             return '; '.join(processed_groups)
 
         def validate(b, ch, vs):
-            # TODO: add validation for John 8:1-11 (spurious -> invalid)?
             c = int(ch)
             v = int(vs)
             if not (0 < b <= 66): # book out of range
@@ -321,6 +320,8 @@ class Scriptures():
                 return None
             if b == 19 and c in self._headings:
                 minsv = 0
+            elif b == 43 and c == 8:
+                minsv = 12  # John 8:1-11 (spurious -> invalid)
             else:
                 minsv = 1
             if not (minsv <= v <= self._ranges.get((b, c), 0)): # verse out of range
