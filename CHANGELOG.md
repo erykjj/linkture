@@ -11,6 +11,12 @@
 ### Removed
 
 ____
+## [5.0.0] - 2026-03-05
+### Changed
+
+- Dropped support for Python 3.9 - it was holding up some dependency updates
+  - Use v4.8.2 on Python 3.9
+
 ## [4.8.2] - 2026-03-05
 ### Fixed
 
@@ -468,6 +474,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.0.0]:https://github.com/erykjj/linkture/releases/tag/v5.0.0
 [4.8.2]:https://github.com/erykjj/linkture/releases/tag/v4.8.2
 [4.8.1]:https://github.com/erykjj/linkture/releases/tag/v4.8.1
 [4.8.0]:https://github.com/erykjj/linkture/releases/tag/v4.8.0
