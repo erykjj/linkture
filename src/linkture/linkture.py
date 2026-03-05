@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v4.8.0'
+__version__ = 'v4.9.0'
 
 
 import json, regex, sqlite3
@@ -135,14 +135,12 @@ class Scriptures():
 
             self._tagged = regex.compile(r'({{.*?}})')
             self._cv_cv = regex.compile(r'(\d+):(\d+)-(\d+):(\d+)')
-            self._v_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
+            self._c_cv = regex.compile(r'(\d+)-(\d+):(\d+)')
             self._cv_v = regex.compile(r'(\d+):(\d+)-(\d+)')
             self._cv = regex.compile(r'(\d+):(\d+)')
-            self._ddd = regex.compile(r'(\d+),(\d+),(\d+)')
             self._dd_d = regex.compile(r'(\d+),(\d+)-(\d+)')
             self._d_dd = regex.compile(r'(\d+)-(\d+),(\d+)')
             self._d_d = regex.compile(r'(\d+)-(\d+)(?!:)')
-            self._dd = regex.compile(r'(\d+),(\d+)')
             self._d = regex.compile(r'(\d+)')
             self._chunk = regex.compile(r'([^,;\p{Z}]+.*)')
             self._sep = regex.compile(r'(?<!;)\s')
@@ -314,6 +312,7 @@ class Scriptures():
             return '; '.join(processed_groups)
 
         def validate(b, ch, vs):
+            # TODO: add validation for John 8:1-11 (spurious -> invalid)?
             c = int(ch)
             v = int(vs)
             if not (0 < b <= 66): # book out of range
@@ -363,10 +362,14 @@ class Scriptures():
                 v2 = v.zfill(3)
                 return (b+ch1+v1, b+ch1+v2), ch1
 
-            result = self._v_cv.search(chunk)
+            result = self._c_cv.search(chunk)
             if result:
-                c = str(ch)
-                v = result.group(1)
+                if ch:
+                    c = ch
+                    v = result.group(1)
+                else:
+                    c = result.group(1).zfill(3)
+                    v = '001'
                 if not validate(book, c, v):
                     return None, 0
                 ch1 = c
