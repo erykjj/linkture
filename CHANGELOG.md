@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [4.8.2] - 2026-03-05
+### Fixed
+
+- Fixed handling John 8
+
 ## [4.8.1] - 2026-03-05
 ### Changed
 
