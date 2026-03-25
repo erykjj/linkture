@@ -568,7 +568,7 @@ class Scriptures():
         bk_name = self._tr_book_names[sb]
         if book == bk_name:
             cont = True
-            while chap == sc and sv <= vs:
+            while chap == sc and sv == vs:
                 sv = vs + 1
                 if sv > ev:
                     return '', '', 0, False, ''
