@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Check for repeated verses in decode
+
 ### Fixed
 
 ### Removed
