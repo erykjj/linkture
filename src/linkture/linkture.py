@@ -530,7 +530,7 @@ class Scriptures():
         return lst
 
 
-    def _decode_scripture(self, bcv_range, book='', chap=0, sep=';'):
+    def _decode_scripture(self, bcv_range, book='', chap=0, vs=0, sep=';'):
         if not bcv_range:
             return None, '', 0, False, ''
         start, end = bcv_range
@@ -568,6 +568,10 @@ class Scriptures():
         bk_name = self._tr_book_names[sb]
         if book == bk_name:
             cont = True
+            while chap == sc and sv <= vs:
+                sv = vs + 1
+                if sv > ev:
+                    return '', '', 0, False, ''
         else:
             cont = False
             book = bk_name
@@ -628,14 +632,16 @@ class Scriptures():
             scriptures = []
             bk = ''
             ch = 0
+            vs = 0
             sep = ';'
             for bcv_range in bcv_ranges:
-                scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, sep)
+                scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, vs, sep)
                 if scripture:
                     if cont:
                         scriptures[-1] = scriptures[-1] + scripture
                     else:
                         scriptures.append(scripture)
+                    vs = int(bcv_range[1][5:])
             return scriptures
         except:
             return None
@@ -670,12 +676,14 @@ class Scriptures():
             output = ''
             bk = ''
             ch = 0
+            vs = 0 # CHECK
             sep = ';'
             for bcv_range in self._encoded[scripture]:
-                scrip, bk, ch, _, sep = self._decode_scripture(bcv_range, bk, ch, sep)
+                scrip, bk, ch, _, sep = self._decode_scripture(bcv_range, bk, ch, vs, sep) # CHECK
                 if scrip:
                     lnk = convert_range(bcv_range)
                     output += regex.sub(self._chunk, r2, scrip)
+                    vs = int(bcv_range[1][5:]) # CHECK
             self._linked[scripture] = output.strip(' ;,')
             if self._upper:
                 output = output.upper()
