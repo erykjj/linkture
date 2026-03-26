@@ -6,14 +6,17 @@
 
 ### Changed
 
-- Check for repeated verses in decode
-- Adjusted argument parser descriptions
-
 ### Fixed
 
 ### Removed
 
 ____
+## [5.0.2] - 2026-03-26
+### Changed
+
+- Check for repeated verses in decode
+- Adjusted argument parser descriptions
+
 ## [5.0.1] - 2026-03-05
 ### Changed
 
@@ -477,6 +480,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.0.2]:https://github.com/erykjj/linkture/releases/tag/v5.0.2
 [5.0.1]:https://github.com/erykjj/linkture/releases/tag/v5.0.1
 [4.8.2]:https://github.com/erykjj/linkture/releases/tag/v4.8.2
 [4.8.1]:https://github.com/erykjj/linkture/releases/tag/v4.8.1
