@@ -199,6 +199,7 @@ Parameters:
 * *separator* - character(s) to use instead of space (default) to separate the various segments of the scripture
 * *upper* - if **True**, outputs book names in UPPER CASE (**False** by default)
 * *verbose* - if **True**, show (in terminal) any out-of-range errors encountered while parsing (**False** by default)
+* *chapters* - if **True**, multi-chapter BCV-encoding is split into separate chapters (**False** by default)
 
 ____
 ## Feedback
