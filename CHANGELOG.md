@@ -7,6 +7,7 @@
 ### Changed
 
 - Check for repeated verses in decode
+- Adjusted argument parser descriptions
 
 ### Fixed
 
