@@ -98,7 +98,7 @@ def main(args):
 parser = argparse.ArgumentParser(description='PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information', prog='linkture', epilog='')
 
 parser.add_argument('-v', action='version', version=f"{__app__} {__version__}", help='show version and exit')
-parser.add_argument('-q', action='store_true', help="don't show errors")
+parser.add_argument('-q', action='store_true', help="don't show errors (quiet)")
 
 function_group = parser.add_argument_group('data source (one required - except for auxiliary functions, which only take command-line arguments)', 'choose between terminal or file input:')
 mode = function_group.add_mutually_exclusive_group()
@@ -128,10 +128,10 @@ tpe.add_argument('-x', action='store_true', help='extract list of scripture refe
 
 aux_group = parser.add_argument_group('auxiliary functions')
 aux = aux_group.add_mutually_exclusive_group(required=False)
-aux.add_argument('-sc', metavar=('BCV'), help='return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")')
-aux.add_argument('-sv', metavar=('BCV'), help='return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")')
-aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (integer value)')
-aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (integer value)')
+aux.add_argument('-sc', metavar=('BCV'), help='return the serial number of the chapter with code "BCV" ("bbcccvvv")')
+aux.add_argument('-sv', metavar=('BCV'), help='return the serial number of the verse with code "BCV" ("bbcccvvv")')
+aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (1-31194)')
+aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (1-1189)')
 aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (integer value)')
 
 try:
