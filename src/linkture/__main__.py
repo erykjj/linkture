@@ -132,7 +132,7 @@ aux.add_argument('-sc', metavar=('BCV'), help='return the serial number of the c
 aux.add_argument('-sv', metavar=('BCV'), help='return the serial number of the verse with code "BCV" ("bbcccvvv")')
 aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial verse number "verse" (1-31194)')
 aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (1-1189)')
-aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (integer value)')
+aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (1-66)')
 
 try:
     args = parser.parse_args()
