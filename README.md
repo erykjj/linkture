@@ -36,7 +36,7 @@ PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, trans
 options:
   -h, --help            show this help message and exit
   -v                    show version and exit
-  -q                    don't show errors
+  -q                    don't show errors (quiet)
   -o out-file           output file (terminal output if not provided)
   --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate source language for book names (English if unspecified)
@@ -70,11 +70,11 @@ type of conversion:
   -x                    extract list of scripture references
 
 auxiliary functions:
-  -sc BCV               return the serial number (1-1189) of the chapter with code "BCV" ("bbcccvvv")
-  -sv BCV               return the serial number (1-31194) of the verse with code "BCV" ("bbcccvvv")
-  -cv verse             return the BCV code for serial verse number "verse" (integer value)
-  -cc chapter           return the BCV range for serial chapter number "chapter" (integer value)
-  -bn book              return the name of book number "book" (integer value)
+  -sc BCV               return the serial number of the chapter with code "BCV" ("bbcccvvv")
+  -sv BCV               return the serial number of the verse with code "BCV" ("bbcccvvv")
+  -cv verse             return the BCV code for serial verse number "verse" (1-31194)
+  -cc chapter           return the BCV range for serial chapter number "chapter" (1-1189)
+  -bn book              return the name of book number "book" (1-66)
 ```
 
 Some examples:
