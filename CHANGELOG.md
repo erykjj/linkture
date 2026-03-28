@@ -6,6 +6,10 @@
 
 ### Changed
 
+- Improved handling for lists of BCV ranges, grouping successive same-book ranges
+  - For example, decoding this: [["23011001","23011016"],["23011001","23011001"],["62003001","62003024"],["63001003","63001003"],["23011002","23011003"],["23011003","23011005"],["50001007","50001007"],["50001005","50001006"],["50004001","50004001"],["50001005","50001005"]]
+  - will now produce this: ['Isaiah 11', '1 John 3', '2 John 3', 'Isaiah 11:2‑5', 'Philippians 1:5‑7; 4:1']
+
 ### Fixed
 
 ### Removed
