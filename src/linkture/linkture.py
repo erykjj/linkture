@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v5.0.2'
+__version__ = 'v5.1.0'
 
 
 import json, regex, sqlite3
@@ -627,14 +627,65 @@ class Scriptures():
             scripture = regex.sub(self._sep, self._separator, scripture)
         return scripture.strip(), book, chap, cont, sep
 
+    def _combine_ranges(self, bcv_ranges):
+        if not bcv_ranges:
+            return []
+        groups = []
+        current_group = [bcv_ranges[0]]
+        for i in range(1, len(bcv_ranges)):
+            current = bcv_ranges[i]
+            current_book = int(current[0][:2])
+            group_book = int(current_group[0][0][:2])
+            if current_book == group_book:
+                current_group.append(current)
+            else:
+                groups.append(current_group)
+                current_group = [current]
+        groups.append(current_group)
+
+        combined_ranges = []
+        for group in groups:
+            verses = set()
+            bcvs = {}
+            for bcv_range in group:
+                ss = self.serial_verse_number(bcv_range[0])
+                es = self.serial_verse_number(bcv_range[1])
+                if ss is None or es is None:
+                    continue
+                bcvs[ss] = bcv_range[0]
+                bcvs[es] = bcv_range[1]
+                for serial in range(ss, es + 1):
+                    verses.add(serial)
+            if not verses:
+                continue
+
+            serial_ids = sorted(verses)
+            i = 0
+            while i < len(serial_ids):
+                ss = serial_ids[i]
+                es = ss
+                j = i + 1
+                while j < len(serial_ids) and serial_ids[j] == es + 1:
+                    es = serial_ids[j]
+                    j += 1
+                start_bcv = bcvs.get(ss)
+                end_bcv = bcvs.get(es)
+                if start_bcv and end_bcv:
+                    combined_ranges.append([start_bcv, end_bcv])
+                i = j
+        return combined_ranges
+
     def decode_scriptures(self, bcv_ranges=[]):
         try:
+            if not bcv_ranges:
+                return []
+            combined_ranges = self._combine_ranges(bcv_ranges)
             scriptures = []
             bk = ''
             ch = 0
             vs = 0
             sep = ';'
-            for bcv_range in bcv_ranges:
+            for bcv_range in combined_ranges:
                 scripture, bk, ch, cont, sep = self._decode_scripture(bcv_range, bk, ch, vs, sep)
                 if scripture:
                     if cont:
@@ -645,7 +696,6 @@ class Scriptures():
             return scriptures
         except:
             return None
-
 
     def link_scriptures(self, text, prefix='<a href=', suffix='>'):
         # this always rewrites (full by default); if rewrite not desired, get code the scripture and build your own link
