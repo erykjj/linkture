@@ -4,6 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+____
+## [5.1.0] - 2026-04-02
+### Added
+
 - **Custom start and end tags** for tagging ('{{' and '}}' by default)
 
 ### Changed
@@ -17,11 +27,6 @@
     - if you *want* each range expressed as a scripture without being combined, call `decode_scriptures` for each range in turn with a list of just that one range
   - Tagging doesn't modify scriptures (other than adding the tags)
 
-### Fixed
-
-### Removed
-
-____
 ## [5.0.2] - 2026-03-26
 ### Changed
 
@@ -491,6 +496,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.1.0]:https://github.com/erykjj/linkture/releases/tag/v5.1.0
 [5.0.2]:https://github.com/erykjj/linkture/releases/tag/v5.0.2
 [5.0.1]:https://github.com/erykjj/linkture/releases/tag/v5.0.1
 [4.8.2]:https://github.com/erykjj/linkture/releases/tag/v4.8.2
