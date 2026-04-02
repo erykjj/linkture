@@ -15,7 +15,6 @@
       - notice that 'Isaiah 11, 1' should actually have been 'Isaiah 11; 11:1' (so this was a bit buggy also)
     - but will now produce this: ['Isaiah 11', '1 John 3', '2 John 3', 'Isaiah 11:2‑5', 'Philippians 1:5‑7; 4:1']
     - if you *want* each range expressed as a scripture without being combined, call `decode_scriptures` for each range in turn with a list of just that one range
-  - **Format output as proper JSON**
   - Tagging doesn't modify scriptures (other than adding the tags)
 
 ### Fixed
