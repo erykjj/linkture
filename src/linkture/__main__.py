@@ -134,12 +134,16 @@ aux.add_argument('-cv', metavar=('verse'), help='return the BCV code for serial 
 aux.add_argument('-cc', metavar=('chapter'), help='return the BCV range for serial chapter number "chapter" (1-1189)')
 aux.add_argument('-bn', metavar=('book'), help='return the name of book number "book" (1-66)')
 
-try:
-    args = parser.parse_args()
-    main(vars(args))
-except Exception as e:
-    print('\n' + '='*36)
-    print('ERROR: An unexpected error occurred!')
-    print('='*36 + '\n')
-    parser.print_help()
-    sys.exit(1)
+def main_cli():
+    try:
+        args = parser.parse_args()
+        main(vars(args))
+    except Exception as e:
+        print('\n' + '='*36)
+        print('ERROR: An unexpected error occurred!')
+        print('='*36 + '\n')
+        parser.print_help()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main_cli()
