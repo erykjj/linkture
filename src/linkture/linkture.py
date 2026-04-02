@@ -216,7 +216,7 @@ class Scriptures():
             if self._upper:
                 script = script.upper()
             lst.append(script)
-        return json.dumps(lst, ensure_ascii=False)
+        return lst
 
     def tag_scriptures(self, text, start_tag = "{{", end_tag = "}}"):
         return self.rewrite_scriptures(text, True, start_tag, end_tag)
@@ -526,7 +526,7 @@ class Scriptures():
                 lst.extend(split_ranges)
             else:
                 lst.extend(bcv_ranges)
-        return json.dumps(lst, ensure_ascii=False)
+        return lst
 
 
     def _decode_scripture(self, bcv_range, book='', chap=0, sep=';'):
@@ -686,7 +686,7 @@ class Scriptures():
                         scriptures[-1] = scriptures[-1] + scripture
                     else:
                         scriptures.append(scripture)
-            return json.dumps(scriptures, ensure_ascii=False)
+            return scriptures
         except:
             return None
 
@@ -766,7 +766,7 @@ class Scriptures():
                 v = '012'
             else:
                 v = '001'
-            return f'["{bc}{v}", "{bc}{str(last).zfill(3)}"]'
+            return f"('{bc}{v}', '{bc}{str(last).zfill(3)}')"
         except:
             self._error_report(chapter, 'OUT OF RANGE')
             return None
@@ -776,7 +776,7 @@ class Scriptures():
         try:
             bk, ch, vs = self._verses_id[int(verse)-1]
             bcv = f'{bk:02d}{ch:03d}{vs:03d}'
-            return f'["{bcv}", "{bcv}"]'
+            return f"('{bcv}', '{bcv}')"
         except:
             self._error_report(verse, 'OUT OF RANGE')
             return None
