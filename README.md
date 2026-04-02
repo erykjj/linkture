@@ -80,14 +80,28 @@ auxiliary functions:
 
 Some examples:
 ```
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -t
+{{Joh 17:17}}; {{2Ti 3:16, 17}}
+
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -t "@@" "!!!"
+@@Joh 17:17!!!; @@2Ti 3:16, 17!!!
+
+
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --full -u
-JOHN 17:17; 2 TIMOTHY 3:16, 17
+JOHN 17:17; 2 TIMOTHY 3:16, 17
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --standard
-John 17:17; 2 Tim. 3:16, 17
+John 17:17; 2 Tim. 3:16, 17
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --official
 Joh 17:17; 2Ti 3:16, 17
+
+
+$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
+<a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
+
+$ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
+['Matthew 17:17']
 
 
 $ python3 -m linkture -r "Pr 1; 2:1-5; 3-5" -c
@@ -97,24 +111,21 @@ $ python3 -m linkture -r "Pr 1; 2:1-5; 3-5" -c --chapters
 [('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20003035'), ('20004001', '20004027'), ('20005001', '20005023')]
 
 
-$ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" -l '<a href="https://my.website.com/' '/index.html" class="test">'
-<a href="https://my.website.com/43:17:17/index.html" class="test">John 17:17</a>; <a href="https://my.website.com/55:3:16-55:3:17/index.html" class="test">2 Timothy 3:16, 17</a>
-
-$ python3 -m linkture -r "Mat 17:17; Paul 3:16, 17" --full -x
-['Matthew 17:17']
-
+$ python3 -m linkture -r "[('20001001', '20001033'), ('20002001', '20002005'), ('20003001', '20005023')]" -d
+['Proverbs 1:1‑2:5; 3‑5']
 
 $ python3 -m linkture -r "[('43017017', '43017017'), ('55003016', '55003017')]" -d --translate German
-['Johannes 17:17', '2. Timotheus 3:16, 17']
+['Johannes 17:17', '2. Timotheus 3:16, 17']
+
 
 $ python3 -m linkture -r "Joh 17:17; 2Ti 3:16, 17" --translate Chinese
 约翰福音 17:17; 提摩太后书 3:16, 17
 
 $ python3 -m linkture -r "约翰福音 17:17; 提摩太后书 3:16, 17" --language Chinese --translate Dutch
-Johannes 17:17; 2 Timotheüs 3:16, 17
+Johannes 17:17; 2 Timotheüs 3:16, 17
 
 $ python3 -m linkture -r "{{Jean 17:17}}; 2 Timothée 3:16, 17" --language French --translate Spanish --standard
-Juan 17:17; 2 Tim. 3:16, 17
+Juan 17:17; 2 Tim. 3:16, 17
 
 
 $ python3 -m linkture -cc 2
@@ -133,7 +144,7 @@ $ python3 -m linkture -bn 3 --official
 Le
 
 $ python3 -m linkture -bn 3 --translate German
-3. Mose
+3. Mose
 
 $ python3 -m linkture -r '2Ti 3:16, 17' --full -s '_'
 2_Timothy_3:16,_17
