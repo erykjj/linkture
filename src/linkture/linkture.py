@@ -218,10 +218,10 @@ class Scriptures():
             lst.append(script)
         return lst
 
-    def tag_scriptures(self, text):
-        return self.rewrite_scriptures(text, True)
+    def tag_scriptures(self, text, start_tag = "{{", end_tag = "}}"):
+        return self.rewrite_scriptures(text, True, start_tag, end_tag)
 
-    def rewrite_scriptures(self, text, tag=False):
+    def rewrite_scriptures(self, text, tag=False, start_tag = "{{", end_tag = "}}"):
 
         def r(match):
             script = match.group(1).strip('}{')
@@ -231,7 +231,7 @@ class Scriptures():
             if self._upper:
                 script = script.upper()
             if tag:
-                return '{{'+script+'}}'
+                return start_tag + script + end_tag
             else:
                 return script
 
