@@ -118,7 +118,7 @@ formats.add_argument('--standard', action='store_true', help='output as standard
 parser.add_argument('--chapters', action='store_true', 
                     help='encode multi-chapter ranges into separate chapters (only with -c)')
 
-type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen (or default) output format:')
+type_group = parser.add_argument_group('type of conversion', 'if not specified, references are simply rewritten according to chosen output format:')
 tpe = type_group.add_mutually_exclusive_group(required=False)
 tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
 tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
