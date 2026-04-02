@@ -225,15 +225,14 @@ class Scriptures():
 
         def r(match):
             script = match.group(1).strip('}{')
+            if tag:
+                return start_tag + script + end_tag
             if self._rewrite:
                 temp = self.decode_scriptures(self._encoded[script])
                 script = temp[0] if temp else script
             if self._upper:
                 script = script.upper()
-            if tag:
-                return start_tag + script + end_tag
-            else:
-                return script
+            return script
 
         text = self._locate_scriptures(text)
         return regex.sub(self._tagged, r, text).replace('»»|', '{{').replace('|««', '}}')
