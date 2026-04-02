@@ -4,6 +4,8 @@
 
 ### Added
 
+- **Custom start and end tags** for tagging ('{{' and '}}' by default)
+
 ### Changed
 
 - **Improved handling for lists of BCV ranges**, grouping successive same-book ranges
