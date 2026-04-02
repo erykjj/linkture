@@ -35,12 +35,9 @@ def main(args):
 
     def switchboard(text):
         if args['l'] is not None:
-            prefix = '<a href="'
-            suffix = '">'
-            if len(args['l']) > 1 and args['l'][1] != '':
-                suffix = args['l'][1]
-            if len(args['l']) > 0 and args['l'][0] != '':
-                prefix = args['l'][0]
+            tags = args['l']
+            prefix = tags[0] if len(tags) > 0 and tags[0] != '' else '<a href="'
+            suffix = tags[1] if len(tags) > 1 and tags[1] != '' else '">'
             return s.link_scriptures(text, prefix, suffix)
         elif args['c']:
             return s.code_scriptures(text, split=args['chapters'])
@@ -48,8 +45,11 @@ def main(args):
             return s.decode_scriptures(literal_eval(text))
         elif args['x']:
             return s.list_scriptures(text)
-        elif args['t']:
-            return s.tag_scriptures(text)
+        elif args['t'] is not None:
+            tags = args['t']
+            start_tag = tags[0] if len(tags) > 0 else '{{'
+            end_tag = tags[1] if len(tags) > 1 else '}}'
+            return s.tag_scriptures(text, start_tag, end_tag)
         else:
             return s.rewrite_scriptures(text)
 
@@ -123,7 +123,7 @@ tpe = type_group.add_mutually_exclusive_group(required=False)
 tpe.add_argument('-c', action='store_true', help='encode as BCV-notation ranges')
 tpe.add_argument('-d', action='store_true', help='decode list of BCV-notation ranges')
 tpe.add_argument('-l', nargs='*', metavar=('prefix', 'suffix'), help='create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)')
-tpe.add_argument('-t', action='store_true', help='tag scriptures with {{ }}')
+tpe.add_argument('-t', nargs='*', metavar=('start', 'end'), help='tag scriptures (provide optional start and end tags; default "{{" "}}")')
 tpe.add_argument('-x', action='store_true', help='extract list of scripture references')
 
 aux_group = parser.add_argument_group('auxiliary functions')
