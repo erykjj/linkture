@@ -29,9 +29,13 @@ classifiers = [
 ]
 keywords = ["bible", "scriptures", "scripture-references", "scripture-translation", "scripture-parser", "scripture-linker"]
 
+[project.scripts]
+linkture = "linkture.__main__:main_cli"
+
 [project.urls]
 Homepage = "https://github.com/erykjj/linkture"
 Issues = "https://github.com/erykjj/linkture/issues"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
