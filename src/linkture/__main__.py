@@ -92,7 +92,7 @@ def main(args):
         with open(args['o'], 'w', encoding='UTF-8') as f:
             f.write(str(txt))
     else:
-        print(txt)
+        print(str(txt).replace('\\xa0', '\xa0'))
 
 
 parser = argparse.ArgumentParser(description='PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information', prog='linkture', epilog='')
