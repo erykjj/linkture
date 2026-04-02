@@ -24,12 +24,12 @@ ____
 
 ```
 > python3 -m linkture -h
-usage: linkture.py [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
-                   [--language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
-                   [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
-                   [-s separator] [-u] [--full | --official | --standard] [--chapters]
-                   [-c | -d | -l [prefix [suffix ...]] | -t | -x]
-                   [-sc BCV | -sv BCV | -cv verse | -cc chapter | -bn book]
+usage: linkture [-h] [-v] [-q] [-f in-file | -r reference] [-o out-file]
+                [--language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
+                [--translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}]
+                [-s separator] [-u] [--full | --official | --standard] [--chapters] [-c | -d |
+                -l [prefix [suffix ...]] | -t [start [end ...]] | -x] [-sc BCV | -sv BCV |
+                -cv verse | -cc chapter | -bn book]
 
 PARSE and PROCESS BIBLE SCRIPTURE REFERENCES: extract, tag, link, rewrite, translate, BCV-encode and decode. See README for more information
 
@@ -38,9 +38,9 @@ options:
   -v                    show version and exit
   -q                    don't show errors (quiet)
   -o out-file           output file (terminal output if not provided)
-  --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
+   --language {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate source language for book names (English if unspecified)
-  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
+  --translate {Cebuano,Chinese,Danish,Dutch,English,Ewe,French,German,Greek,Haitian,Hungarian,Indonesian,Italian,Japanese,Korean,Norwegian,Polish,Portuguese,Romanian,Russian,Spanish,Swedish,Tagalog,Ukrainian}
                         indicate output language for book names (same as source if unspecified)
   -s separator          segment separator (space by default)
   -u                    capitalize (upper-case) book names
@@ -60,13 +60,14 @@ output format (optional):
   --standard            output as standard abbreviation (eg., "Gen.")
 
 type of conversion:
-  if not specified, references are simply rewritten according to chosen (or default) output format:
+  if not specified, references are simply rewritten according to chosen output format:
 
   -c                    encode as BCV-notation ranges
   -d                    decode list of BCV-notation ranges
   -l [prefix [suffix ...]]
-                        create <a></a> links; provide a "prefix" and a "suffix" (or neither for testing)
-  -t                    tag scriptures with {{ }}
+                        create <a></a> links; provide a "prefix" and a "suffix" (or neither for
+                        testing)
+  -t [start [end ...]]  tag scriptures (provide optional start and end tags; default "{{" "}}")
   -x                    extract list of scripture references
 
 auxiliary functions:
