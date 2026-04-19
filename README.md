@@ -19,6 +19,8 @@ ____
 
 `python3 -m pip install linkture`
 
+If you're looking for a single-binary executable, check out the parallel [linkture-binary](https://github.com/erykjj/linkture-binary) project repo.
+
 ____
 ## Command-line usage
 
