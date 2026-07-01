@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Allow double-spacing ("2Cor 11:1,3" and "2  Cor  11:1,  3" will both parse)
+
 ### Fixed
 
 ### Removed
