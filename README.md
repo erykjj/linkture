@@ -6,7 +6,7 @@ This module contains functions to parse and process Bible scripture references.
 
 The parser can work in **Cebuano, Chinese, Danish, Dutch, English, Ewe, French, German, Greek, Haitian Creole, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Romanian, Russian, Spanish, Swedish, Tagalog and Ukrainian**. It will **recognize** such references and **validate** them to ensure the chapter(s) and/or verse(s) are within range.
 
-It *does not* work with whole books (like "James") unless they are preceded by a number (like "1 John"); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (eg., "{{Song of Solomon 1:1}}") - *one book* per brace pair. These two limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
+It *does not* work with whole books (like "James") unless they are preceded by a number (like "1 John"); otherwise it would have to look up ever single word. Also, it will *not* find the multi-word book name "Song of Solomon" (and its variations), though this (and any other scripture) can be force-detected by tagging the desired reference "manually" within the source text (e.g., "{{Song of Solomon 1:1}}" or "{{Obadiah}}") - *one book* per brace pair. Finally, there are some extreme "edge-cases" where the parser simply cannot know your intentions. Take "1 John 5:3; 2 John 4" as an example. The parser will find "1 John 5:3; 2" and "John 4". To force proper detection use braces: "1 John 5:3; {{2 John 4}}". These few limitations aside, it works with most book name variants in all the available languages (including common abbreviations): "2 Sam.", "2nd Samuel", "II Samuel", "2Sa", etc. Any special/unusual variants can be added to the *res/custom.json* list.
 
 These found references can be **extracted** as a list of references, or a list of BCV-encoded ranges in the format `bbcccvvv` (where `b` is book, `c` is chapter, and `v` is verse). Or, they can be **tagged** (with '{{ }}') within the text, or replaced with HTML **hyperlink** tags (with custom prefix and suffix). All of these functions can also include a **rewrite** of the reference with either a full book name, or one of two abbreviation formats, along with **translation** into one of the available languages.
 
@@ -57,9 +57,9 @@ data source (one required - except for auxiliary functions, which only take comm
 output format (optional):
   if provided, book names will be rewritten accordingly:
 
-  --full                output as full name - default (eg., "Genesis")
-  --official            output as official abbreviation (eg., "Ge")
-  --standard            output as standard abbreviation (eg., "Gen.")
+  --full                output as full name - default (e.g., "Genesis")
+  --official            output as official abbreviation (e.g., "Ge")
+  --standard            output as standard abbreviation (e.g., "Gen.")
 
 type of conversion:
   if not specified, references are simply rewritten according to chosen output format:
@@ -206,9 +206,9 @@ Parameters:
 * *language* - source language for Scripture parsing
 * *translate* - language for Bible book name translation
 * *form* - output format of Bible book names
-  * **"full"** for full name format (eg., "Genesis")
-  * **"standard"** for standard abbreviation format (eg., "Gen.")
-  * **"official"** for official abbreviation format (eg., "Ge")
+  * **"full"** for full name format (e.g., "Genesis")
+  * **"standard"** for standard abbreviation format (e.g., "Gen.")
+  * **"official"** for official abbreviation format (e.g., "Ge")
   * *None* or not supplied - no re-write will be performed, *unless* translation is performed or *linking* (in which case, "full" is the default)
 * *separator* - character(s) to use instead of space (default) to separate the various segments of the scripture
 * *upper* - if **True**, outputs book names in UPPER CASE (**False** by default)
