@@ -14,7 +14,7 @@ ____
 ## [5.2.0] - 2026-07-05
 ### Changed
 
-- Allow double-spacing ("2Cor 11:1,3" and "2  Cor  11:1,  3" will both parse)
+- Allow double-spacing (`2Cor 11:1,3` and `2  Cor  11:1,  3` will both parse)
 
 ## [5.1.0] - 2026-04-02
 ### Added
