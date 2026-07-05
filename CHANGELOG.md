@@ -6,13 +6,16 @@
 
 ### Changed
 
-- Allow double-spacing ("2Cor 11:1,3" and "2  Cor  11:1,  3" will both parse)
-
 ### Fixed
 
 ### Removed
 
 ____
+## [5.2.0] - 2026-07-05
+### Changed
+
+- Allow double-spacing ("2Cor 11:1,3" and "2  Cor  11:1,  3" will both parse)
+
 ## [5.1.0] - 2026-04-02
 ### Added
 
@@ -498,6 +501,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.2.0]:https://github.com/erykjj/linkture/releases/tag/v5.2.0
 [5.1.0]:https://github.com/erykjj/linkture/releases/tag/v5.1.0
 [5.0.2]:https://github.com/erykjj/linkture/releases/tag/v5.0.2
 [5.0.1]:https://github.com/erykjj/linkture/releases/tag/v5.0.1
