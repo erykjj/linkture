@@ -6,6 +6,9 @@
 
 ### Changed
 
+- Updated custom variants
+- Tweaked regex for better detection
+
 ### Fixed
 
 ### Removed
