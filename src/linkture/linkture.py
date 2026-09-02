@@ -475,7 +475,6 @@ class Scriptures():
         for chunk in rest.split(';'):
             ch = None
             for bit in chunk.split(','):
-                # print(f'rest: {rest.strip()}\t\t chunk: {chunk.strip()}\t\t bit: {bit.strip()}')#DEBUG
                 if ch:
                     tup, ch = code_verses(f'{ch}:{bit}', bk_num, last>1)
                 else:
