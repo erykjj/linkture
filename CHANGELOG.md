@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.3.1] - 2026-09-02
+### Changed
+
+- Minor tweaks
+
 ## [5.3.0] - 2026-07-29
 
 ### Changed
@@ -508,6 +513,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.3.1]:https://github.com/erykjj/linkture/releases/tag/v5.3.1
 [5.3.0]:https://github.com/erykjj/linkture/releases/tag/v5.3.0
 [5.2.0]:https://github.com/erykjj/linkture/releases/tag/v5.2.0
 [5.1.0]:https://github.com/erykjj/linkture/releases/tag/v5.1.0
