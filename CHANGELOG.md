@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.3.3] - 2026-10-14
+### Added
+
+- Added more plural/singular variants for Psalms
+
 ## [5.3.2] - 2026-10-14
 ### Added
 
@@ -518,6 +523,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.3.3]:https://github.com/erykjj/linkture/releases/tag/v5.3.3
 [5.3.2]:https://github.com/erykjj/linkture/releases/tag/v5.3.2
 [5.3.1]:https://github.com/erykjj/linkture/releases/tag/v5.3.1
 [5.3.0]:https://github.com/erykjj/linkture/releases/tag/v5.3.0
