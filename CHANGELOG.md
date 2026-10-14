@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added plural/singular variants for Psalms
+
 ### Changed
 
 ### Fixed
