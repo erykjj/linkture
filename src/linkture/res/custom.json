@@ -77,7 +77,41 @@
     [64, "3ra Juan, III Juan"],
     [66, "Revelación, Rev, Re"]
   ],
+  "German": [
+    [19, "Psalm"]
+  ],
+  "French": [
+    [19, "Psaume"]
+  ],
+  "Italian": [
+    [19, "Salmo"]
+  ],
   "Portuguese": [
-    [18, "Jo"]
+    [18, "Jo"],
+    [19, "Salmo"]
+  ],
+  "Dutch": [
+    [19, "Psalm"]
+  ],
+  "Haitian": [
+    [19, "Salme"]
+  ],
+  "Norwegian": [
+    [19, "Salme"]
+  ],
+  "Polish": [
+    [19, "Psalm"]
+  ],
+  "Romanian": [
+    [19, "Psalmul"]
+  ],
+  "Russian": [
+    [19, "Псалом"]
+  ],
+  "Swedish": [
+    [19, "Psalm"]
+  ],
+  "Ukrainian": [
+    [19, "Псалом"]
   ]
 }
