@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.3.4] - 2026-10-14
+### Changed
+
+- Use singular for for Psalms
+
 ## [5.3.3] - 2026-10-14
 ### Added
 
