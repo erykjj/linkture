@@ -14,7 +14,7 @@
     [14, "2 Chr, 2nd Chronicles, II Chronicles"],
     [16, "Nehem"],
     [17, "Est, Esth"],
-    [19, "Psalm, Psal, Pss, Psa"],
+    [19, "Psalms, Psal, Pss, Psa"],
     [20, "Pro"],
     [21, "Ecc, Eccles, Qoh"],
     [22, "Cant, Song, Sng, SoS"],
@@ -57,7 +57,7 @@
     [12, "2do Reyes, II Reyes"],
     [13, "1ro Crónicas, I Crónicas"],
     [14, "2do Crónicas, II Crónicas"],
-    [19, "Sa, Salmo"],
+    [19, "Sa, Salmos"],
     [20, "Pro"],
     [22, "Cantar de los Cantares, Cantar, Cnt"],
     [23, "Isa"],
@@ -77,47 +77,21 @@
     [64, "3ra Juan, III Juan"],
     [66, "Revelación, Rev, Re"]
   ],
-  "German": [
-    [19, "Psalm"]
-  ],
-  "French": [
-    [19, "Psaume"]
-  ],
-  "Italian": [
-    [19, "Salmo"]
-  ],
+  "German": [[19, "Psalmen"]],
+  "French": [[19, "Psaumes"]],
+  "Italian": [[19, "Salmi"]],
   "Portuguese": [
     [18, "Jo"],
-    [19, "Salmo"]
+    [19, "Salmos"]
   ],
-  "Dutch": [
-    [19, "Psalm"]
-  ],
-  "Haitian": [
-    [19, "Salme"]
-  ],
-  "Norwegian": [
-    [19, "Salme"]
-  ],
-  "Polish": [
-    [19, "Psalm"]
-  ],
-  "Romanian": [
-    [19, "Psalmul"]
-  ],
-  "Russian": [
-    [19, "Псалом"]
-  ],
-  "Swedish": [
-    [19, "Psalm"]
-  ],
-  "Ukrainian": [
-    [19, "Псалом"]
-  ],
-  "Ewe": [
-    [19, "Psalmo, Pss"]
-  ],
-  "Greek": [
-    [19, "Ψαλμός"]
-  ]
+  "Dutch": [[19, "Psalmen"]],
+  "Danish": [[19, "Salmerne"]],
+  "Norwegian": [[19, "Salmene"]],
+  "Polish": [[19, "Psalmy"]],
+  "Romanian": [[19, "Psalmii"]],
+  "Russian": [[19, "Псалмы"]],
+  "Swedish": [[19, "Psalmerna"]],
+  "Ukrainian": [[19, "Псалми"]],
+  "Ewe": [[19, "Psalmowo, Pss"]],
+  "Greek": [[19, "Ψαλμοί"]]
 }
