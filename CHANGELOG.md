@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.4.0] - 2026-11-02
+### Fixed
+
+- Fixed regex for edge case
+
 ## [5.3.4] - 2026-10-14
 ### Changed
 
