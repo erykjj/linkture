@@ -126,12 +126,14 @@ class Scriptures():
             # A chapter/verse number that does NOT begin a prefixed book name
             _NUM = r"(?!" + _BK_PREFIX + r")\d+"
 
+            self._num_prefix = regex.compile(r'(?<!\p{L})((?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.]?\p{Z}{0,2})$', flags=regex.IGNORECASE)
+
             # Pass 1: Prefixed books WITH verses
             self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 2: Non-prefixed books WITH verses
             self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 3: Prefixed books ONLY
-            self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?!\p{Z}{0,2}\d))', regex.IGNORECASE)
+            self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
 
 
             self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}{0,2}\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
@@ -182,13 +184,17 @@ class Scriptures():
 
     def _locate_scriptures(self, text):
 
-        def r(match):
+        def r(match, pass2=False):
             scripture = match.group(1)
             if regex.match(r'{{.*}}', scripture):
                 tag = True
                 scripture = scripture.strip('}{')
             else:
                 tag = False
+            if pass2 and not tag:
+                pre = self._num_prefix.search(match.string[:match.start()])
+                if pre and self._scripture_parts(pre.group(1) + scripture)[2]:
+                    return scripture
             if scripture in self._encoded.keys():
                 return '{{' + scripture +'}}'
             _, rest, bk_num, last = self._scripture_parts(scripture)
@@ -204,7 +210,7 @@ class Scriptures():
 
         self._reported = []
         text = regex.sub(self._pass1, r, text)
-        text = regex.sub(self._pass2, r, text)
+        text = regex.sub(self._pass2, lambda m: r(m, True), text)
         text = regex.sub(self._pass3, r, text)
         return text
 
