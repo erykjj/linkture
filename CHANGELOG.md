@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Handle Roman numeral prefixes better
+
 ### Fixed
 
 ### Removed
