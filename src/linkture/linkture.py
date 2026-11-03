@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v5.4.0'
+__version__ = 'v5.4.1'
 
 
 import json, regex, sqlite3
@@ -78,13 +78,20 @@ class Scriptures():
                 else:
                     tr = rec[form]
                 self._tr_book_names.insert(rec[2], tr)
-            for rec in cur.execute(f'SELECT * FROM Books WHERE Language = ?;', (language,)).fetchall():
+            roman_nums = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}
+            roman_aliases = {}
+            for rec in cur.execute('SELECT * FROM Books WHERE Language = ?;', (language,)).fetchall():
                 for i in range(3,6):
                     item = rec[i]
                     if not self._nl:
                         item = unidecode(item)
                     normalized = regex.sub(r'\p{P}|\p{Z}', '', item.upper())
                     self._src_book_names[normalized] = rec[2]
+                    m = regex.match(r'^([1-5])(\p{L}.*)$', normalized)
+                    if m:
+                        roman_aliases[roman_nums[int(m.group(1))] + m.group(2)] = rec[2]
+            for alias, num in roman_aliases.items():
+                self._src_book_names.setdefault(alias, num)
 
             with open(path / 'res/custom.json', 'r', encoding='UTF-8') as json_file:
                 b = json.load(json_file)
@@ -133,7 +140,7 @@ class Scriptures():
             # Pass 2: Non-prefixed books WITH verses
             self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 3: Prefixed books ONLY
-            self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
+            self._pass3 = regex.compile(r'({{.*?}}|(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
 
             self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}{0,2}\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
