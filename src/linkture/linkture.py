@@ -572,6 +572,8 @@ class Scriptures():
         if sb == 19 and (sc in self._headings):
             minsv = 0
             le += 1
+        if sb == 19 and (ec in self._headings):
+            minev = 0
         if not ((minsv <= sv <= se) & (minev <= ev <= le)): # verse(s) out of range
             return None, '', 0, False, ''
         bk_name = self._tr_book_names[sb]
