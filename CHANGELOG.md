@@ -12,9 +12,14 @@
 
 ____
 ## [5.4.0] - 2026-11-02
+### Changed
+
+- Fine-tuned detection
+
 ### Fixed
 
-- Fixed regex for edge case
+- Fixed regex for edge cases
+- Fixed Psalm header decode (`linkture -d -r "[('19007000', '19007000')]"`)
 
 ## [5.3.4] - 2026-10-14
 ### Changed
@@ -533,6 +538,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.4.0]:https://github.com/erykjj/linkture/releases/tag/v5.4.0
 [5.3.3]:https://github.com/erykjj/linkture/releases/tag/v5.3.3
 [5.3.2]:https://github.com/erykjj/linkture/releases/tag/v5.3.2
 [5.3.1]:https://github.com/erykjj/linkture/releases/tag/v5.3.1
