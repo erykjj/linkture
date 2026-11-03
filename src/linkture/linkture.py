@@ -135,7 +135,6 @@ class Scriptures():
             # Pass 3: Prefixed books ONLY
             self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
 
-
             self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}{0,2}\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
             self._tagged = regex.compile(r'({{.*?}})')
