@@ -12,9 +12,9 @@
 
 ____
 ## [5.4.2] - 2026-11-04
-### Fixed
+### Changed
 
-- Fix/guard agains huge numbers
+- Guard agains huge numbers
 
 ## [5.4.1] - 2026-11-03
 ### Changed
