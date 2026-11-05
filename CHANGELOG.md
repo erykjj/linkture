@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.4.2] - 2026-11-04
+### Fixed
+
+- Fix/guard agains huge numbers
+
 ## [5.4.1] - 2026-11-03
 ### Changed
 
@@ -543,6 +548,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.4.2]:https://github.com/erykjj/linkture/releases/tag/v5.4.2
 [5.4.1]:https://github.com/erykjj/linkture/releases/tag/v5.4.1
 [5.4.0]:https://github.com/erykjj/linkture/releases/tag/v5.4.0
 [5.3.3]:https://github.com/erykjj/linkture/releases/tag/v5.3.3
