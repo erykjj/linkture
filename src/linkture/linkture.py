@@ -27,7 +27,7 @@
 """
 
 __app__ = 'linkture'
-__version__ = 'v5.4.2'
+__version__ = 'v5.5.0'
 
 
 import json, regex, sqlite3
@@ -136,9 +136,9 @@ class Scriptures():
             self._num_prefix = regex.compile(r'(?<!\p{L})((?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.]?\p{Z}{0,2})$', flags=regex.IGNORECASE)
 
             # Pass 1: Prefixed books WITH verses
-            self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
+            self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}(?::\p{Z}{0,2}\d+\p{L}?|[,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?))*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 2: Non-prefixed books WITH verses
-            self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
+            self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}(?::\p{Z}{0,2}\d+\p{L}?|[,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?))*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 3: Prefixed books ONLY
             self._pass3 = regex.compile(r'({{.*?}}|(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
 
