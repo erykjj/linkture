@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Fixed regex
+
 ### Removed
 
 ____
