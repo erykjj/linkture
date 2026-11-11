@@ -128,19 +128,27 @@ class Scriptures():
             self._encoded = {}
             self._linked = {}
 
-            # Digit/roman-numeral book prefix plus the first two letters of the name ("2Ki", "2 Ch", "1.Jo", "III Jo")
-            _BK_PREFIX = r"(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}"
-            # A chapter/verse number that does NOT begin a prefixed book name
-            _NUM = r"(?!" + _BK_PREFIX + r")\d+"
+            _starts = set()
+            for _name in self._src_book_names:
+                _m = regex.match(r'^[1-5](\p{L}{2,})$', _name)
+                if _m:
+                    _starts.add(_m.group(1))
+            if _starts:
+                _names = '|'.join(regex.escape(x) for x in sorted(_starts, key=len, reverse=True))
+                _BOOK_START = r'[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?(?:' + _names + r')(?!\p{L})'
+            else:
+                _BOOK_START = r'(?!)'
+
+            _NUM = r'(?!' + _BOOK_START + r')\d+'
 
             self._num_prefix = regex.compile(r'(?<!\p{L})((?:[1-5]\p{L}{0,2}|[IV]{1,3})[\p{Pd}\.]?\p{Z}{0,2})$', flags=regex.IGNORECASE)
 
             # Pass 1: Prefixed books WITH verses
-            self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}(?::\p{Z}{0,2}\d+\p{L}?|[,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?))*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
+            self._pass1 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 2: Non-prefixed books WITH verses
-            self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}(?::\p{Z}{0,2}\d+\p{L}?|[,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?))*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
+            self._pass2 = regex.compile(r'((?![^{]*})\p{L}{2}[\p{L}\p{Pd}\.]*\p{Z}{0,2}\d+\p{L}?(?:\p{Z}{0,2}[:,\.\p{Pd};]\p{Z}{0,2}' + _NUM + r'\p{L}?)*(?!\w|\p{Z}{0,2}[:,\.\p{Pd};]?\p{Z}{0,2}' + _NUM + r'))', flags=regex.IGNORECASE)
             # Pass 3: Prefixed books ONLY
-            self._pass3 = regex.compile(r'({{.*?}}|(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
+            self._pass3 = regex.compile(r'({{.*?}}|(?:(?<!\p{L})[1-5](?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}|\p{L}{1,2}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))?|(?<!\p{L})[IV]{1,3}(?:\p{Z}|\.\p{Z}{0,2}|\p{Pd}))\p{L}{2}[\p{L}\p{Pd}\.]*(?![\p{L}\p{Pd}\.]|\p{Z}{0,2}\d))', regex.IGNORECASE)
 
             self._bk_ref = regex.compile(r"""(?i)((?:(?<!\p{L})[1-5]\p{L}{0,2}|(?<!\p{L})[IV]{1,3})?[\p{Pd}\.]?\p{Z}{0,2}\p{L}{2}[\p{L}\p{Pd}\.\p{Z}]*)(.*)""")
 
@@ -164,6 +172,17 @@ class Scriptures():
             print(f'** "{scripture}" - {message}')
             self._reported.append(scripture)
 
+    @staticmethod
+    def _suffixes_valid(rest, multi_chapter):
+        for chunk in rest.replace('.', ':').split(';'):
+            has_colon = ':' in chunk
+            for m in regex.finditer(r'\d(\p{L}+)', chunk):
+                if m.group(1).lower() not in ('a', 'b', 'c'):
+                    return False
+                if multi_chapter and (not has_colon or chunk[m.end():m.end() + 1] == ':'):
+                    return False
+        return True
+
     def _scripture_parts(self, scripture):
 
         def check_book(bk_name):
@@ -182,6 +201,8 @@ class Scriptures():
         if result:
             bk_name, rest = result.group(1).strip(), result.group(2).strip()
             bk_num, last = check_book(bk_name)
+            if bk_num and not self._suffixes_valid(rest, (last or 0) > 1):
+                return None, None, None, 0
             rest = regex.sub(r'(\d)\p{L}+', r'\1', rest) # strip off a, b, etc.
             if bk_num:
                 tr_name = self._tr_book_names[bk_num]
