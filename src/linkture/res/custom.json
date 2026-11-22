@@ -1,4 +1,10 @@
 {
+  "Danish": [
+    [19, "Salmerne"]
+  ],
+  "Dutch": [
+    [19, "Psalmen"]
+  ],
   "English": [
     [2, "Exo, Exod"],
     [3, "Levit"],
@@ -6,19 +12,18 @@
     [5, "Deu"],
     [7, "Jdg"],
     [8, "Rth"],
-    [9, "1st Samuel"],
-    [10, "2nd Samuel"],
-    [11, "1Kgs, 1st Kings, 1 King"],
-    [12, "2Kgs, 2nd Kings, 2 King"],
-    [13, "1 Chr, 1st Chronicles"],
-    [14, "2 Chr, 2nd Chronicles"],
+    [9, "1st Samuel"],
+    [10, "2nd Samuel"],
+    [11, "1Kgs, 1st Kings, 1 King"],
+    [12, "2Kgs, 2nd Kings, 2 King"],
+    [13, "1 Chr, 1st Chronicles"],
+    [14, "2 Chr, 2nd Chronicles"],
     [16, "Nehem"],
     [17, "Est, Esth"],
     [19, "Psalms, Psal, Pss, Psa"],
     [20, "Pro"],
     [21, "Ecc, Eccles, Qoh"],
     [22, "Cant, Song, Sng, SoS"],
-    [26, "Ezek"],
     [30, "Amo"],
     [31, "Oba"],
     [35, "Habaccuc"],
@@ -33,65 +38,89 @@
     [49, "Ephes"],
     [50, "Phi, Phili, Phl"],
     [51, "Colos"],
-    [52, "1Thes, 1st Thessalonians"],
-    [53, "2Thes, 2nd Thessalonians"],
-    [54, "1st Timothy"],
-    [55, "2nd Timothy"],
+    [52, "1Thes, 1st Thessalonians"],
+    [53, "2Thes, 2nd Thessalonians"],
+    [54, "1st Timothy"],
+    [55, "2nd Timothy"],
     [57, "Phile"],
     [58, "Hebre"],
     [59, "Jam"],
-    [60, "1st Peter"],
-    [61, "2nd Peter"],
-    [62, "1Jn, 1st John"],
-    [63, "2Jn, 2nd John"],
-    [64, "3Jn, 3rd John"],
+    [60, "1st Peter"],
+    [61, "2nd Peter"],
+    [62, "1Jn, 1st John"],
+    [63, "2Jn, 2nd John"],
+    [64, "3Jn, 3rd John"],
     [65, "Jud, Jde"],
     [66, "Revel, Apoc"]
+  ],
+  "Ewe": [
+    [19, "Psalmowo, Pss"]
+  ],
+  "French": [
+    [19, "Psaumes"]
+  ],
+  "German": [
+    [19, "Psalmen"]
+  ],
+  "Greek": [
+    [19, "Ψαλμοί"]
+  ],
+  "Italian": [
+    [19, "Salmi"]
+  ],
+  "Norwegian": [
+    [19, "Salmene"]
+  ],
+  "Polish": [
+    [19, "Psalmy"]
+  ],
+  "Portuguese": [
+    [5, "Deu"],
+    [18, "Jo"],
+    [19, "Salmos"]
+  ],
+  "Romanian": [
+    [19, "Psalmii"]
+  ],
+  "Russian": [
+    [19, "Псалмы"],
+    [22, "Песнь песней, Песнь"],
+    [23, "Исаия"]
   ],
   "Spanish": [
     [2, "Éxo"],
     [5, "Deu"],
-    [9, "1ro Samuel"],
-    [10, "2do Samuel"],
-    [11, "1ro Reyes"],
-    [12, "2do Reyes"],
-    [13, "1ro Crónicas"],
-    [14, "2do Crónicas"],
+    [9, "1ro Samuel"],
+    [10, "2do Samuel"],
+    [11, "1ro Reyes"],
+    [12, "2do Reyes"],
+    [13, "1ro Crónicas"],
+    [14, "2do Crónicas"],
     [19, "Sa, Salmos"],
     [20, "Pro"],
-    [22, "Cantar de los Cantares, Cantar, Cnt"],
+    [22, "Cantar de los Cantares, Cantar, Cnt"],
     [23, "Isa"],
     [26, "Ez"],
     [28, "Ose"],
     [48, "Gá, Ga"],
     [49, "Efe"],
     [50, "Fil"],
-    [52, "1ra Tesalonicenses"],
-    [53, "2da Tesalonicenses"],
-    [54, "1ra Timoteo"],
-    [55, "2da Timoteo"],
-    [60, "1ra Pedro"],
-    [61, "2da Pedro"],
-    [62, "1ra Juan"],
-    [63, "2da Juan"],
-    [64, "3ra Juan"],
+    [52, "1ra Tesalonicenses"],
+    [53, "2da Tesalonicenses"],
+    [54, "1ra Timoteo"],
+    [55, "2da Timoteo"],
+    [60, "1ra Pedro"],
+    [61, "2da Pedro"],
+    [62, "1ra Juan"],
+    [63, "2da Juan"],
+    [64, "3ra Juan"],
     [66, "Revelación, Rev, Re"]
   ],
-  "German": [[19, "Psalmen"]],
-  "French": [[19, "Psaumes"]],
-  "Italian": [[19, "Salmi"]],
-  "Portuguese": [
-    [18, "Jo"],
-    [19, "Salmos"]
+  "Swedish": [
+    [19, "Psalmerna"]
   ],
-  "Dutch": [[19, "Psalmen"]],
-  "Danish": [[19, "Salmerne"]],
-  "Norwegian": [[19, "Salmene"]],
-  "Polish": [[19, "Psalmy"]],
-  "Romanian": [[19, "Psalmii"]],
-  "Russian": [[19, "Псалмы"]],
-  "Swedish": [[19, "Psalmerna"]],
-  "Ukrainian": [[19, "Псалми"]],
-  "Ewe": [[19, "Psalmowo, Pss"]],
-  "Greek": [[19, "Ψαλμοί"]]
+  "Ukrainian": [
+    [19, "Псалми"],
+    [22, "Пісн"]
+  ]
 }
