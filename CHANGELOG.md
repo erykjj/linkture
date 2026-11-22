@@ -11,6 +11,11 @@
 ### Removed
 
 ____
+## [5.6.0] - 2026-11-21
+### Changed
+
+- Updated Bible book names
+
 ## [5.5.0] - 2026-11-11
 ### Changed
 
@@ -557,6 +562,7 @@ ____
 
 ____
 [Unreleased]: https://github.com/erykjj/linkture
+[5.6.0]:https://github.com/erykjj/linkture/releases/tag/v5.6.0
 [5.5.0]:https://github.com/erykjj/linkture/releases/tag/v5.5.0
 [5.4.2]:https://github.com/erykjj/linkture/releases/tag/v5.4.2
 [5.4.1]:https://github.com/erykjj/linkture/releases/tag/v5.4.1
